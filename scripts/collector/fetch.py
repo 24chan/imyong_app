@@ -132,12 +132,12 @@ def safe(name):
 
 
 def main(regions):
-    os.makedirs(OUT, exist_ok=True)
-    manifest_path = os.path.join(OUT, 'manifest.json')
-    manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else []
-    have = {(m['file_url']) for m in manifest}
     stats = {}
     for region in regions:
+        os.makedirs(os.path.join(OUT, region), exist_ok=True)
+        manifest_path = os.path.join(OUT, region, 'manifest.json')  # 지역별 목록 (병렬 실행)
+        manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else []
+        have = {m['file_url'] for m in manifest}
         cfg = crawl.BOARDS[region]
         crawl.DELAY[0] = cfg.get('delay', 0.7)
         print(f'\n===== {region}')
@@ -166,14 +166,14 @@ def main(regions):
                 ext = (FILE_EXT.search(f['name']) or FILE_EXT.search(f['href'])).group(1).lower()
                 sha = hashlib.sha1(data).hexdigest()[:12]
                 rel = f"{region}/{post['year']}_{post['level']}_{post['type']}_{sha}.{ext}"
-                os.makedirs(os.path.join(OUT, region), exist_ok=True)
                 with open(os.path.join(OUT, rel), 'wb') as fh:
                     fh.write(data)
                 manifest.append({**post, 'file_name': f['name'], 'file_url': f['href'], 'path': rel,
                                  'sha1': sha, 'size': len(data), 'fetched_at': time.strftime('%Y-%m-%d')})
                 have.add(f['href'])
                 n_files += 1
-                print(f"  + {rel} ({len(data)//1024}KB) {f['name'][:60]}")
+                print(f"  + {rel} ({len(data)//1024}KB) {f['name'][:60]}", flush=True)
+                json.dump(manifest, open(manifest_path, 'w'), ensure_ascii=False, indent=1)
         stats[region] = {'posts': len(posts), 'new_files': n_files}
         json.dump(manifest, open(manifest_path, 'w'), ensure_ascii=False, indent=1)
     print('\n요약', json.dumps(stats, ensure_ascii=False))
