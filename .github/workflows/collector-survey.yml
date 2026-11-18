@@ -1,0 +1,16 @@
+# 수집기 1단계 준비: 교육청 게시판 링크 구조 조사 (수동 실행)
+name: collector-survey
+
+on:
+  workflow_dispatch:
+
+jobs:
+  survey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/collector/survey.py
