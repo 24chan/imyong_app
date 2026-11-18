@@ -27,6 +27,10 @@ for url in sys.argv[1:]:
         names = [re.sub(r'\s+', ' ', i)[:90] for i in ins if 'hidden' in i][:12]
         if names:
             print('  FORM', tag[:160], names)
+    for kw in ('없습니다', 'alert(', 'tbody', 'q_rowPerPage', 'q_currPage'):
+        i = html.find(kw)
+        if i >= 0:
+            print(f'  [{kw}]', re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html[i - 100:i + 500]))[:300])
     for m in re.finditer(r'opMovePage', html):
         print('  ctx', re.sub(r'\s+', ' ', html[max(0, m.start() - 200):m.start() + 200])[:400])
         break
