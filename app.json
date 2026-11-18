@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "임용맵",
-    "slug": "imyong_app",
+    "slug": "imyongapp",
+    "owner": "imyong-app",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,11 +11,11 @@
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/EXPO_PROJECT_ID"
+      "url": "https://u.expo.dev/730303b5-554e-4982-8432-84b3574493c9"
     },
     "extra": {
       "eas": {
-        "projectId": "EXPO_PROJECT_ID"
+        "projectId": "730303b5-554e-4982-8432-84b3574493c9"
       }
     },
     "ios": {
