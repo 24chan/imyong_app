@@ -26,11 +26,25 @@ def hwpx_rows(path):
                 for ch in el:
                     tag = _local(ch.tag)
                     if tag == 'tbl':
-                        rows.append(['[표]'])
+                        # 셀 주소(colAddr,rowAddr)로 격자에 놓음. 병합된 자리는 빈칸 → 칸 위치가 머리글과 맞음
+                        grid = {}
+                        ncol = int(ch.get('colCnt') or 0)
                         for tr in ch:
                             if _local(tr.tag) != 'tr':
                                 continue
-                            rows.append([text_of(tc) for tc in tr if _local(tc.tag) == 'tc'])
+                            for tc in tr:
+                                if _local(tc.tag) != 'tc':
+                                    continue
+                                addr = next((x for x in tc if _local(x.tag) == 'cellAddr'), None)
+                                if addr is None:
+                                    continue
+                                c, r = int(addr.get('colAddr', 0)), int(addr.get('rowAddr', 0))
+                                grid[(r, c)] = text_of(tc)
+                                ncol = max(ncol, c + 1)
+                        rows.append(['[표]'])
+                        if grid:
+                            for r in range(max(k[0] for k in grid) + 1):
+                                rows.append([grid.get((r, c), '') for c in range(ncol)])
                         rows.append(['[/표]'])
                     elif tag == 'p' and not any(_local(x.tag) == 'tbl' for x in ch.iter()):
                         t = text_of(ch)
