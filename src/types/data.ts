@@ -13,22 +13,28 @@ export type SelectionCount = {
   stage: Stage;
   general: number | null; // 일반 (공개 안 된 경우 null)
   disabled: number | null; // 장애 (공개 안 된 경우 null)
+  regional: number | null; // 지역 구분모집 (없거나 미공개면 null)
   total: number;
   sourceId: string;
   baseDate: string; // 기준일 YYYY-MM-DD
 };
 
 /** exam_results: 시험 결과 (올해는 접수 현황만 있고 나머지는 null) */
+export type ResultCategory = 'all' | 'general' | 'disabled' | 'regional';
+
 export type ExamResult = {
   year: number;
   level: Level;
   region: string;
   subject: string | null;
-  applicants: number; // 접수
+  category: ResultCategory; // 전체 / 일반 / 장애 / 지역
+  selected: number | null; // 이 구분의 선발 인원
+  applicants: number | null; // 접수
   takers: number | null; // 실제 응시
   firstPassed: number | null; // 1차 합격
   firstCutoff: number | null; // 1차 합격선
   finalPassed: number | null; // 최종 합격
+  finalCutoff: number | null; // 최종(1+2차) 합격선
   sourceId: string;
   baseDate: string;
 };
@@ -45,6 +51,9 @@ export type RegionSummary = {
   selectionStage: Stage | null;
   preliminary: number | null;
   confirmed: number | null;
+  general: number | null; // 선발 인원 중 일반
+  disabled: number | null; // 장애
+  regional: number | null; // 지역 구분모집
   prevSelection: number | null; // 전년 확정
   change: number | null; // 전년 대비 증감 (명)
   changeRate: number | null; // 전년 대비 증감률 (%)
@@ -52,7 +61,10 @@ export type RegionSummary = {
   takers: number | null;
   ratioApplied: number | null; // 경쟁률 (접수 기준) = 접수 / 선발
   ratioActual: number | null; // 경쟁률 (응시 기준) = 응시 / 선발
-  firstCutoff: number | null;
+  firstCutoff: number | null; // 1차 합격선 (일반 기준, 없으면 전체)
+  firstPassed: number | null; // 1차 합격 인원
+  finalPassed: number | null; // 최종 합격 인원
+  finalCutoff: number | null; // 최종 합격선 (일반 기준, 없으면 전체)
   passRateApplied: number | null; // 합격률 (접수 기준, %) = 최종 합격 / 접수
   passRateActual: number | null; // 합격률 (응시 기준, %) = 최종 합격 / 응시
   source: Source | null;

@@ -150,9 +150,20 @@ export default function CompareScreen() {
               ))}
             />
             <CompareRow label="전년 대비" cells={picked.map((r) => <ChangeBadge key={r.region} change={r.change} />)} />
+            {picked.some((r) => r.general != null || r.disabled != null || r.regional) && (
+              <CompareRow
+                label="일반 / 장애 / 지역"
+                cells={picked.map((r) => (
+                  <Val key={r.region} v={r.general != null || r.disabled != null ? `${r.general ?? '—'} / ${r.disabled ?? '—'} / ${r.regional ?? 0}` : null} />
+                ))}
+              />
+            )}
             <CompareRow label="경쟁률 (접수)" cells={picked.map((r) => <Val key={r.region} v={r.ratioApplied != null ? `${r.ratioApplied} : 1` : null} />)} />
             <CompareRow label="경쟁률 (응시)" cells={picked.map((r) => <Val key={r.region} v={r.ratioActual != null ? `${r.ratioActual} : 1` : null} />)} />
+            <CompareRow label="1차 합격 인원" cells={picked.map((r) => <Val key={r.region} v={r.firstPassed != null ? `${r.firstPassed}명` : null} />)} />
             <CompareRow label="1차 합격선" cells={picked.map((r) => <Val key={r.region} v={r.firstCutoff != null ? `${r.firstCutoff}점` : null} />)} />
+            <CompareRow label="최종 합격 인원" cells={picked.map((r) => <Val key={r.region} v={r.finalPassed != null ? `${r.finalPassed}명` : null} />)} />
+            <CompareRow label="최종 합격선" cells={picked.map((r) => <Val key={r.region} v={r.finalCutoff != null ? `${r.finalCutoff}점` : null} />)} />
             <CompareRow label="합격률 (응시)" cells={picked.map((r) => <Val key={r.region} v={r.passRateActual != null ? `${r.passRateActual}%` : null} />)} />
 
             <SourcesSummary rows={picked} />

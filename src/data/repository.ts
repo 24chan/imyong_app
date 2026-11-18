@@ -43,11 +43,12 @@ class DataError extends Error {
 
 type SelRow = {
   year: number; level: Level; region: string; subject: string | null; stage: 'preliminary' | 'confirmed';
-  general: number | null; disabled: number | null; total: number; source_id: string; base_date: string;
+  general: number | null; disabled: number | null; regional: number | null; total: number; source_id: string; base_date: string;
 };
 type ResRow = {
-  year: number; level: Level; region: string; subject: string | null; applicants: number | null;
-  takers: number | null; first_passed: number | null; first_cutoff: number | null; final_passed: number | null;
+  year: number; level: Level; region: string; subject: string | null; category: ExamResult['category'];
+  selected: number | null; applicants: number | null; takers: number | null; first_passed: number | null;
+  first_cutoff: number | null; final_passed: number | null; final_cutoff: number | null;
   source_id: string; base_date: string;
 };
 type SchRow = { year: number; level: Level; region: string; event: ScheduleEvent['event']; date: string; source_id: string };
@@ -60,11 +61,11 @@ function loadDataset(q: DataQuery) {
   return cached(`ds:${q.level}:${subject}`, async () => {
     let sq = supabase
       .from('selection_counts')
-      .select('year,level,region,subject,stage,general,disabled,total,source_id,base_date')
+      .select('year,level,region,subject,stage,general,disabled,regional,total,source_id,base_date')
       .eq('level', q.level);
     let rq = supabase
       .from('exam_results')
-      .select('year,level,region,subject,applicants,takers,first_passed,first_cutoff,final_passed,source_id,base_date')
+      .select('year,level,region,subject,category,selected,applicants,takers,first_passed,first_cutoff,final_passed,final_cutoff,source_id,base_date')
       .eq('level', q.level);
     sq = subject ? sq.eq('subject', subject) : sq.is('subject', null);
     rq = subject ? rq.eq('subject', subject) : rq.is('subject', null);
@@ -73,13 +74,16 @@ function loadDataset(q: DataQuery) {
     if (r.error) throw new DataError('시험 결과', r.error.message);
     const selection: SelectionCount[] = (s.data as SelRow[]).map((x) => ({
       year: x.year, level: x.level, region: x.region, subject: x.subject, stage: x.stage,
-      general: x.general, disabled: x.disabled, total: x.total, sourceId: x.source_id, baseDate: x.base_date,
+      general: x.general, disabled: x.disabled, regional: x.regional, total: x.total,
+      sourceId: x.source_id, baseDate: x.base_date,
     }));
     const results: ExamResult[] = (r.data as ResRow[]).map((x) => ({
-      year: x.year, level: x.level, region: x.region, subject: x.subject, applicants: x.applicants ?? 0,
-      takers: x.takers, firstPassed: x.first_passed,
+      year: x.year, level: x.level, region: x.region, subject: x.subject, category: x.category ?? 'all',
+      selected: x.selected, applicants: x.applicants, takers: x.takers, firstPassed: x.first_passed,
       firstCutoff: x.first_cutoff != null ? Number(x.first_cutoff) : null,
-      finalPassed: x.final_passed, sourceId: x.source_id, baseDate: x.base_date,
+      finalPassed: x.final_passed,
+      finalCutoff: x.final_cutoff != null ? Number(x.final_cutoff) : null,
+      sourceId: x.source_id, baseDate: x.base_date,
     }));
     return { selection, results };
   });
@@ -160,7 +164,9 @@ function summarize(
   const conf = pick(year, 'confirmed');
   const prev = pick(year - 1, 'confirmed');
   const sel = conf ?? pre;
-  const res = ds.results.find((r) => r.region === region && r.year === year) ?? null;
+  const resRows = ds.results.filter((r) => r.region === region && r.year === year);
+  const res = combineResults(resRows);
+  const cut = resRows.find((r) => r.category === 'general') ?? resRows.find((r) => r.category === 'all') ?? null;
   const selectionN = sel?.total ?? null;
   const change = selectionN != null && prev ? selectionN - prev.total : null;
   const dates = [sel?.baseDate, res?.baseDate].filter(Boolean) as string[];
@@ -173,6 +179,9 @@ function summarize(
     selection: selectionN,
     selectionStage: sel?.stage ?? null,
     preliminary: pre?.total ?? null,
+    general: sel?.general ?? null,
+    disabled: sel?.disabled ?? null,
+    regional: sel?.regional ?? null,
     confirmed: conf?.total ?? null,
     prevSelection: prev?.total ?? null,
     change,
@@ -181,11 +190,35 @@ function summarize(
     takers: res?.takers ?? null,
     ratioApplied: ratio(res?.applicants ?? null, selectionN),
     ratioActual: ratio(res?.takers ?? null, selectionN),
-    firstCutoff: res?.firstCutoff ?? null,
+    firstCutoff: cut?.firstCutoff ?? null,
+    firstPassed: res?.firstPassed ?? null,
+    finalPassed: res?.finalPassed ?? null,
+    finalCutoff: cut?.finalCutoff ?? null,
     passRateApplied: pct(res?.finalPassed ?? null, res?.applicants ?? null),
     passRateActual: pct(res?.finalPassed ?? null, res?.takers ?? null),
     source: sources.find((s) => s.id === sourceId) ?? null,
     baseDate: dates.sort().at(-1) ?? null,
+  };
+}
+
+/** 구분별(일반/장애/지역) 결과를 하나로: '전체' 행이 있으면 그것, 없으면 더해서 */
+function combineResults(rows: ExamResult[]): ExamResult | null {
+  if (!rows.length) return null;
+  const all = rows.find((r) => r.category === 'all');
+  if (all) return all;
+  const sum = (k: 'applicants' | 'takers' | 'firstPassed' | 'finalPassed') =>
+    rows.some((r) => r[k] != null) ? rows.reduce((a, r) => a + (r[k] ?? 0), 0) : null;
+  const latest = [...rows].sort((a, b) => a.baseDate.localeCompare(b.baseDate)).at(-1)!;
+  return {
+    ...latest,
+    category: 'all',
+    selected: null,
+    applicants: sum('applicants'),
+    takers: sum('takers'),
+    firstPassed: sum('firstPassed'),
+    finalPassed: sum('finalPassed'),
+    firstCutoff: null,
+    finalCutoff: null,
   };
 }
 

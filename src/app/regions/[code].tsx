@@ -56,6 +56,10 @@ export default function RegionDetailScreen() {
   const cutoffSeries: Series[] = [
     { key: 'cutoff', label: '1차 합격선', tone: 'brand', shape: 'circle', values: rows.map((r) => r.firstCutoff) },
   ];
+  const finalCutoffSeries: Series[] = [
+    { key: 'fcut', label: '최종 합격선', tone: 'brand', shape: 'circle', values: rows.map((r) => r.finalCutoff) },
+  ];
+  const hasFinalCutoff = rows.some((r) => r.finalCutoff != null);
   const passSeries: Series[] = [
     { key: 'pApplied', label: '접수 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.passRateApplied) },
     { key: 'pActual', label: '응시 기준', tone: 'accent', shape: 'square', line: 'dash', values: rows.map((r) => r.passRateActual) },
@@ -108,11 +112,13 @@ export default function RegionDetailScreen() {
               </Txt>
             </View>
             <ChangeBadge change={cur.change} rate={cur.changeRate} />
+            {breakdown(cur) && <Txt variant="sub">{breakdown(cur)}</Txt>}
             <View style={{ gap: 2, marginTop: space.xs }}>
               <Row label="접수 / 응시 인원" value={`${cur.applicants?.toLocaleString() ?? '—'} / ${cur.takers?.toLocaleString() ?? '—'}명`} />
               <Row label="경쟁률 (접수 기준)" value={cur.ratioApplied != null ? `${cur.ratioApplied} : 1` : '—'} />
               <Row label="경쟁률 (응시 기준)" value={cur.ratioActual != null ? `${cur.ratioActual} : 1` : '—'} />
-              <Row label="1차 합격선" value={cur.firstCutoff != null ? `${cur.firstCutoff}점` : '—'} />
+              <Row label="1차 합격 인원 / 합격선" value={`${cur.firstPassed ?? '—'}명 / ${cur.firstCutoff != null ? `${cur.firstCutoff}점` : '—'}`} />
+              <Row label="최종 합격 인원 / 합격선" value={`${cur.finalPassed ?? '—'}명 / ${cur.finalCutoff != null ? `${cur.finalCutoff}점` : '—'}`} />
               <Row
                 label="합격률 (접수 / 응시 기준)"
                 value={`${cur.passRateApplied ?? '—'}% / ${cur.passRateActual ?? '—'}%`}
@@ -163,6 +169,21 @@ export default function RegionDetailScreen() {
               />
             </Card>
 
+            {hasFinalCutoff && (
+              <Card>
+                <Txt variant="heading">최종 합격선 추이</Txt>
+                <LineChart
+                  labels={labels}
+                  series={finalCutoffSeries}
+                  selectedIndex={sel}
+                  onSelect={setSel}
+                  titleFor={(i) => `${rows[i].year}학년도`}
+                  formatValue={(v) => `${Math.round(v * 100) / 100}점`}
+                />
+                <Txt variant="sub">1차와 2차 점수를 합한 최종 합격선이에요. (일반 기준, 1차 합격선과 만점이 달라 따로 보여줘요)</Txt>
+              </Card>
+            )}
+
             <Card>
               <Txt variant="heading">합격률 추이</Txt>
               <LineChart
@@ -206,6 +227,16 @@ export default function RegionDetailScreen() {
       </Screen>
     </>
   );
+}
+
+/** '일반 815 · 장애 68 · 지역 0' (공개된 경우만) */
+function breakdown(r: { general: number | null; disabled: number | null; regional: number | null }) {
+  const parts = [
+    r.general != null ? `일반 ${r.general}` : null,
+    r.disabled != null ? `장애 ${r.disabled}` : null,
+    r.regional ? `지역 ${r.regional}` : null,
+  ].filter(Boolean);
+  return parts.length ? `구분: ${parts.join(' · ')}` : null;
 }
 
 function Row({ label, value }: { label: string; value: string }) {

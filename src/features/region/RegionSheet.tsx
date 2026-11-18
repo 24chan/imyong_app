@@ -59,6 +59,7 @@ export function RegionSheet({ row, info, title, onClose, onOpenDetail, onReport 
           <View style={{ gap: 2 }}>
             <Line label="경쟁률 (접수 / 응시)" value={`${row.ratioApplied ?? '—'} / ${row.ratioActual ?? '—'} : 1`} />
             <Line label="1차 합격선" value={row.firstCutoff != null ? `${row.firstCutoff}점` : '—'} />
+            <Line label="최종 합격선" value={row.finalCutoff != null ? `${row.finalCutoff}점` : '—'} />
           </View>
 
           <SampleBadge sourceIds={[row.source?.id]} />
