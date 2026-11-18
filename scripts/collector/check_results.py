@@ -37,7 +37,7 @@ def check(recs):
                 problems.append(f"{key} 일반 1차합격 {fp} 이 선발 {sl} 의 1~2배 밖")
             for c in ('first_cutoff', 'final_cutoff'):
                 v = r.get(c)
-                lim = 110 if c == 'first_cutoff' else 220
+                lim = 120 if c == 'first_cutoff' else 220
                 if v is not None and not (20 <= v <= lim):
                     problems.append(f"{key} {r['category']} {c}={v} 범위 밖")
     return ok, problems

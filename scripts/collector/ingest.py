@@ -37,6 +37,12 @@ def manual_records():
     out = []
     for f in sorted(glob.glob(os.path.join(MANUAL_DIR, '*.json'))):
         d = json.load(open(f))
+        for e in d.get('entries', []):  # 학원 집계 등 여러 지역·연도 표 (cols 순서대로)
+            for cat in ('general', 'disabled', 'regional'):
+                if cat in e:
+                    out.append({'region': e['region'], 'year': e['year'], 'level': 'elementary', 'subject': None,
+                                'category': cat, **{k: v for k, v in zip(d['cols'], e[cat]) if v is not None},
+                                'sources': [d['source_url']], 'source_title': d['source_title']})
         for r in d.get('elementary', []):
             out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
                         'category': r['category'], **{k: v for k, v in r.items() if k != 'category' and not k.startswith('_')},
@@ -175,9 +181,11 @@ def main(raw):
     for (region, year, level), rs in sorted(groups.items()):
         probs = [p for p in problems if p.startswith(f"('{region}', {year})")]
         srcs = sorted({s for r in rs for s in r['sources']})
+        ref = next((r['source_title'] for r in rs if r.get('source_title')), None)
+        rs = [{k: v for k, v in r.items() if k != 'source_title'} for r in rs]
         rows.append({
             'region': region, 'level': level, 'doc_type': 'exam_results',
-            'title': f'{year}학년도 {region} {level} 선발·지원·1차·최종 합격 (공고 {len(srcs)}건)',
+            'title': ref or f'{year}학년도 {region} {level} 선발·지원·1차·최종 합격 (공고 {len(srcs)}건)',
             'source_url': f'parsed:{region}:{year}:{level}',  # 묶음 고유 키 (실제 공고 주소는 parsed.sources)
             'file_url': f'parsed:exam_results:{level}:{year}:{region}',
             'parsed': {'year': year, 'records': rs, 'sources': srcs},
