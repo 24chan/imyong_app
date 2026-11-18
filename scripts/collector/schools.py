@@ -86,7 +86,7 @@ def main():
         except (TypeError, ValueError):
             skipped += 1
             continue
-        reg = region_of(it.get('cddcNm'), it.get('rdnmadr'), it.get('lnmadr'))
+        reg = region_of(it.get('rdnmadr'), it.get('lnmadr'), it.get('cddcNm'))  # 주소 우선 (광주 학교가 전남 교육청 코드로 들어온 경우 대비)
         if not (kind and fond and reg and 33 < lat < 39 and 124 < lng < 132):
             skipped += 1
             continue
