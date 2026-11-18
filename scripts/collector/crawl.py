@@ -118,6 +118,8 @@ def anchors(html, base):
     for attrs, inner in A_RE.findall(html):
         text = re.sub(r'\s+', ' ', unescape(TAG_RE.sub('', inner))).strip()
         at = {k.lower(): unescape(v1 or v2) for k, v1, v2 in ATTR_RE.findall(attrs)}
+        if len(at.get('title', '')) > len(text.rstrip('.… ')):  # 목록에서 제목이 잘린 경우(대전·충남)
+            text = re.sub(r'\s+', ' ', at['title']).strip()
         href = at.get('href', '')
         yield text, (urljoin(base, href) if href and not href.lower().startswith('javascript') and not href.startswith('#') else ''), at
 
