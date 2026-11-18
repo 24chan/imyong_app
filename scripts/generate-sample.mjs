@@ -79,6 +79,38 @@ for (const [subject, [scale, comp]] of Object.entries(SEC_SUBJECTS)) {
   }
 }
 
+// 일정 (exam_schedules): 올해(2027학년도)만. 시도마다 며칠씩 다르게.
+const schedules = [];
+const pad = (n) => String(n).padStart(2, '0');
+const addDays = (iso, days) => {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+};
+const PLAN = {
+  elementary: {
+    pre_notice: '2026-08-07', plan: '2026-09-04', receipt_start: '2026-10-05', receipt_end: '2026-10-09',
+    first_exam: '2026-11-07', first_result: '2026-12-04', second_exam: '2027-01-07', final_result: '2027-01-29',
+  },
+  secondary: {
+    pre_notice: '2026-08-07', plan: '2026-09-25', receipt_start: '2026-10-13', receipt_end: '2026-10-19',
+    first_exam: '2026-11-28', first_result: '2026-12-25', second_exam: '2027-01-20', final_result: '2027-02-10',
+  },
+};
+for (const level of ['elementary', 'secondary']) {
+  for (const region of Object.keys(ELEM)) {
+    const shift = Math.floor(between(0, 4)); // 시도별 0~3일 차이
+    for (const [event, date] of Object.entries(PLAN[level])) {
+      const sameNationwide = event === 'first_exam'; // 1차 시험일은 전국 같은 날
+      schedules.push({
+        year: CURRENT, level, region, event,
+        date: sameNationwide ? date : addDays(date, event === 'pre_notice' ? 0 : shift),
+        sourceId: SOURCE_ID,
+      });
+    }
+  }
+}
+
 const sources = [
   {
     id: SOURCE_ID,
@@ -93,4 +125,5 @@ const out = (name, data) =>
 out('selection_counts', selection);
 out('exam_results', results);
 out('sources', sources);
+out('exam_schedules', schedules);
 console.log(`selection_counts ${selection.length}행, exam_results ${results.length}행`);

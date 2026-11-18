@@ -11,6 +11,8 @@ export type Settings = {
   subjectCode: string | null; // 중등이면 필수
   regionCodes: string[]; // 관심 지역 (화면에 공개되지 않음)
   themePref: ThemePref;
+  /** 개발용: 접수 상태를 다른 날짜로 확인해 볼 때 (출시 전 제거) */
+  devDate: string | null;
 };
 
 const DEFAULT_SETTINGS: Settings = {
@@ -19,6 +21,7 @@ const DEFAULT_SETTINGS: Settings = {
   subjectCode: null,
   regionCodes: [],
   themePref: 'system',
+  devDate: null,
 };
 
 const STORAGE_KEY = 'app-settings-v1';
@@ -87,3 +90,12 @@ export function useAppSettings() {
 }
 
 export const levelLabel = (level: Level) => (level === 'elementary' ? '초등' : '중등');
+
+/** 오늘 날짜 (개발용 날짜가 있으면 그 값) */
+export function useToday() {
+  const { settings } = useAppSettings();
+  if (settings.devDate) return settings.devDate;
+  const now = new Date();
+  const p = (n: number) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
+}

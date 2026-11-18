@@ -32,6 +32,7 @@ function RootStack() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ title: '설정' }} />
+        <Stack.Screen name="regions/[code]" options={{ title: '', headerBackTitle: '지역·TO' }} />
       </Stack>
     </>
   );

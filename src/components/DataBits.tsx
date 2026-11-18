@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { RECEIPT_STATUS_LABEL, ReceiptStatus } from '../data/receiptStatus';
 import { IS_SAMPLE_DATA } from '../data/repository';
 import type { Source } from '../types/data';
 import { radius } from '../theme/tokens';
@@ -56,6 +57,31 @@ export function SourceNote({ source, baseDate }: { source: Source | null; baseDa
     <Txt variant="sub">
       출처: {source ? `${source.publisher} · ${source.title}` : '—'} | 기준일: {baseDate ?? '—'}
     </Txt>
+  );
+}
+
+/** 원서 접수 상태 배지. 색 + 글자로 표시 (색만으로 구분하지 않음) */
+export function StatusBadge({ status }: { status: ReceiptStatus }) {
+  const { colors } = useTheme();
+  const filled = status === 'open';
+  const tone = status === 'open' ? colors.brand : status === 'upcoming' ? colors.accent : colors.textSub;
+  const icon = status === 'open' ? '●' : status === 'upcoming' ? '◷' : status === 'closed' ? '■' : '○';
+  return (
+    <View
+      style={{
+        alignSelf: 'flex-start',
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: radius.pill,
+        borderWidth: 1,
+        borderColor: tone,
+        backgroundColor: filled ? tone : 'transparent',
+      }}
+    >
+      <Txt variant="sub" style={{ fontWeight: '700', color: filled ? colors.background : tone }}>
+        {icon} {RECEIPT_STATUS_LABEL[status]}
+      </Txt>
+    </View>
   );
 }
 

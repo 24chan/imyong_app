@@ -2,9 +2,17 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, View } from 'react-native';
 import { RegionPicker, SubjectPicker } from '../components/pickers';
-import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
+import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
 import { space } from '../theme/tokens';
+
+const DEV_DATES: { label: string; value: string | null }[] = [
+  { label: '실제 오늘', value: null },
+  { label: '8/20 (공고 전)', value: '2026-08-20' },
+  { label: '9/28 (접수 예정)', value: '2026-09-28' },
+  { label: '10/7 (초등 접수 중)', value: '2026-10-07' },
+  { label: '10/16 (중등 접수 중)', value: '2026-10-16' },
+];
 
 export default function SettingsScreen() {
   const { settings, update, reset } = useAppSettings();
@@ -82,6 +90,21 @@ export default function SettingsScreen() {
         <Txt variant="heading">관심 지역</Txt>
         <Txt variant="sub">다른 사람에게는 공개되지 않아요.</Txt>
         <RegionPicker value={settings.regionCodes} onChange={(regionCodes) => update({ regionCodes })} />
+      </Card>
+
+      <Card>
+        <Txt variant="heading">개발용 · 테스트 날짜</Txt>
+        <Txt variant="sub">접수 상태가 날짜에 따라 바뀌는지 확인하는 용도예요. 출시 전에 없앨게요.</Txt>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
+          {DEV_DATES.map((d) => (
+            <Chip
+              key={d.label}
+              label={d.label}
+              selected={settings.devDate === d.value}
+              onPress={() => update({ devDate: d.value })}
+            />
+          ))}
+        </View>
       </Card>
 
       <PrimaryButton label="처음 화면부터 다시 하기" variant="ghost" onPress={confirmReset} />

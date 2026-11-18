@@ -1,6 +1,15 @@
-import type { DataQuery, ExamResult, RegionSummary, SelectionCount, Source } from '../types/data';
+import type { Level } from '../store/AppSettings';
+import type {
+  DataQuery,
+  ExamResult,
+  RegionSummary,
+  ScheduleEvent,
+  SelectionCount,
+  Source,
+} from '../types/data';
 import { REGIONS } from './regions';
 import examResultsJson from './sample/exam_results.json';
+import schedulesJson from './sample/exam_schedules.json';
 import selectionJson from './sample/selection_counts.json';
 import sourcesJson from './sample/sources.json';
 
@@ -12,6 +21,14 @@ export const IS_SAMPLE_DATA = true;
 const selection = selectionJson as SelectionCount[];
 const results = examResultsJson as ExamResult[];
 const sources = sourcesJson as Source[];
+const schedules = schedulesJson as ScheduleEvent[];
+
+/** 한 해·한 모드의 일정 (시도별). region을 주면 그 지역만 */
+export async function getSchedules(level: Level, year: number, region?: string): Promise<ScheduleEvent[]> {
+  return schedules
+    .filter((s) => s.level === level && s.year === year && (!region || s.region === region))
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
 
 const sameKey = (q: DataQuery) => (r: { level: string; subject: string | null }) =>
   r.level === q.level && (q.level === 'elementary' ? r.subject === null : r.subject === (q.subject ?? null));

@@ -59,4 +59,24 @@ export type RegionSummary = {
   baseDate: string | null; // 가장 최근 기준일
 };
 
+/** exam_schedules: 일정 */
+export type ScheduleEventType =
+  | 'pre_notice' // 선발 인원 사전예고
+  | 'plan' // 시행계획 공고
+  | 'receipt_start' // 원서 접수 시작
+  | 'receipt_end' // 원서 접수 마감
+  | 'first_exam' // 1차 시험
+  | 'first_result' // 1차 합격 발표
+  | 'second_exam' // 2차 시험
+  | 'final_result'; // 최종 합격 발표
+
+export type ScheduleEvent = {
+  year: number;
+  level: Level;
+  region: string;
+  event: ScheduleEventType;
+  date: string; // YYYY-MM-DD
+  sourceId: string;
+};
+
 export type DataQuery = { level: Level; subject?: string | null };
