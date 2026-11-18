@@ -50,22 +50,30 @@ def get(page, rows=1000):
     raise RuntimeError('API 실패')
 
 
+def body_of(d):
+    b = (d.get('response') or d).get('body') or {}
+    it = b.get('items') or []
+    if isinstance(it, dict):
+        it = it.get('item') or []
+    if isinstance(it, dict):
+        it = [it]
+    return int(b.get('totalCount') or 0), it
+
+
 def main():
     if not KEY:
         print('DATA_GO_KR_KEY 없음')
         return 1
     first = get(1)
-    body = first.get('response', {}).get('body', {})
-    total = int(body.get('totalCount', 0))
-    print('header', first.get('response', {}).get('header'), 'total', total, 'keys', list(first.keys())[:5])
+    total, items = body_of(first)
+    print('header', (first.get('response') or first).get('header'), 'total', total)
     if not total:
         print('응답 일부:', json.dumps(first, ensure_ascii=False)[:400])
-    items = body.get('items', []) or []
     if items:
         print('항목 예시 키:', list(items[0].keys()))
     pages = (total + 999) // 1000
     for p in range(2, pages + 1):
-        items += get(p).get('response', {}).get('body', {}).get('items', []) or []
+        items += body_of(get(p))[1]
     by = {}
     skipped = 0
     for it in items:
