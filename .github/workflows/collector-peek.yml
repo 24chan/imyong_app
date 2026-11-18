@@ -13,4 +13,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -I -u scripts/collector/peek.py ${{ github.event.inputs.urls }}
+      - env:
+          URLS: ${{ github.event.inputs.urls }}
+        run: python -I -u scripts/collector/peek.py $URLS
