@@ -1,0 +1,37 @@
+name: collector-fetch
+on:
+  workflow_dispatch:
+    inputs:
+      regions:
+        description: '지역 코드(공백 구분, 비우면 전체)'
+        required: false
+        default: ''
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: 기존 원문 파일 가져오기 (raw-files 브랜치)
+        run: |
+          git fetch origin raw-files:raw-files 2>/dev/null && git --work-tree=. checkout raw-files -- raw 2>/dev/null || echo "처음 실행"
+          git reset -q
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 공고 첨부파일 내려받기
+        run: python -I scripts/collector/fetch.py ${{ github.event.inputs.regions }}
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          mv raw /tmp/raw
+          git checkout -q --orphan raw-files-new
+          git rm -rq --cached . || true
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          mv /tmp/raw raw
+          git add raw
+          git commit -qm "원문 파일 갱신 $(date +%F)" || exit 0
+          git push -qf origin HEAD:raw-files
