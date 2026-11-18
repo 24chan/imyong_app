@@ -1,7 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import type { ReactNode } from 'react';
 import { Linking, Pressable, View } from 'react-native';
-import { Card, Txt } from '../../components/ui';
+import { Txt } from '../../components/ui';
 import { regionByCode } from '../../data/regions';
+import { useToday } from '../../store/AppSettings';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { Notice, NoticeType, RegionSummary } from '../../types/data';
@@ -37,47 +39,105 @@ export function noticeNumbers(t: NoticeType, s: RegionSummary | undefined): stri
   return text || null;
 }
 
-export function NoticeItem({ item, summary, highlight }: { item: Notice; summary?: RegionSummary; highlight?: boolean }) {
+// 토큰 색에 투명도만 더해 옅은 배경을 만듦 (#RRGGBB + AA)
+const tint = (hex: string, alpha = '1F') => (hex.length === 7 ? hex + alpha : hex);
+
+const daysSince = (date: string | null, today: string) =>
+  date ? Math.round((Date.parse(today) - Date.parse(date)) / 86400000) : Infinity;
+
+/** 게시판 한 줄: 종류 배지(색) · 지역 · 날짜 / 굵은 제목 / 숫자 */
+export function NoticeRow({
+  item,
+  summary,
+  highlight,
+  last,
+}: {
+  item: Notice;
+  summary?: RegionSummary;
+  highlight?: boolean;
+  last?: boolean;
+}) {
   const { colors } = useTheme();
+  const today = useToday();
   const nums = noticeNumbers(item.docType, summary);
+  const tone = item.docType === 'private' ? colors.accent : item.docType === 'final_pass' || item.docType === 'first_pass' ? colors.up : colors.brand;
+  const isNew = daysSince(item.postedAt, today) <= 3;
   return (
     <Pressable
       onPress={() => Linking.openURL(item.url).catch(() => {})}
       accessibilityRole="link"
       accessibilityHint="교육청 원문 공고를 열어요"
+      style={({ pressed }) => ({
+        paddingVertical: space.md,
+        paddingHorizontal: space.lg,
+        gap: 6,
+        backgroundColor: pressed ? colors.surface : 'transparent',
+        borderBottomWidth: last ? 0 : 1,
+        borderBottomColor: colors.line,
+      })}
     >
-      <Card>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' }}>
-          <View
-            style={{
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: radius.pill,
-              borderWidth: 1,
-              borderColor: item.docType === 'private' ? colors.accent : colors.brand,
-            }}
-          >
-            <Txt variant="sub" color={item.docType === 'private' ? 'accent' : 'brand'} style={{ fontWeight: '700' }}>
-              {NOTICE_LABEL[item.docType]}
-            </Txt>
-          </View>
-          <Txt variant="sub" color="text" style={{ fontWeight: '700' }}>
-            {regionByCode(item.region)?.shortName ?? item.region}
-            {highlight ? ' ★' : ''}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <View style={{ flexShrink: 0, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, backgroundColor: tint(tone) }}>
+          <Txt variant="sub" style={{ color: tone, fontWeight: '800', fontSize: 12 }}>
+            {NOTICE_LABEL[item.docType]}
           </Txt>
-          <Txt variant="sub">
-            {item.year}학년도{item.postedAt ? ` · ${item.postedAt.slice(5).replace('-', '.')}` : ''}
-          </Txt>
-          <View style={{ flex: 1 }} />
-          <Ionicons name="open-outline" size={16} color={colors.textSub} />
         </View>
-        <Txt numberOfLines={2}>{item.title}</Txt>
-        {nums && (
-          <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
+        <Txt variant="sub" color="text" style={{ fontWeight: '800' }}>
+          {regionByCode(item.region)?.shortName ?? item.region}
+        </Txt>
+        {highlight && <Ionicons name="star" size={12} color={colors.accent} accessibilityLabel="관심 지역" />}
+        <Txt variant="sub" style={{ fontSize: 12 }}>
+          {item.postedAt ? item.postedAt.slice(5).replace('-', '.') : `${item.year}학년도`}
+        </Txt>
+        {isNew && (
+          <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: colors.down, alignItems: 'center', justifyContent: 'center' }}>
+            <Txt style={{ color: colors.background, fontSize: 10, fontWeight: '900' }}>N</Txt>
+          </View>
+        )}
+        <View style={{ flex: 1 }} />
+        <Ionicons name="open-outline" size={15} color={colors.textSub} />
+      </View>
+      <Txt numberOfLines={2} style={{ fontSize: 16, fontWeight: '700', lineHeight: 22 }}>
+        {item.title}
+      </Txt>
+      {nums && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <Ionicons name="stats-chart" size={12} color={tone} />
+          <Txt variant="sub" style={{ color: tone, fontWeight: '700' }}>
             {nums}
           </Txt>
-        )}
-      </Card>
+        </View>
+      )}
     </Pressable>
+  );
+}
+
+/** 게시판 상자: 색 아이콘 머리글 + 테두리 + 줄 구분 (에브리타임 '즐겨찾는 게시판' 느낌) */
+export function NoticeBoard({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, backgroundColor: colors.background, overflow: 'hidden' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: space.sm,
+          paddingHorizontal: space.lg,
+          paddingVertical: space.md,
+          backgroundColor: tint(colors.brand, '14'),
+          borderBottomWidth: 1,
+          borderBottomColor: colors.line,
+        }}
+      >
+        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="megaphone" size={15} color={colors.background} />
+        </View>
+        <Txt variant="heading" style={{ flex: 1 }}>
+          {title}
+        </Txt>
+        {action}
+      </View>
+      {children}
+    </View>
   );
 }

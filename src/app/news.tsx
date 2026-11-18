@@ -4,7 +4,7 @@ import { ViewModeBanner } from '../components/ModeToggle';
 import { Chip, Screen, Txt } from '../components/ui';
 import { getNotices, getRegionSummaries } from '../data/repository';
 import { useAsync } from '../data/useAsync';
-import { NOTICE_LABEL, NoticeItem } from '../features/news/NoticeList';
+import { NOTICE_LABEL, NoticeBoard, NoticeRow } from '../features/news/NoticeList';
 import { useRegionFilters } from '../features/region/useRegionFilters';
 import { useAppSettings } from '../store/AppSettings';
 import { space } from '../theme/tokens';
@@ -59,9 +59,19 @@ export default function NewsScreen() {
           {onlyMine && mine.length === 0 ? '설정에서 관심 지역을 고르면 그 지역 소식만 볼 수 있어요.' : '아직 모인 소식이 없어요.'}
         </Txt>
       )}
-      {list.map((x) => (
-        <NoticeItem key={x.url} item={x} summary={byKey.get(`${x.year}:${x.region}`)} highlight={mine.includes(x.region)} />
-      ))}
+      {list.length > 0 && (
+        <NoticeBoard title={`${type === 'all' ? '전체' : NOTICE_LABEL[type]} · ${list.length}건`}>
+          {list.map((x, i) => (
+            <NoticeRow
+              key={x.url}
+              item={x}
+              summary={byKey.get(`${x.year}:${x.region}`)}
+              highlight={mine.includes(x.region)}
+              last={i === list.length - 1}
+            />
+          ))}
+        </NoticeBoard>
+      )}
     </Screen>
   );
 }

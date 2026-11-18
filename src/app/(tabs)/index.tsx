@@ -9,7 +9,7 @@ import { regionByCode } from '../../data/regions';
 import { getNotices, getRegionSummaries, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
-import { NoticeItem } from '../../features/news/NoticeList';
+import { NoticeBoard, NoticeRow } from '../../features/news/NoticeList';
 import { useRegionFilters } from '../../features/region/useRegionFilters';
 import { useAppSettings, useToday } from '../../store/AppSettings';
 import { radius, space } from '../../theme/tokens';
@@ -175,23 +175,32 @@ export default function HomeScreen() {
       )}
 
       {/* 임용 소식 (교육청 공고 모음) */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Txt variant="heading">임용 소식</Txt>
-        <Pressable onPress={() => router.push('/news')} hitSlop={8}>
-          <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
-            전체 보기 ›
+      <NoticeBoard
+        title="임용 소식"
+        action={
+          <Pressable onPress={() => router.push('/news')} hitSlop={8} accessibilityRole="button">
+            <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
+              전체 보기 ›
+            </Txt>
+          </Pressable>
+        }
+      >
+        {homeNotices.length === 0 ? (
+          <Txt variant="sub" style={{ padding: space.lg }}>
+            교육청 공고를 모으는 중이에요. 곧 사전예고·시행계획·접수 현황·합격 발표가 올라와요.
           </Txt>
-        </Pressable>
-      </View>
-      {homeNotices.length === 0 ? (
-        <Card>
-          <Txt variant="sub">교육청 공고를 모으는 중이에요. 곧 여기에 사전예고·시행계획·접수 현황·합격 발표가 올라와요.</Txt>
-        </Card>
-      ) : (
-        homeNotices.map((x) => (
-          <NoticeItem key={x.url} item={x} summary={summaryOf(x.year, x.region)} highlight={interest.includes(x.region)} />
-        ))
-      )}
+        ) : (
+          homeNotices.map((x, i) => (
+            <NoticeRow
+              key={x.url}
+              item={x}
+              summary={summaryOf(x.year, x.region)}
+              highlight={interest.includes(x.region)}
+              last={i === homeNotices.length - 1}
+            />
+          ))
+        )}
+      </NoticeBoard>
 
       {/* 바로가기 */}
       <View style={{ flexDirection: 'row', gap: space.sm }}>
