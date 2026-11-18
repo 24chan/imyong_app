@@ -6,9 +6,12 @@
 - [x] 0단계 접속 확인 `collector-probe` (2026-11-18): 14/17
 - [x] 1단계 준비 게시판 링크 구조 조사 `collector-survey` (2026-11-18)
 - [x] 1단계 지역별 목록 → 상세 → 첨부 URL 수집 `collector-crawl` (14/17)
-- [ ] 2단계 첨부 다운로드 + 문서 종류 분류 (시행계획 / 접수현황 / 1차 응시 / 1차 합격 / 최종 합격)
-- [ ] 3단계 표 추출 (hwpx: XML, pdf: 텍스트, hwp(구형): pyhwp/hwp5txt) + 자체 검증(일반+장애+지역=총원, 교육부 합계)
-- [ ] 4단계 ingest_queue 저장 (GitHub Secret `SUPABASE_SECRET_KEY` 필요, 사용자가 등록)
+- [x] 2단계 첨부 다운로드 + 분류 `collector-fetch` (지역별 병렬) → `raw-files` 브랜치 (2026-11-18, 약 360MB)
+- [x] 3단계 표 추출 — 초등 1차·최종 (hwpx XML / pdf 표+글자배치 / xlsx / hwp→pyhwp 변환) + 교육부 확정 인원과 합계 대조
+  - 결과: 11개 지역 30개 연도 묶음, 검증 전부 통과 (2026-11-18)
+  - [ ] 중등(과목별, 2단 머리글 표) 파서
+- [ ] 4단계 ingest_queue 저장 `collector-ingest` (fetch 끝나면 자동 실행) — GitHub Secret `SUPABASE_SECRET_KEY` 등록 대기
+- 인천·세종·전남: 해외 차단 → 사용자가 공고 파일을 대화에 올리면 처리 (2026-11-18 결정 A)
 - [ ] 5단계 하루 1회 자동 실행(cron), 시즌엔 더 자주 / 새 공고 알림
 
 ## 게시판 현황 (2026-11-18, `collector-crawl` 기준)
