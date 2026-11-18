@@ -37,7 +37,7 @@ def manual_records():
         d = json.load(open(f))
         for r in d.get('elementary', []):
             out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
-                        'category': r['category'], **{k: v for k, v in r.items() if k != 'category'},
+                        'category': r['category'], **{k: v for k, v in r.items() if k != 'category' and not k.startswith('_')},
                         'sources': [d['source_url']]})
     return out
 

@@ -1,0 +1,12 @@
+{
+  "_설명": "사용자가 올려준 전남광주통합특별시교육청(전남) 원문 PDF에서 옮겨 적음. 원본: supabase/data/manual/sources/jeonnam_2027_elementary_receipt.pdf",
+  "region": "jeonnam",
+  "year": 2027,
+  "source_title": "2027학년도 전남광주통합특별시(전남) 유·초·특(유·초)교사 임용시험 원서접수 현황 (2026.10.2. 18:00 기준, 공립 초등학교)",
+  "source_url": "https://www.jne.go.kr",
+  "elementary": [
+    {"category": "general", "selected": 137, "applicants": 336},
+    {"category": "disabled", "selected": 12, "applicants": 5},
+    {"category": "regional", "selected": 13, "applicants": 26, "_비고": "지역 구분모집 시·군II 10명/22명 + 시·군Ⅲ 3명/4명 합산"}
+  ]
+}
