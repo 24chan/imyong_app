@@ -158,6 +158,90 @@ def split_side_by_side(tbl):
     return [tbl]
 
 
+TOK = re.compile(r'\S+(?: \S+)*')
+VAL = re.compile(r'^(?:[\d,]+(?:\.\d+)?|-|비공개|없음)$')
+
+
+def parse_layout_wide(path, doc_type):
+    """표 선이 안 잡히는 PDF(경기 등): 글자 배치로 과목 행 × (지표·구분) 열 읽기"""
+    import subprocess
+    text = subprocess.run(['pdftotext', '-layout', path, '-'], capture_output=True, text=True, timeout=60).stdout
+    lines = text.splitlines()
+    out, ctx = [], ''
+    i = 0
+    while i < len(lines):
+        ln = lines[i]
+        subs = [(m.start(), m.group(0)) for m in re.finditer(r'\S+', ln)]
+        cats = [t for _, t in subs if re.fullmatch(r'일반|장애|합계|계|소계|지역', t)]
+        if len(cats) < 4 or len(cats) < len(subs) - 2:
+            if ln.strip() and len(ln.strip()) < 40:
+                ctx = ln.strip()
+            i += 1
+            continue
+        sub_toks = [(x, t) for x, t in subs if re.fullmatch(r'일반|장애|합계|계|소계|지역', t)]
+        # 위 1~3줄에서 지표 머리글 찾기
+        groups = []
+        for back in range(1, 4):
+            if i - back < 0:
+                break
+            g = [(m.start(), m.group(0)) for m in TOK.finditer(lines[i - back])]
+            g = [(x, t) for x, t in g if col_metric(t, doc_type)]
+            if len(g) >= 2:
+                groups = g
+                break
+        if not groups:
+            i += 1
+            continue
+        # 구분 칸을 '일반'에서 시작하는 묶음으로 나누고, 묶음 가운데와 가장 가까운 지표 머리글에 붙임 (머리글이 가운데 정렬이라)
+        runs = []
+        for x, t in sub_toks:
+            if t == '일반' or not runs:
+                runs.append([])
+            runs[-1].append((x, t))
+        cols = []
+        for run in runs:
+            cx = sum(x for x, _ in run) / len(run)
+            g = min(groups, key=lambda gg: abs(gg[0] + len(gg[1]) / 2 - cx))
+            for _, t in run:
+                cols.append((col_metric(g[1], doc_type), col_cat(t)))
+        skip = bool(re.search(r'사립|국립|위탁', ctx))
+        j = i + 1
+        while j < len(lines) and j - i < 60:
+            toks = [m.group(0) for m in re.finditer(r'\S+', lines[j])]
+            if not toks:
+                j += 1
+                continue
+            toks = [x for tk in toks for x in tk.split(' ')] if False else toks
+            k = 0
+            while k < len(toks) and not VAL.match(toks[k]):
+                k += 1
+            label, vals = ' '.join(toks[:k]), toks[k:]
+            if re.search(r'사립|국립|위탁', label):
+                skip = True
+            if k == 0 or not vals:
+                if re.match(r'^\s*\d+\s', lines[j]) or re.search(r'공립|사립|국립', lines[j]):
+                    skip = bool(re.search(r'사립|국립|위탁', lines[j]))
+                j += 1
+                if len(toks) > 6 and not k:
+                    break
+                continue
+            code = subject_code(label.split(' ')[-1]) or subject_code(label)
+            if code and not skip and len(vals) == len(cols):
+                recs = {}
+                for (m, c), v in zip(cols, vals):
+                    nv = num(v)
+                    if m and nv is not None:
+                        recs.setdefault(c, {})[m] = nv
+                if recs.keys() & {'general', 'disabled'}:
+                    recs.pop('total', None)
+                    recs.pop('all', None)
+                for c, rec in recs.items():
+                    out.append((code, 'all' if c == 'total' else c, rec))
+            j += 1
+        i = j
+    return out
+
+
 def doc_rank(m):
     t = m['title'] + ' ' + m['file_name']
     if m['type'] in ('first_pass', 'final_pass'):
@@ -210,6 +294,8 @@ def main(raw, out_path=None):
                     cur_tbl.append(r)
                 elif len(r) == 1 and r[0].strip():
                     ctx = r[0][-60:]  # 표 바로 앞 문단 (예: '[사립]', '나. 장애인 구분모집')
+            if path.endswith('.pdf') and len({c for c, _, _ in recs if not c.startswith('x:')}) < 5:
+                recs = parse_layout_wide(path, m['type'])
         except Exception as e:  # noqa: BLE001
             log.append(f"ERR {m['path']} {e}")
             continue
