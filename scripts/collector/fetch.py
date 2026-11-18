@@ -166,7 +166,7 @@ def main(regions):
                 print(f"  상세 실패 {post['title'][:50]}: {type(e).__name__}")
                 continue
             for f in files:
-                if not f['href'] or SKIP_FILE.search(f['name']) or not FILE_EXT.search(f['name'] + f['href']):
+                if not f['href'] or SKIP_FILE.search(f['name']) or not FILE_EXT.search(f['name'] + ' ' + f['href']):
                     continue
                 if f['href'] in have:
                     continue
@@ -178,7 +178,7 @@ def main(regions):
                 if len(data) < 200 or data[:15].lstrip().lower().startswith((b'<!doctype', b'<html', b'<script')):
                     print(f"  파일 아님(HTML) {f['name'][:50]}")
                     continue
-                ext = (FILE_EXT.search(f['name']) or FILE_EXT.search(f['href'])).group(1).lower()
+                ext = (FILE_EXT.search(f['name'] + ' ') or FILE_EXT.search(f['href'])).group(1).lower()
                 sha = hashlib.sha1(data).hexdigest()[:12]
                 rel = f"{region}/{post['year']}_{post['level']}_{post['type']}_{sha}.{ext}"
                 with open(os.path.join(OUT, rel), 'wb') as fh:

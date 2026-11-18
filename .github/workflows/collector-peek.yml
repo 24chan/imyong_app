@@ -1,0 +1,16 @@
+name: collector-peek
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: '확인할 주소(공백 구분)'
+        required: true
+jobs:
+  peek:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -I -u scripts/collector/peek.py ${{ github.event.inputs.urls }}
