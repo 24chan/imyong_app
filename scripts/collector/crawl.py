@@ -17,7 +17,7 @@ CTX_LOOSE.check_hostname = False
 CTX_LOOSE.verify_mode = ssl.CERT_NONE  # 인증서 체인이 불완전한 곳(울산 등) 공개 공고 읽기 전용
 
 A_RE = re.compile(r'<a\b([^>]*)>(.*?)</a>', re.S | re.I)
-ATTR_RE = re.compile(r'([\w-]+)\s*=\s*"([^"]*)"', re.I)
+ATTR_RE = re.compile(r'([\w-]+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\')', re.I)
 TAG_RE = re.compile(r'<[^>]+>')
 YEAR_RE = re.compile(r'20(2[4-7])\s*학년도')
 TEACHER_RE = re.compile(r'(유치원|초등|중등|특수)')
@@ -49,7 +49,10 @@ BOARDS = {
     'jeonbuk': {'list': ['https://www.jbe.go.kr/board/list.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004001000&paging=ok&startPage={p}',
                          'https://www.jbe.go.kr/board/list.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&paging=ok&startPage={p}'],
                 'mode': 'href'},
-    'gyeongbuk': {'list': ['https://www.gbe.kr/main/na/ntt/selectNttList.do?mi=3538&bbsId=1882&currPage={p}'],
+    'daegu': {'warm': 'https://www.dge.go.kr/main/main.do',
+              'list': ['https://www.dge.go.kr/main/na/ntt/selectNttList.do?mi=10179&bbsId=3913&currPage={p}'],
+              'mode': 'dataid', 'detail': 'https://www.dge.go.kr/main/na/ntt/selectNttInfo.do?mi=10179&bbsId=3913&nttSn={id}'},
+    'gyeongbuk': {'delay': 4, 'list': ['https://www.gbe.kr/main/na/ntt/selectNttList.do?mi=3538&bbsId=1882&currPage={p}'],
                   'mode': 'dataid', 'detail': 'https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn={id}'},
     'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251'], 'mode': 'href', 'pages': 1},
     'jeju': {'list': ['https://www.jje.go.kr/board/list.jje?boardId=BBS_0000002&paging=ok&startPage={p}'], 'mode': 'href'},
@@ -57,8 +60,6 @@ BOARDS = {
 
 # 게시판 주소를 아직 모르는 곳: 메뉴에서 '임용' 들어간 링크 찾기
 DISCOVER = {
-    'daegu': ['https://www.dge.go.kr/main/main.do', 'https://www.dge.go.kr/sso/index.jsp', 'https://www.dge.go.kr/main/main.do',
-              'https://www.dge.go.kr/', 'http://www.dge.go.kr/main/main.do'],
     'chungnam': ['https://www.cne.go.kr/sub/info.do?m=010901&page=01060101&s=cne',
                  'https://www.cne.go.kr/sub/info.do?m=010902&page=01060102&s=cne'],
     'sejong': ['https://www.sje.go.kr/sje/main.do'],
@@ -74,9 +75,15 @@ OPENERS = {
 }
 
 
+LAST = {}  # 사이트별 직전 주소(Referer) — 인천처럼 외부 유입을 막는 곳
+DELAY = [0.7]
+
+
 def get(url, timeout=40, referer=None):
     last = None
-    time.sleep(0.7)  # 교육청 서버 부담 줄이기
+    time.sleep(DELAY[0])  # 교육청 서버 부담 줄이기
+    host = url.split('/')[2]
+    referer = referer or LAST.get(host)
     for loose in (False, True):
         try:
             h = {'User-Agent': UA, 'Accept-Language': 'ko-KR,ko;q=0.9'}
@@ -86,6 +93,7 @@ def get(url, timeout=40, referer=None):
             with OPENERS[loose].open(req, timeout=timeout) as r:
                 raw = r.read()
                 ct = r.headers.get_content_charset() or ('euc-kr' if b'euc-kr' in raw[:3000].lower() else 'utf-8')
+                LAST[host] = r.geturl()
                 return r.geturl(), raw.decode(ct, 'ignore')
         except Exception as e:  # noqa: BLE001
             last = e
@@ -97,7 +105,7 @@ def get(url, timeout=40, referer=None):
 def anchors(html, base):
     for attrs, inner in A_RE.findall(html):
         text = re.sub(r'\s+', ' ', unescape(TAG_RE.sub('', inner))).strip()
-        at = {k.lower(): unescape(v) for k, v in ATTR_RE.findall(attrs)}
+        at = {k.lower(): unescape(v1 or v2) for k, v1, v2 in ATTR_RE.findall(attrs)}
         href = at.get('href', '')
         yield text, (urljoin(base, href) if href and not href.lower().startswith('javascript') and not href.startswith('#') else ''), at
 
@@ -174,6 +182,8 @@ def attachments(url):
     # 경기처럼 파일 주소가 미리보기 onclick 에만 있는 경우 보충
     for f, url in zip([f for f in files if not f['href']], re.findall(r"previewAjax\('([^']+)'", html)):
         f['href'] = url
+    have = {f['name'] for f in files if f['href']}
+    files = [f for f in files if f['name'].strip() and (f['href'] or f['name'] not in have)]
     nohref = [f for f in files if not f['href']]
     if nohref:
         i = html.find(nohref[0]['name'][:15])
@@ -189,6 +199,7 @@ def crawl(regions):
     summary = {}
     for region in regions:
         cfg = BOARDS[region]
+        DELAY[0] = cfg.get('delay', 0.7)
         print(f'\n===== {region}')
         posts = list_posts(cfg)
         summary[region] = {'posts': len(posts), 'with_files': 0}
@@ -220,6 +231,8 @@ def discover(regions):
             print(f'  {url} → {final} len={len(html)}')
             if len(html) < 2000:
                 print('    짧음:', re.sub(r'\s+', ' ', html)[:300])
+            for m in sorted(set(re.findall(r'(?:boardID=\d+[^"\'<>\s]*|<iframe[^>]+>)', html)))[:15]:
+                print('    @', m[:200])
             n = 0
             for text, href, at in anchors(html, final):
                 if MENU_RE.search(text) or (YEAR_RE.search(text) and '임용' in text):
