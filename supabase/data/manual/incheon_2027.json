@@ -1,0 +1,40 @@
+{
+  "_설명": "해외 접속이 막힌 교육청(인천·세종·전남) 공고를 사용자가 보내준 원문 화면에서 옮겨 적은 값. 수집기가 ingest_queue(검수 대기)에 같이 올림.",
+  "region": "incheon",
+  "year": 2027,
+  "source_title": "2027학년도 인천광역시 임용시험 원서 접수 현황 (인천광역시교육청 누리집, 사용자 제공 화면 2026-11-18)",
+  "source_url": "https://www.ice.go.kr/ice/na/ntt/selectNttList.do?mi=10991&bbsId=1777",
+  "elementary": [
+    {"category": "general", "selected": 219, "applicants": 557},
+    {"category": "disabled", "selected": 19, "applicants": 9}
+  ],
+  "secondary_base": "2026-10-19 18:00 기준, 공립. 장애 모집 인원은 '최대 선발 가능 인원'(총정원 42)",
+  "secondary": [
+    {"subject": "특수(중등)", "general": [35, 195], "disabled": [3, 4]},
+    {"subject": "보건", "general": [22, 128], "disabled": [2, 1]},
+    {"subject": "사서", "general": [3, 39], "disabled": [1, 1]},
+    {"subject": "전문상담", "general": [13, 144], "disabled": [2, 1]},
+    {"subject": "영양", "general": [4, 36], "disabled": [1, 0]},
+    {"subject": "국어", "general": [72, 492], "disabled": [6, 1]},
+    {"subject": "수학", "general": [84, 349], "disabled": [7, 1]},
+    {"subject": "물리", "general": [14, 58], "disabled": [2, 0]},
+    {"subject": "화학", "general": [20, 91], "disabled": [2, 0]},
+    {"subject": "생물", "general": [14, 71], "disabled": [2, 1]},
+    {"subject": "지구과학", "general": [12, 78], "disabled": [1, 1]},
+    {"subject": "일반사회", "general": [25, 128], "disabled": [2, 0]},
+    {"subject": "역사", "general": [28, 257], "disabled": [3, 1]},
+    {"subject": "지리", "general": [19, 124], "disabled": [2, 0]},
+    {"subject": "도덕·윤리", "general": [20, 109], "disabled": [2, 1]},
+    {"subject": "체육", "general": [30, 222], "disabled": [3, 1]},
+    {"subject": "음악", "general": [20, 209], "disabled": [2, 2]},
+    {"subject": "미술", "general": [15, 138], "disabled": [2, 1]},
+    {"subject": "한문", "general": [5, 33], "disabled": [1, 1]},
+    {"subject": "영어", "general": [58, 303], "disabled": [5, 2]},
+    {"subject": "기술", "general": [8, 25], "disabled": [1, 0]},
+    {"subject": "가정", "general": [15, 109], "disabled": [2, 1]},
+    {"subject": "정보·컴퓨터", "general": [31, 116], "disabled": [3, 0]},
+    {"subject": "기계", "general": [4, 16], "disabled": [1, 0]},
+    {"subject": "경영·금융", "general": [6, 55], "disabled": [1, 1]}
+  ],
+  "secondary_totals": {"general_selected": 577, "general_applicants": 3525, "disabled_applicants": 22}
+}

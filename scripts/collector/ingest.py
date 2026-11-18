@@ -26,8 +26,25 @@ def upsert(table, rows, on_conflict):
         return r.status
 
 
+MANUAL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'supabase', 'data', 'manual')
+
+
+def manual_records():
+    """해외 차단 지역: 사용자가 보내준 원문에서 옮겨 적은 값 (supabase/data/manual/*.json)"""
+    import glob
+    out = []
+    for f in sorted(glob.glob(os.path.join(MANUAL_DIR, '*.json'))):
+        d = json.load(open(f))
+        for r in d.get('elementary', []):
+            out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
+                        'category': r['category'], **{k: v for k, v in r.items() if k != 'category'},
+                        'sources': [d['source_url']]})
+    return out
+
+
 def main(raw):
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
+    recs += manual_records()
     _, problems = check_results.check(recs)
     groups = {}
     for r in recs:
@@ -51,7 +68,20 @@ def main(raw):
     if not KEY:
         print('SUPABASE_SECRET_KEY 없음 → DB 저장은 건너뜀 (GitHub Secrets 에 등록하면 저장됨)')
         return
-    st = upsert('ingest_queue', rows, 'source_url,file_url')
+    # 이미 승인된 묶음은 숫자가 그대로면 다시 올리지 않음 (승인 상태 유지)
+    req = urllib.request.Request(f'{URL}/rest/v1/ingest_queue?select=source_url,file_url,parsed,status&doc_type=eq.exam_results',
+                                 headers={'apikey': KEY, 'Authorization': f'Bearer {KEY}'})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        old = {(x['source_url'], x['file_url']): x for x in json.load(r)}
+    def same(a, b):
+        return json.dumps(a, sort_keys=True, ensure_ascii=False) == json.dumps(b, sort_keys=True, ensure_ascii=False)
+    send = [r for r in rows if not ((o := old.get((r['source_url'], r['file_url']))) and same(o['parsed'], r['parsed']))]
+    print(f'새로 올리거나 바뀐 묶음 {len(send)}개 (그대로인 {len(rows) - len(send)}개는 건너뜀)')
+    for r in send:
+        print('  →', r['file_url'], r['note'][:60])
+    if not send:
+        return
+    st = upsert('ingest_queue', send, 'source_url,file_url')
     print('ingest_queue 저장 완료', st)
 
 
