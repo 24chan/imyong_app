@@ -1,4 +1,4 @@
-import { Alert, Modal, Pressable, View } from 'react-native';
+import { Modal, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChangeBadge, SampleBadge, SourceNote, StatusBadge, stageLabel } from '../../components/DataBits';
 import { PrimaryButton, Txt } from '../../components/ui';
@@ -15,10 +15,11 @@ type Props = {
   title: string; // 예: '2027학년도 초등'
   onClose: () => void;
   onOpenDetail: (region: string) => void;
+  onReport: (region: string) => void;
 };
 
 /** 지도에서 지역을 누르면 아래에서 올라오는 상세 */
-export function RegionSheet({ row, info, title, onClose, onOpenDetail }: Props) {
+export function RegionSheet({ row, info, title, onClose, onOpenDetail, onReport }: Props) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   return (
@@ -69,7 +70,7 @@ export function RegionSheet({ row, info, title, onClose, onOpenDetail }: Props) 
             <PrimaryButton
               label="오류 신고"
               variant="ghost"
-              onPress={() => Alert.alert('오류 신고', '지금은 샘플 데이터예요. 서버(Supabase)를 연결하면 신고가 저장돼요.')}
+              onPress={() => onReport(row.region)}
             />
           </View>
         </View>

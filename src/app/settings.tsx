@@ -4,6 +4,8 @@ import { Alert, View } from 'react-native';
 import { RegionPicker, SubjectPicker } from '../components/pickers';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
+import { checkServer, clearDataCache } from '../data/repository';
+import { useAsync } from '../data/useAsync';
 import { space } from '../theme/tokens';
 
 const DEV_DATES: { label: string; value: string | null }[] = [
@@ -15,7 +17,8 @@ const DEV_DATES: { label: string; value: string | null }[] = [
 ];
 
 export default function SettingsScreen() {
-  const { settings, update, reset } = useAppSettings();
+  const { settings, update, reset, bumpDataVersion } = useAppSettings();
+  const server = useAsync(checkServer, []);
   // 중등으로 바꿀 때 과목이 없으면 과목을 고른 뒤에 저장
   const [pendingLevel, setPendingLevel] = useState<Level | null>(null);
   const shownLevel = pendingLevel ?? settings.level ?? 'elementary';
@@ -90,6 +93,22 @@ export default function SettingsScreen() {
         <Txt variant="heading">관심 지역</Txt>
         <Txt variant="sub">다른 사람에게는 공개되지 않아요.</Txt>
         <RegionPicker value={settings.regionCodes} onChange={(regionCodes) => update({ regionCodes })} />
+      </Card>
+
+      <Card>
+        <Txt variant="heading">데이터</Txt>
+        <Txt variant="sub">
+          서버(Supabase)에서 불러와요.{' '}
+          {server.loading ? '연결 확인 중…' : server.data?.ok ? `연결됨 · ${server.data.message}` : `연결 안 됨 · ${server.data?.message ?? server.error?.message ?? ''}`}
+        </Txt>
+        <PrimaryButton
+          label="데이터 새로고침"
+          variant="ghost"
+          onPress={() => {
+            clearDataCache();
+            bumpDataVersion();
+          }}
+        />
       </Card>
 
       <Card>

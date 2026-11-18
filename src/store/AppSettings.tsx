@@ -41,6 +41,9 @@ type Ctx = {
   /** 상단 토글로 '잠깐 보기' 중인 모드. 저장된 모드는 바뀌지 않음 */
   viewLevel: Level;
   setViewLevel: (level: Level) => void;
+  /** 데이터 새로고침 때 1씩 늘어남 (useAsync가 다시 불러옴) */
+  dataVersion: number;
+  bumpDataVersion: () => void;
 };
 
 const AppSettingsContext = createContext<Ctx | null>(null);
@@ -49,6 +52,8 @@ export function AppSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [hydrated, setHydrated] = useState(false);
   const [viewLevel, setViewLevel] = useState<Level>('elementary');
+  const [dataVersion, setDataVersion] = useState(0);
+  const bumpDataVersion = useCallback(() => setDataVersion((v) => v + 1), []);
 
   // 앱 시작 시 저장된 설정 불러오기
   useEffect(() => {
@@ -83,8 +88,8 @@ export function AppSettingsProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ hydrated, settings, update, reset, viewLevel, setViewLevel }),
-    [hydrated, settings, update, reset, viewLevel],
+    () => ({ hydrated, settings, update, reset, viewLevel, setViewLevel, dataVersion, bumpDataVersion }),
+    [hydrated, settings, update, reset, viewLevel, dataVersion, bumpDataVersion],
   );
 
   return <AppSettingsContext.Provider value={value}>{children}</AppSettingsContext.Provider>;
