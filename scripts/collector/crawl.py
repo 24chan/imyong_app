@@ -30,16 +30,17 @@ BOARDS = {
     'seoul': {'list': ['https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1094'], 'mode': 'href', 'pages': 1},
     'ulsan': {'list': ['https://use.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1913'], 'mode': 'href', 'pages': 1},
     'incheon': {'warm': 'https://www.ice.go.kr/ice/main.do',
-                'list': ['https://www.ice.go.kr/ice/na/ntt/selectNttList.do?mi=10991&bbsId=1777&currPage={p}'],
-                'mode': 'dataid', 'detail': 'https://www.ice.go.kr/ice/na/ntt/selectNttInfo.do?mi=10991&bbsId=1777&nttSn={id}'},
+                'list': ['https://www.ice.go.kr/ice/na/ntt/selectAllNttList.do?bbsAllTy=exam&mi=12237&currPage={p}'],
+                'mode': 'href'},
     'chungbuk': {'list': ['https://www.cbe.go.kr/cbe/na/ntt/selectNttList.do?mi=11700&bbsId=1793&currPage={p}',
                           'https://www.cbe.go.kr/cbe/na/ntt/selectNttList.do?mi=11700&bbsId=1794&currPage={p}'],
                  'mode': 'dataid', 'detail': 'https://www.cbe.go.kr/cbe/na/ntt/selectNttInfo.do?mi=11700&nttSn={id}'},
     'busan': {'list': ['https://www.pen.go.kr/main/na/ntt/selectNttList.do?mi=30361&bbsId=2342&currPage={p}'],
               'mode': 'dataid', 'detail': 'https://www.pen.go.kr/main/na/ntt/selectNttInfo.do?mi=30361&bbsId=2342&nttSn={id}'},
     'gwangju': {'list': ['https://gen.go.kr/xboard/board.php?tbnum=49&page={p}'], 'mode': 'href'},
-    'daejeon': {'list': ['https://www.dje.go.kr/boardCnts/list.do?boardID=64&m=031701&s=dje&page={p}',
-                         'https://www.dje.go.kr/main.do?s=djeNew'], 'mode': 'href', 'pages': 1},
+    'daejeon': {'list': ['https://www.dje.go.kr/boardCnts/list.do?boardID=64&m=031701&s=dje&page={p}'],
+                'mode': 'onclick', 'onclick': r"goView\('64'\s*,\s*'(\d+)'",
+                'detail': 'https://www.dje.go.kr/boardCnts/view.do?boardID=64&boardSeq={id}&lev=0&s=dje&m=031701'},
     'gyeonggi': {'list': ['https://www.goe.go.kr/goe/na/ntt/selectNttList.do?mi=10154&bbsId=2583&currPage={p}'],
                  'mode': 'dataid', 'detail': 'https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn={id}'},
     'gangwon': {'list': ['https://www.gwe.go.kr/main/bbs/list.do?key=bTIzMDcyMTA1ODIyNTA=&pageIndex={p}'],
@@ -56,7 +57,8 @@ BOARDS = {
 
 # 게시판 주소를 아직 모르는 곳: 메뉴에서 '임용' 들어간 링크 찾기
 DISCOVER = {
-    'daegu': ['https://www.dge.go.kr/sso/index.jsp', 'https://www.dge.go.kr/main/main.do'],
+    'daegu': ['https://www.dge.go.kr/main/main.do', 'https://www.dge.go.kr/sso/index.jsp', 'https://www.dge.go.kr/main/main.do',
+              'https://www.dge.go.kr/', 'http://www.dge.go.kr/main/main.do'],
     'chungnam': ['https://www.cne.go.kr/sub/info.do?m=010901&page=01060101&s=cne',
                  'https://www.cne.go.kr/sub/info.do?m=010902&page=01060102&s=cne'],
     'sejong': ['https://www.sje.go.kr/sje/main.do'],
@@ -166,11 +168,18 @@ def attachments(url):
             m = re.search(r"https?://[^'\"]+\.(?:pdf|hwpx?|xlsx?)", oc)
             files.append({'name': text[:100], 'href': href or (m.group(0) if m else ''), 'onclick': oc[:160],
                           'data': {k: v[:60] for k, v in at.items() if k.startswith('data-')}})
+    # 부산: 업로드 위젯(RAONK) 스크립트 안에 파일 목록
+    for name, path in re.findall(r"AddUploadedFile\('\d+',\s*'([^']+)',\s*'(/[^']+)'", html):
+        files.append({'name': name[:100], 'href': urljoin(final, path), 'onclick': '', 'data': {}})
     # 경기처럼 파일 주소가 미리보기 onclick 에만 있는 경우 보충
     for f, url in zip([f for f in files if not f['href']], re.findall(r"previewAjax\('([^']+)'", html)):
         f['href'] = url
+    nohref = [f for f in files if not f['href']]
+    if nohref:
+        i = html.find(nohref[0]['name'][:15])
+        print('      [원본]', re.sub(r'\s+', ' ', html[max(0, i - 450):i + 150])[:600])
     if not files:
-        idx = [m.start() for m in re.finditer(r'(첨부파일|fileDown|atchFile|downFile|\.hwp|\.pdf)', html)][:3]
+        idx = [m.start() for m in re.finditer(r'(첨부\s*파일|첨부)', html)][-2:]
         for i in idx:
             print('      [문맥]', re.sub(r'\s+', ' ', html[max(0, i - 200):i + 250])[:450])
     return final, len(html), files
@@ -203,7 +212,8 @@ def discover(regions):
         print(f'\n===== [탐색] {region}')
         for url in DISCOVER[region]:
             try:
-                final, html = get(url, timeout=25)
+                final, html = get(url, timeout=25, referer=prev if (prev := globals().get('_PREV')) else None)
+                globals()['_PREV'] = final
             except Exception as e:  # noqa: BLE001
                 print(f'  {url} 실패: {type(e).__name__}: {str(e)[:100]}')
                 continue
@@ -213,7 +223,8 @@ def discover(regions):
             n = 0
             for text, href, at in anchors(html, final):
                 if MENU_RE.search(text) or (YEAR_RE.search(text) and '임용' in text):
-                    print(f'    - {text[:70]} | {href[:160]} | {at.get("onclick", "")[:100]}')
+                    extra = '' if href else json.dumps({a: b[:90] for a, b in at.items()}, ensure_ascii=False)[:250]
+                    print(f'    - {text[:70]} | {href[:160]} | {at.get("onclick", "")[:100]} {extra}')
                     n += 1
                     if n >= 15:
                         break
