@@ -33,6 +33,7 @@ function RootStack() {
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ title: '설정' }} />
         <Stack.Screen name="regions/[code]" options={{ title: '', headerBackTitle: '지역·TO' }} />
+        <Stack.Screen name="compare" options={{ title: '지역 비교', headerBackTitle: '지역·TO' }} />
       </Stack>
     </>
   );

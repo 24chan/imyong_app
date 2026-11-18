@@ -14,6 +14,8 @@ export type Settings = {
   themePref: ThemePref;
   /** 지역·TO 보기 방식: 지도 / 목록(한 줄) / 격자(2열) */
   regionView: RegionView;
+  /** 지역 비교에 담은 지역 (최대 3개) */
+  compareRegions: string[];
   /** 개발용: 접수 상태를 다른 날짜로 확인해 볼 때 (출시 전 제거) */
   devDate: string | null;
 };
@@ -26,6 +28,7 @@ const DEFAULT_SETTINGS: Settings = {
   themePref: 'system',
   devDate: null,
   regionView: 'map',
+  compareRegions: [],
 };
 
 const STORAGE_KEY = 'app-settings-v1';
@@ -102,4 +105,23 @@ export function useToday() {
   const now = new Date();
   const p = (n: number) => String(n).padStart(2, '0');
   return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
+}
+
+export const MAX_COMPARE = 3;
+
+/** 지역 비교 담기/빼기. 이미 3개면 false */
+export function useCompare() {
+  const { settings, update } = useAppSettings();
+  const list = settings.compareRegions;
+  const has = (code: string) => list.includes(code);
+  const toggle = (code: string) => {
+    if (has(code)) {
+      update({ compareRegions: list.filter((c) => c !== code) });
+      return true;
+    }
+    if (list.length >= MAX_COMPARE) return false;
+    update({ compareRegions: [...list, code] });
+    return true;
+  };
+  return { list, has, toggle, set: (codes: string[]) => update({ compareRegions: codes }) };
 }

@@ -9,6 +9,7 @@ import { regionByCode } from '../../data/regions';
 import { getRegionTrend, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
+import { CompareButton } from '../../features/region/CompareButton';
 import { Level, useToday } from '../../store/AppSettings';
 import { space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -166,6 +167,7 @@ export default function RegionDetailScreen() {
             )}
 
             <SourceNote source={rows.at(-1)!.source} baseDate={cur?.baseDate ?? null} />
+            <CompareButton region={params.code} />
           </>
         )}
       </Screen>

@@ -1,19 +1,22 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { SampleBadge, SourceNote } from '../../components/DataBits';
 import { ViewModeBanner } from '../../components/ModeToggle';
-import { Chip, Screen, Segmented, Txt } from '../../components/ui';
+import { Screen, Segmented, Txt } from '../../components/ui';
 import { getReceiptInfo } from '../../data/receiptStatus';
-import { getAvailableSubjects, getRegionSummaries, getSchedules, getYears } from '../../data/repository';
+import { regionByCode } from '../../data/regions';
+import { getRegionSummaries, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
+import { FilterChips } from '../../features/region/FilterChips';
 import { KoreaMap } from '../../features/region/KoreaMap';
 import { METRIC_OPTIONS, MapMetric } from '../../features/region/metrics';
 import { RegionRow, RegionTile } from '../../features/region/RegionCards';
 import { RegionSheet } from '../../features/region/RegionSheet';
-import { RegionView, useAppSettings, useToday } from '../../store/AppSettings';
+import { useRegionFilters } from '../../features/region/useRegionFilters';
+import { RegionView, useAppSettings, useCompare, useToday } from '../../store/AppSettings';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
@@ -23,60 +26,44 @@ const VIEW_OPTIONS: { value: RegionView; icon: keyof typeof Ionicons.glyphMap; l
   { value: 'grid', icon: 'grid-outline', label: '두 칸씩 보기' },
 ];
 
-// 지역·TO: 지도 / 목록 / 격자 보기. 지도에서 지역을 누르면 바텀시트, 목록에서 누르면 지역 상세.
+// 지역·TO: 지도 / 한 줄 / 두 칸 보기. 지도에서 지역을 누르면 바텀시트, 목록에서 누르면 지역 상세.
 export default function RegionScreen() {
-  const { settings, update, viewLevel } = useAppSettings();
+  const { settings, update } = useAppSettings();
   const { colors } = useTheme();
   const today = useToday();
-  const isSecondary = viewLevel === 'secondary';
+  const compare = useCompare();
+  const f = useRegionFilters();
   const view = settings.regionView;
-
-  const years = useAsync(getYears, []);
-  const subjects = useAsync(getAvailableSubjects, []);
-  const latestYear = years.data?.[0] ?? null;
-  const [year, setYear] = useState<number | null>(null);
-  useEffect(() => {
-    if (latestYear != null && year == null) setYear(latestYear);
-  }, [latestYear, year]);
-  const isLatest = year != null && year === latestYear;
-
-  // 중등: 내 과목을 기본으로, 샘플이 없는 과목이면 첫 과목
-  const [subject, setSubject] = useState<string | null>(null);
-  const mySubjectHasData = !!settings.subjectCode && !!subjects.data?.includes(settings.subjectCode);
-  useEffect(() => {
-    if (!subjects.data) return;
-    setSubject(mySubjectHasData ? settings.subjectCode : subjects.data[0]);
-  }, [subjects.data, settings.subjectCode, mySubjectHasData]);
 
   const [metric, setMetric] = useState<MapMetric>('selection');
   const [sheetRegion, setSheetRegion] = useState<string | null>(null);
 
-  const query = useMemo(
-    () => ({ level: viewLevel, subject: isSecondary ? subject : null }),
-    [viewLevel, isSecondary, subject],
-  );
-  const ready = year != null && (!isSecondary || subject != null);
   const rows = useAsync(
-    () => (ready ? getRegionSummaries(query, year!) : Promise.resolve([])),
-    [ready, query, year],
+    () => (f.ready ? getRegionSummaries(f.query, f.year!) : Promise.resolve([])),
+    [f.ready, f.query, f.year],
   );
   const schedules = useAsync(
-    () => (isLatest ? getSchedules(viewLevel, year!) : Promise.resolve([])),
-    [isLatest, viewLevel, year],
+    () => (f.isLatest ? getSchedules(f.viewLevel, f.year!) : Promise.resolve([])),
+    [f.isLatest, f.viewLevel, f.year],
   );
 
   const statusOf = (region: string) =>
-    isLatest ? getReceiptInfo((schedules.data ?? []).filter((s) => s.region === region), today) : null;
+    f.isLatest ? getReceiptInfo((schedules.data ?? []).filter((s) => s.region === region), today) : null;
 
   const openDetail = (region: string) => {
     setSheetRegion(null);
     router.push({
       pathname: '/regions/[code]',
-      params: { code: region, level: viewLevel, subject: isSecondary ? (subject ?? '') : '', year: String(year) },
+      params: {
+        code: region,
+        level: f.viewLevel,
+        subject: f.isSecondary ? (f.subject ?? '') : '',
+        year: String(f.year),
+      },
     });
   };
 
-  const modeTitle = isSecondary ? `중등 · ${subjectByCode(subject)?.name ?? ''}` : '초등';
+  const modeTitle = f.isSecondary ? `중등 · ${subjectByCode(f.subject)?.name ?? ''}` : '초등';
   const sheetRow = rows.data?.find((r) => r.region === sheetRegion) ?? null;
 
   return (
@@ -116,35 +103,31 @@ export default function RegionScreen() {
         </View>
       </View>
 
-      {/* 연도 선택 */}
-      {years.data && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
-          {years.data.map((y) => (
-            <Chip key={y} label={`${y}학년도`} selected={year === y} onPress={() => setYear(y)} />
-          ))}
-        </ScrollView>
-      )}
+      {/* 지역 비교로 가기 */}
+      <Pressable
+        onPress={() => router.push('/compare')}
+        accessibilityRole="button"
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: space.sm,
+          padding: space.md,
+          borderRadius: radius.md,
+          borderWidth: 1,
+          borderColor: colors.brand,
+        }}
+      >
+        <Ionicons name="git-compare-outline" size={18} color={colors.brand} />
+        <Txt style={{ flex: 1, fontWeight: '700' }} color="brand">
+          지역 비교{' '}
+          {compare.list.length > 0
+            ? `· ${compare.list.map((c) => regionByCode(c)?.shortName).join(', ')}`
+            : '· 2~3개 지역 나란히 보기'}
+        </Txt>
+        <Ionicons name="chevron-forward" size={18} color={colors.brand} />
+      </Pressable>
 
-      {/* 중등: 과목 선택 */}
-      {isSecondary && subjects.data && (
-        <View style={{ gap: space.xs }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
-            {subjects.data.map((code) => (
-              <Chip
-                key={code}
-                label={subjectByCode(code)?.name ?? code}
-                selected={subject === code}
-                onPress={() => setSubject(code)}
-              />
-            ))}
-          </ScrollView>
-          {settings.level === 'secondary' && settings.subjectCode && !mySubjectHasData && (
-            <Txt variant="sub" color="accent">
-              내 과목({subjectByCode(settings.subjectCode)?.name})은 아직 샘플 데이터가 없어요.
-            </Txt>
-          )}
-        </View>
-      )}
+      <FilterChips f={f} />
 
       {rows.loading && <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />}
       {rows.error && <Txt color="down">데이터를 불러오지 못했어요: {rows.error.message}</Txt>}
@@ -180,7 +163,7 @@ export default function RegionScreen() {
       <RegionSheet
         row={sheetRow}
         info={sheetRegion ? statusOf(sheetRegion) : null}
-        title={`${year}학년도 ${modeTitle}`}
+        title={`${f.year}학년도 ${modeTitle}`}
         onClose={() => setSheetRegion(null)}
         onOpenDetail={openDetail}
       />

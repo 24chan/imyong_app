@@ -7,6 +7,7 @@ import { regionByCode } from '../../data/regions';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { RegionSummary } from '../../types/data';
+import { CompareButton } from './CompareButton';
 
 type Props = {
   row: RegionSummary | null;
@@ -64,6 +65,7 @@ export function RegionSheet({ row, info, title, onClose, onOpenDetail }: Props) 
 
           <View style={{ gap: space.xs, marginTop: space.xs }}>
             <PrimaryButton label="추이·그래프 보기" onPress={() => onOpenDetail(row.region)} />
+            <CompareButton region={row.region} />
             <PrimaryButton
               label="오류 신고"
               variant="ghost"
