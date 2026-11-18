@@ -20,9 +20,17 @@ REG = [('서울', 'seoul'), ('부산', 'busan'), ('대구', 'daegu'), ('인천',
        ('경상북', 'gyeongbuk'), ('경북', 'gyeongbuk'), ('경상남', 'gyeongnam'), ('경남', 'gyeongnam'), ('제주', 'jeju')]
 
 
+GWANGJU_GU = {'동구', '서구', '남구', '북구', '광산구'}
+
+
 def region_of(*texts):
     for t in texts:
         t = (t or '').strip()
+        if t.startswith('전남광주'):  # 2026.7 출범 전남광주통합특별시: 임용은 아직 전남·광주 따로 → 옛 경계(광주 5개 구)로 나눔
+            parts = t.split()
+            if len(parts) > 1 and not parts[0].endswith('교육청'):
+                return 'gwangju' if parts[1] in GWANGJU_GU else 'jeonnam'
+            continue
         for k, v in REG:
             if t.startswith(k):
                 return v
@@ -74,9 +82,6 @@ def main():
     pages = (total + 999) // 1000
     for p in range(2, pages + 1):
         items += body_of(get(p))[1]
-    for it in items:
-        if it.get('schoolNm') in ('각화초등학교', '광주제일고등학교'):
-            print('표본:', {k: it.get(k) for k in ('schoolNm', 'cddcNm', 'rdnmadr', 'lnmadr', 'edcSportNm')})
     by = {}
     skipped = 0
     for it in items:
