@@ -1,0 +1,32 @@
+name: collector-schools
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 18 3 * *'   # 매달 4일 03:23 (한국 시간)
+permissions:
+  contents: write
+jobs:
+  schools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: raw-files
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 학교 위치 받기
+        env:
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+        run: python -I -u app/scripts/collector/schools.py raw/schools
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/schools
+          git commit -qm "학교 위치 갱신 $(date +%F)" || exit 0
+          git push -q origin HEAD:raw-files
