@@ -51,7 +51,14 @@ export default function RegionDetailScreen() {
   ];
   const ratioSeries: Series[] = [
     { key: 'applied', label: '접수 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.ratioApplied) },
-    { key: 'actual', label: '응시 기준', tone: 'accent', shape: 'square', dashed: true, values: rows.map((r) => r.ratioActual) },
+    { key: 'actual', label: '응시 기준', tone: 'accent', shape: 'square', line: 'dash', values: rows.map((r) => r.ratioActual) },
+  ];
+  const cutoffSeries: Series[] = [
+    { key: 'cutoff', label: '1차 합격선', tone: 'brand', shape: 'circle', values: rows.map((r) => r.firstCutoff) },
+  ];
+  const passSeries: Series[] = [
+    { key: 'pApplied', label: '접수 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.passRateApplied) },
+    { key: 'pActual', label: '응시 기준', tone: 'accent', shape: 'square', line: 'dash', values: rows.map((r) => r.passRateActual) },
   ];
 
   return (
@@ -144,6 +151,31 @@ export default function RegionDetailScreen() {
               <Txt variant="sub">접수 기준 = 접수 인원 ÷ 선발 인원, 응시 기준 = 실제 응시 인원 ÷ 선발 인원</Txt>
             </Card>
 
+            <Card>
+              <Txt variant="heading">1차 합격선 추이</Txt>
+              <LineChart
+                labels={labels}
+                series={cutoffSeries}
+                selectedIndex={sel}
+                onSelect={setSel}
+                titleFor={(i) => `${rows[i].year}학년도`}
+                formatValue={(v) => `${Math.round(v * 10) / 10}점`}
+              />
+            </Card>
+
+            <Card>
+              <Txt variant="heading">합격률 추이</Txt>
+              <LineChart
+                labels={labels}
+                series={passSeries}
+                selectedIndex={sel}
+                onSelect={setSel}
+                titleFor={(i) => `${rows[i].year}학년도`}
+                formatValue={(v) => `${Math.round(v * 10) / 10}%`}
+              />
+              <Txt variant="sub">합격률 = 최종 합격 ÷ 접수 인원(접수 기준) 또는 ÷ 실제 응시 인원(응시 기준)</Txt>
+            </Card>
+
             <PrimaryButton
               label={showTable ? '표 닫기' : '숫자 표로 보기'}
               variant="ghost"
@@ -151,15 +183,16 @@ export default function RegionDetailScreen() {
             />
             {showTable && (
               <Card>
-                <TableRow cells={['학년도', '선발', '경쟁률(접수)', '경쟁률(응시)']} header />
+                <TableRow cells={['학년도', '선발', '경쟁률\n접수/응시', '합격선', '합격률\n접수/응시']} header />
                 {[...rows].reverse().map((r) => (
                   <TableRow
                     key={r.year}
                     cells={[
                       String(r.year),
                       r.selection?.toLocaleString() ?? '—',
-                      r.ratioApplied != null ? `${r.ratioApplied}` : '—',
-                      r.ratioActual != null ? `${r.ratioActual}` : '—',
+                      `${r.ratioApplied ?? '—'}/${r.ratioActual ?? '—'}`,
+                      r.firstCutoff != null ? `${r.firstCutoff}` : '—',
+                      `${r.passRateApplied ?? '—'}/${r.passRateActual ?? '—'}`,
                     ]}
                   />
                 ))}

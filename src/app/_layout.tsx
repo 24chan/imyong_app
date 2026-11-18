@@ -34,6 +34,7 @@ function RootStack() {
         <Stack.Screen name="settings" options={{ title: '설정' }} />
         <Stack.Screen name="regions/[code]" options={{ title: '', headerBackTitle: '지역·TO' }} />
         <Stack.Screen name="compare" options={{ title: '지역 비교', headerBackTitle: '지역·TO' }} />
+        <Stack.Screen name="trend" options={{ title: '추이·합격률', headerBackTitle: '지역·TO' }} />
       </Stack>
     </>
   );

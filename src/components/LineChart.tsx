@@ -1,20 +1,24 @@
 import { useState } from 'react';
 import { LayoutChangeEvent, Pressable, View } from 'react-native';
-import Svg, { Circle, G, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 import { Txt } from './ui';
 
 // 꺾은선 그래프 (react-native-svg, Expo Go에 포함)
 // 규칙: 축 하나, 선 2px, 점 8px, 계열이 2개 이상이면 범례 + 선 모양(실선/점선)·점 모양으로도 구분.
+// 색 토큰만으로는 채도가 낮아 구분이 약하므로 선 모양·점 모양을 반드시 함께 씁니다.
+
+const DASH = { solid: undefined, dash: '6,4', dot: '2,4' } as const;
 // 그래프를 누르면 그 해의 값이 위에 표시됩니다.
 
 export type Series = {
   key: string;
   label: string;
-  tone: 'brand' | 'accent';
-  dashed?: boolean;
-  shape?: 'circle' | 'square';
+  tone: 'brand' | 'accent' | 'textSub';
+  /** 선 모양: 실선(기본) / 'dash' 점선 / 'dot' 짧은 점선 */
+  line?: 'solid' | 'dash' | 'dot';
+  shape?: 'circle' | 'square' | 'diamond';
   values: (number | null)[];
 };
 
@@ -164,12 +168,24 @@ export function LineChart({ labels, series, formatValue, selectedIndex, onSelect
                       fill="none"
                       strokeLinejoin="round"
                       strokeLinecap="round"
-                      strokeDasharray={s.dashed ? '6,4' : undefined}
+                      strokeDasharray={DASH[s.line ?? 'solid']}
                     />
                     {s.values.map((v, i) => {
                       if (v == null) return null;
                       const big = i === sel;
                       const r = big ? 5.5 : 4;
+                      if (s.shape === 'diamond') {
+                        const d = r * 1.3;
+                        return (
+                          <Polygon
+                            key={i}
+                            points={`${x(i)},${y(v) - d} ${x(i) + d},${y(v)} ${x(i)},${y(v) + d} ${x(i) - d},${y(v)}`}
+                            fill={c}
+                            stroke={colors.surface}
+                            strokeWidth={2}
+                          />
+                        );
+                      }
                       return s.shape === 'square' ? (
                         <Rect
                           key={i}
@@ -198,13 +214,15 @@ export function LineChart({ labels, series, formatValue, selectedIndex, onSelect
 }
 
 /** 범례 표시: 선 모양 + 점 모양 (색만으로 구분하지 않도록) */
-export function LegendMark({ series }: { series: Pick<Series, 'tone' | 'dashed' | 'shape'> }) {
+export function LegendMark({ series }: { series: Pick<Series, 'tone' | 'line' | 'shape'> }) {
   const { colors } = useTheme();
   const c = colors[series.tone];
   return (
     <Svg width={22} height={10}>
-      <Line x1={0} x2={22} y1={5} y2={5} stroke={c} strokeWidth={2} strokeDasharray={series.dashed ? '4,3' : undefined} />
-      {series.shape === 'square' ? (
+      <Line x1={0} x2={22} y1={5} y2={5} stroke={c} strokeWidth={2} strokeDasharray={series.line === 'dash' ? '4,3' : series.line === 'dot' ? '2,3' : undefined} />
+      {series.shape === 'diamond' ? (
+        <Polygon points="11,0 16,5 11,10 6,5" fill={c} />
+      ) : series.shape === 'square' ? (
         <Rect x={7} y={1} width={8} height={8} rx={1.5} fill={c} />
       ) : (
         <Circle cx={11} cy={5} r={4} fill={c} />

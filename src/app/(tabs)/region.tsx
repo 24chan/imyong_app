@@ -103,29 +103,43 @@ export default function RegionScreen() {
         </View>
       </View>
 
-      {/* 지역 비교로 가기 */}
-      <Pressable
-        onPress={() => router.push('/compare')}
-        accessibilityRole="button"
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: space.sm,
-          padding: space.md,
-          borderRadius: radius.md,
-          borderWidth: 1,
-          borderColor: colors.brand,
-        }}
-      >
-        <Ionicons name="git-compare-outline" size={18} color={colors.brand} />
-        <Txt style={{ flex: 1, fontWeight: '700' }} color="brand">
-          지역 비교{' '}
+      {/* 비교 지역(최대 3개)으로 나란히 보기 / 추이 겹쳐 보기 */}
+      <View style={{ gap: space.xs }}>
+        <View style={{ flexDirection: 'row', gap: space.sm }}>
+          {[
+            { href: '/compare' as const, icon: 'git-compare-outline' as const, label: '지역 비교' },
+            { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이 함께 보기' },
+          ].map((b) => (
+            <Pressable
+              key={b.href}
+              onPress={() => router.push(b.href)}
+              accessibilityRole="button"
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                padding: space.md,
+                borderRadius: radius.md,
+                borderWidth: 1,
+                borderColor: colors.brand,
+              }}
+            >
+              <Ionicons name={b.icon} size={18} color={colors.brand} />
+              <Txt style={{ fontWeight: '700' }} color="brand">
+                {b.label}
+              </Txt>
+            </Pressable>
+          ))}
+        </View>
+        <Txt variant="sub">
+          비교 지역:{' '}
           {compare.list.length > 0
-            ? `· ${compare.list.map((c) => regionByCode(c)?.shortName).join(', ')}`
-            : '· 2~3개 지역 나란히 보기'}
+            ? compare.list.map((c) => regionByCode(c)?.shortName).join(', ')
+            : '아직 없음 (지역을 눌러 "비교에 추가")'}
         </Txt>
-        <Ionicons name="chevron-forward" size={18} color={colors.brand} />
-      </Pressable>
+      </View>
 
       <FilterChips f={f} />
 
