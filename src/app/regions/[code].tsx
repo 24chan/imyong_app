@@ -65,7 +65,7 @@ export default function RegionDetailScreen() {
     <>
       <Stack.Screen options={{ title }} />
       <Screen>
-        <SampleBadge />
+        <SampleBadge sourceIds={rows.map((r) => r.source?.id)} />
 
         {trend.loading && <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />}
         {trend.error && <Txt color="down">데이터를 불러오지 못했어요: {trend.error.message}</Txt>}

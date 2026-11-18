@@ -125,7 +125,11 @@ export function KoreaMap({ rows, metric, selected, onSelect }: Props) {
         )}
       </View>
 
-      <Legend metric={metric} qs={qs} paint={paint} hasAny={hasAny} />
+      {metric === 'selection' && hasAny && !rows.some((r) => r.changeRate != null) ? (
+        <Txt variant="sub">전년 자료가 아직 없어 증감 색은 칠하지 않았어요. 숫자는 말풍선에서 볼 수 있어요.</Txt>
+      ) : (
+        <Legend metric={metric} qs={qs} paint={paint} hasAny={hasAny} />
+      )}
       <Txt variant="sub" style={{ fontSize: 11 }}>
         {MAP_CREDIT}
       </Txt>

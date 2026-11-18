@@ -61,7 +61,7 @@ export function RegionSheet({ row, info, title, onClose, onOpenDetail, onReport 
             <Line label="1차 합격선" value={row.firstCutoff != null ? `${row.firstCutoff}점` : '—'} />
           </View>
 
-          <SampleBadge />
+          <SampleBadge sourceIds={[row.source?.id]} />
           <SourceNote source={row.source} baseDate={row.baseDate} />
 
           <View style={{ gap: space.xs, marginTop: space.xs }}>

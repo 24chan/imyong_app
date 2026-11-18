@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
-import { SampleBadge, SourceNote } from '../../components/DataBits';
+import { SampleBadge, SourcesSummary } from '../../components/DataBits';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Screen, Segmented, Txt } from '../../components/ui';
 import { getReceiptInfo } from '../../data/receiptStatus';
@@ -73,7 +73,7 @@ export default function RegionScreen() {
       {/* 제목 + 오른쪽 위 보기 방식 선택 */}
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.sm }}>
         <View style={{ flex: 1, gap: space.xs }}>
-          <SampleBadge />
+          <SampleBadge sourceIds={(rows.data ?? []).map((r) => r.source?.id)} />
           <Txt variant="title">{modeTitle} 선발 인원</Txt>
         </View>
         <View
@@ -170,7 +170,7 @@ export default function RegionScreen() {
           )}
 
           <Txt variant="sub">경쟁률은 접수 기준이에요. 응시 기준은 지역 상세에서 볼 수 있어요.</Txt>
-          <SourceNote source={rows.data[0].source} baseDate={rows.data[0].baseDate} />
+          <SourcesSummary rows={rows.data} />
         </>
       )}
 

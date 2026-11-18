@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ActivityIndicator, Alert, View } from 'react-native';
-import { SampleBadge, SourceNote } from '../components/DataBits';
+import { SampleBadge, SourcesSummary } from '../components/DataBits';
 import { LineChart, Series } from '../components/LineChart';
 import { ViewModeBanner } from '../components/ModeToggle';
 import { Card, Chip, Screen, Segmented, Txt } from '../components/ui';
@@ -89,7 +89,7 @@ export default function TrendScreen() {
   return (
     <Screen>
       <ViewModeBanner />
-      <SampleBadge />
+      <SampleBadge sourceIds={sliced.flatMap((t) => t.map((r) => r.source?.id))} />
       <Txt variant="sub">{modeTitle} · 지역을 최대 3개 골라 연도별 변화를 한 그래프로 비교해요. (지역 비교와 같은 목록을 써요)</Txt>
 
       {/* 과목 (중등) — 연도 칩은 이 화면에서 쓰지 않음 */}
@@ -186,7 +186,7 @@ export default function TrendScreen() {
               })}
             </Card>
 
-            <SourceNote source={sliced[0]?.at(-1)?.source ?? null} baseDate={sliced[0]?.at(-1)?.baseDate ?? null} />
+            <SourcesSummary rows={sliced.flat()} />
           </>
         )
       )}

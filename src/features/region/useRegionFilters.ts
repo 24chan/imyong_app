@@ -8,14 +8,15 @@ export function useRegionFilters(initialYear?: number | null) {
   const { settings, viewLevel } = useAppSettings();
   const isSecondary = viewLevel === 'secondary';
 
-  const years = useAsync(getYears, []);
+  const years = useAsync(() => getYears(viewLevel), [viewLevel]);
   const subjects = useAsync(getAvailableSubjects, []);
   const latestYear = years.data?.[0] ?? null;
 
   const [year, setYear] = useState<number | null>(initialYear ?? null);
   useEffect(() => {
-    if (latestYear != null && year == null) setYear(latestYear);
-  }, [latestYear, year]);
+    // 처음이거나, 모드를 바꿨는데 그 모드에 없는 학년도면 최신 학년도로
+    if (latestYear != null && (year == null || (years.data && !years.data.includes(year)))) setYear(latestYear);
+  }, [latestYear, year, years.data]);
 
   // 중등: 내 과목을 기본으로, 샘플이 없는 과목이면 첫 과목
   const [subject, setSubject] = useState<string | null>(null);

@@ -13,8 +13,8 @@ import { REGIONS } from './regions';
 // 데이터 창구. Supabase(서버 DB)에서 읽고, 같은 앱 실행 동안은 기억(캐시)해 둡니다.
 // 화면은 여기 있는 함수만 사용하세요.
 
-/** 지금 DB에 들어 있는 통계가 샘플인지. 실제 데이터로 바꾸면 false로 */
-export const IS_SAMPLE_DATA = true;
+/** 샘플(가짜) 출처인지. 화면의 '샘플 데이터' 배지에 사용 */
+export const isSampleSource = (sourceId: string | null | undefined) => sourceId === 'sample';
 
 // ───── 서버에서 읽기 + 캐시 ─────
 
@@ -43,7 +43,7 @@ class DataError extends Error {
 
 type SelRow = {
   year: number; level: Level; region: string; subject: string | null; stage: 'preliminary' | 'confirmed';
-  general: number; disabled: number; total: number; source_id: string; base_date: string;
+  general: number | null; disabled: number | null; total: number; source_id: string; base_date: string;
 };
 type ResRow = {
   year: number; level: Level; region: string; subject: string | null; applicants: number | null;
@@ -95,16 +95,25 @@ function loadSources() {
 
 // ───── 화면에서 쓰는 함수 ─────
 
-/** 데이터가 있는 학년도 목록 (최근 순) */
-export async function getYears(): Promise<number[]> {
-  const { selection } = await loadDataset({ level: 'elementary' });
-  return [...new Set(selection.map((r) => r.year))].sort((a, b) => b - a);
+/** 데이터가 있는 학년도 목록 (최근 순). 모드별로 다를 수 있음 */
+export async function getYears(level: Level = 'elementary'): Promise<number[]> {
+  return cached(`years:${level}`, async () => {
+    const { data, error } = await supabase
+      .from('selection_counts')
+      .select('year')
+      .eq('level', level)
+      .order('year', { ascending: false })
+      .limit(1000);
+    if (error) throw new DataError('학년도', error.message);
+    return [...new Set((data as { year: number }[]).map((r) => r.year))];
+  });
 }
 
 /** 중등에서 데이터가 있는 과목 code 목록 (과목 순서대로) */
 export async function getAvailableSubjects(): Promise<string[]> {
   return cached('subjects-with-data', async () => {
-    const years = await getYears();
+    const years = await getYears('secondary');
+    if (!years.length) return [];
     const { data, error } = await supabase
       .from('selection_counts')
       .select('subject, subjects(sort)')
@@ -188,7 +197,7 @@ export async function getRegionSummaries(q: DataQuery, year: number): Promise<Re
 
 /** 한 지역의 연도별 요약 (추이 그래프용, 오래된 순) */
 export async function getRegionTrend(q: DataQuery, region: string): Promise<RegionSummary[]> {
-  const [ds, sources, years] = await Promise.all([loadDataset(q), loadSources(), getYears()]);
+  const [ds, sources, years] = await Promise.all([loadDataset(q), loadSources(), getYears(q.level)]);
   return years
     .slice()
     .reverse()

@@ -64,7 +64,7 @@ export default function HomeScreen() {
         <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
           {modeLabel} 임용
         </Txt>
-        <SampleBadge />
+        <SampleBadge sourceIds={(rows.data ?? []).map((r) => r.source?.id)} />
       </View>
 
       {/* D-day */}

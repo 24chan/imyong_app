@@ -11,8 +11,8 @@ export type SelectionCount = {
   region: string;
   subject: string | null; // 초등은 null
   stage: Stage;
-  general: number; // 일반
-  disabled: number; // 장애
+  general: number | null; // 일반 (공개 안 된 경우 null)
+  disabled: number | null; // 장애 (공개 안 된 경우 null)
   total: number;
   sourceId: string;
   baseDate: string; // 기준일 YYYY-MM-DD

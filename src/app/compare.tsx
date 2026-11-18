@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing';
 import { ComponentRef, ReactNode, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
-import { ChangeBadge, SampleBadge, SourceNote, StatusBadge, stageLabel } from '../components/DataBits';
+import { ChangeBadge, SampleBadge, SourcesSummary, StatusBadge, stageLabel } from '../components/DataBits';
 import { ViewModeBanner } from '../components/ModeToggle';
 import { Chip, PrimaryButton, Screen, Txt } from '../components/ui';
 import { getReceiptInfo } from '../data/receiptStatus';
@@ -124,7 +124,7 @@ export default function CompareScreen() {
               <Txt variant="title">
                 {f.year}학년도 {modeTitle}
               </Txt>
-              <SampleBadge />
+              <SampleBadge sourceIds={picked.map((r) => r.source?.id)} />
             </View>
 
             {/* 지역 이름 */}
@@ -155,7 +155,7 @@ export default function CompareScreen() {
             <CompareRow label="1차 합격선" cells={picked.map((r) => <Val key={r.region} v={r.firstCutoff != null ? `${r.firstCutoff}점` : null} />)} />
             <CompareRow label="합격률 (응시)" cells={picked.map((r) => <Val key={r.region} v={r.passRateActual != null ? `${r.passRateActual}%` : null} />)} />
 
-            <SourceNote source={picked[0].source} baseDate={picked.map((r) => r.baseDate ?? '').sort().at(-1) || null} />
+            <SourcesSummary rows={picked} />
           </View>
 
           <PrimaryButton label={busy ? '저장 중…' : '이미지로 저장'} onPress={save} disabled={busy} />
