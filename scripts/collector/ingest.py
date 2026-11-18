@@ -46,6 +46,9 @@ def main(raw):
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
     recs += manual_records()
     _, problems = check_results.check(recs)
+    for line in log:
+        if 'seoul' in line and ('충돌' in line or 'xls' in line):
+            print('  [로그]', line[:200])
     groups = {}
     for r in recs:
         groups.setdefault((r['region'], r['year'], r['level']), []).append(r)
@@ -65,6 +68,9 @@ def main(raw):
     print(f'묶음 {len(rows)}개, 확인 필요 {sum(1 for r in rows if r["note"] != "검증 통과")}개')
     for r in rows:
         print(' ', r['file_url'], r['note'][:100])
+        if r['note'] != '검증 통과':
+            for x in r['parsed']['records']:
+                print('      ', x['category'], {k: v for k, v in x.items() if k not in ('region', 'year', 'level', 'subject', 'category', 'sources')})
     if not KEY:
         print('SUPABASE_SECRET_KEY 없음 → DB 저장은 건너뜀 (GitHub Secrets 에 등록하면 저장됨)')
         return

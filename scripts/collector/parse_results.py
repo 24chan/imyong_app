@@ -251,7 +251,7 @@ def main(raw, out_path=None):
                     if v is None:
                         continue
                     if k in cur and cur[k] != v:
-                        log.append(f"충돌 {key} {k}: {cur[k]} vs {v} ({m['path']})")
+                        log.append(f"충돌 {key} {k}: {cur[k]} vs {v} ({m['path']} {field})")
                         continue
                     cur[k] = v
                 if m['post_url'] not in cur['sources']:
