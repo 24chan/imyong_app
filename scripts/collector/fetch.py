@@ -188,9 +188,19 @@ def main(regions):
         os.makedirs(os.path.join(OUT, region), exist_ok=True)
         manifest_path = os.path.join(OUT, region, 'manifest.json')  # 지역별 목록 (병렬 실행)
         manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else []
+        # 분류 규칙이 바뀌면 예전에 받은 파일의 종류도 다시 매김 (파일 이름은 그대로, 파서는 type 값을 봄)
+        for m in manifest:
+            t = classify(m.get('title', ''))
+            if t and t != m.get('type'):
+                print(f"  종류 변경 {m.get('type')} → {t}: {m.get('title', '')[:50]}")
+                m['type'] = t
         have = {m['file_url'] for m in manifest}
         posts_path = os.path.join(OUT, region, 'posts.json')  # 공고 목록 (홈 '임용 소식'용)
         post_index = json.load(open(posts_path)) if os.path.exists(posts_path) else {}
+        for v in post_index.values():
+            t = classify(v.get('title', ''))
+            if t:
+                v['type'] = t
         cfg = crawl.BOARDS[region]
         crawl.DELAY[0] = cfg.get('delay', 0.7)
         print(f'\n===== {region}')
@@ -200,7 +210,7 @@ def main(regions):
         for post in posts:
             try:
                 _, _, files, pdate = crawl.attachments(post['post_url'])
-                post_index[post['post_url']] = {**post, 'posted_at': pdate or post_index.get(post['post_url'], {}).get('posted_at'),
+                post_index[post['post_url']] = {**post_index.get(post['post_url'], {}), **post, 'posted_at': pdate or post_index.get(post['post_url'], {}).get('posted_at'),
                                            'files': [{'name': f['name'], 'url': f['href']} for f in files if f['href']][:10]}
             except Exception as e:  # noqa: BLE001
                 print(f"  상세 실패 {post['title'][:50]}: {type(e).__name__}")

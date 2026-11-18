@@ -226,8 +226,8 @@ def main(raw, out_path=None):
             if m['type'] not in ('first_pass', 'final_pass', 'receipt', 'attend') or m['level'] != 'elementary' or doc_rank(m) >= 9:
                 continue
             ext = m['path'].rsplit('.', 1)[-1]
-            if ext == 'hwp' and os.path.exists(os.path.join(raw, m['path'] + '.xhtml')):
-                ext = 'hwp'  # hwp5html 변환본 사용
+            if ext == 'hwp':
+                pass  # hwp5.py 로 직접 읽음 (안 되면 변환본)
             elif ext not in ('pdf', 'hwpx', 'xlsx', 'xls'):
                 continue
             if SKIP_FILE.search(m['file_name']):

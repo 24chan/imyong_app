@@ -268,8 +268,6 @@ def main(raw, out_path=None):
             continue
         ext = m['path'].rsplit('.', 1)[-1]
         path = os.path.join(raw, m['path'])
-        if ext == 'hwp' and not os.path.exists(path + '.xhtml'):
-            continue
         if ext not in ('pdf', 'hwpx', 'xlsx', 'xls', 'hwp'):
             continue
         if SKIP_FILE.search(m['file_name']) or re.search(r'사립|위탁', m['file_name']):

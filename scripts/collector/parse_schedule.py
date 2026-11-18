@@ -84,9 +84,7 @@ def main(raw):
             if re.search(r'서식|신청서|FAQ|질문|접수\s*(방법|안내|요령)|사립|위탁|변경\s*내용', m['file_name']):
                 continue
             path = os.path.join(raw, m['path'])
-            if m['path'].endswith('.hwp'):
-                path += '.xhtml'
-            if not os.path.exists(path) or not re.search(r'\.(pdf|hwpx|xhtml)$', path):
+            if not os.path.exists(path) or not re.search(r'\.(pdf|hwpx|hwp)$', path):
                 continue
             try:
                 ev = extract(text_of(path), m['year'])

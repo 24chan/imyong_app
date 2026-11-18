@@ -5,6 +5,9 @@ import re
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
+import os as _os
+
+sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 
 
 def _local(t):
@@ -172,8 +175,15 @@ def html_rows(path):
 
 def rows_of(path):
     import os
-    if path.lower().endswith('.hwp') and os.path.exists(path + '.xhtml'):
-        return html_rows(path + '.xhtml')
+    if path.lower().endswith('.hwp'):
+        # 직접 읽기(hwp5.py)가 우선: 셀 주소로 격자를 맞춤. 안 되면 hwp5html 변환본
+        try:
+            from hwp5 import rows as hwp5_rows
+            return hwp5_rows(path)
+        except Exception:  # noqa: BLE001
+            if os.path.exists(path + '.xhtml'):
+                return html_rows(path + '.xhtml')
+            raise
     ext = path.rsplit('.', 1)[-1].lower()
     if ext in ('xhtml', 'html'):
         return html_rows(path)
