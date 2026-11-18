@@ -27,8 +27,8 @@ FILE_RE = re.compile(r'(download|filedown|fileDown|atchFile|FileDown|getFile|\.h
 # 목록 페이지 → 상세 링크 만드는 방법
 #   href: a 태그 href 그대로 / dataid: data-id 값을 detail 템플릿에 / onclick: 정규식 그룹을 detail 템플릿에
 BOARDS = {
-    'seoul': {'list': ['https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1094'], 'mode': 'href', 'pages': 1},
-    'ulsan': {'list': ['https://use.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1913'], 'mode': 'href', 'pages': 1},
+    'seoul': {'list': ['https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1094'], 'mode': 'href', 'form': 'dataForm'},
+    'ulsan': {'list': ['https://use.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1913'], 'mode': 'href', 'form': 'dataForm'},
     'incheon': {'warm': 'https://www.ice.go.kr/ice/main.do',
                 'list': ['https://www.ice.go.kr/ice/na/ntt/selectAllNttList.do?bbsAllTy=exam&mi=12237&currPage={p}'],
                 'mode': 'href'},
@@ -57,7 +57,7 @@ BOARDS = {
                  'detail': 'https://www.cne.go.kr/boardCnts/view.do?boardID=47&boardSeq={id}&lev=0&s=cne&m=021201'},
     'gyeongbuk': {'delay': 4, 'list': ['https://www.gbe.kr/main/na/ntt/selectNttList.do?mi=3538&bbsId=1882&currPage={p}'],
                   'mode': 'dataid', 'detail': 'https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn={id}'},
-    'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251'], 'mode': 'href', 'pages': 1},
+    'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251'], 'mode': 'href', 'form': 'dataForm'},
     'jeju': {'list': ['https://www.jje.go.kr/board/list.jje?boardId=BBS_0000002&paging=ok&startPage={p}'], 'mode': 'href'},
 }
 

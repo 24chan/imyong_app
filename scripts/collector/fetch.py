@@ -55,6 +55,31 @@ def classify(title):
     return None
 
 
+def form_url(html, base, form_name, **over):
+    """게시판 검색 form 의 모든 값(hidden/select/text)을 모아 GET 주소로 (서울·울산·경남: q_currPage 만 붙이면 '잘못된 URL')"""
+    from urllib.parse import urlencode, urljoin
+    m = re.search(r'<form[^>]*name="%s"[^>]*>(.*?)</form>' % form_name, html, re.S)
+    if not m:
+        return None
+    tag = re.match(r'<form[^>]*>', m.group(0)).group(0)
+    action = (re.search(r'action="([^"]*)"', tag) or [None, ''])[1]
+    pairs = []
+    for inp in re.findall(r'<input[^>]*>', m.group(1)):
+        n = re.search(r'name="([^"]+)"', inp)
+        if not n or re.search(r'type="(checkbox|radio|submit|button|image)"', inp):
+            continue
+        v = re.search(r'value="([^"]*)"', inp)
+        pairs.append((n.group(1), v.group(1) if v else ''))
+    for sel in re.findall(r'<select[^>]*name="([^"]+)"[^>]*>(.*?)</select>', m.group(1), re.S):
+        opts = re.findall(r'<option([^>]*)>', sel[1])
+        pick = next((o for o in opts if 'selected' in o), opts[0] if opts else '')
+        v = re.search(r'value="([^"]*)"', pick)
+        pairs.append((sel[0], v.group(1) if v else ''))
+    d = dict(pairs)
+    d.update({k: str(v) for k, v in over.items()})
+    return urljoin(base, action) + '?' + urlencode(d)
+
+
 def list_all(region, cfg):
     """여러 쪽을 넘기며 2024~2027 임용 공고만. 2023 이하만 나오는 쪽에서 멈춤."""
     out, seen = [], set()
@@ -64,11 +89,19 @@ def list_all(region, cfg):
         except Exception as e:  # noqa: BLE001
             print('  warm 실패', e)
     for tmpl in cfg['list']:
-        pages = cfg.get('pages', MAX_PAGES) if '{p}' in tmpl else 1
+        form = cfg.get('form')
+        pages = cfg.get('pages', MAX_PAGES) if ('{p}' in tmpl or form) else 1
         prev_links = None
+        html, final = None, None
         for p in range(1, pages + 1):
             try:
-                final, html = crawl.get(tmpl.format(p=p))
+                url = tmpl.format(p=p)
+                if form and p > 1:
+                    url = form_url(html, final, form, q_currPage=p)
+                    if not url:
+                        print('  form 없음')
+                        break
+                final, html = crawl.get(url)
             except Exception as e:  # noqa: BLE001
                 print(f'  p{p} 실패: {type(e).__name__} {str(e)[:80]}')
                 break
