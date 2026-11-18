@@ -52,6 +52,9 @@ BOARDS = {
     'daegu': {'warm': 'https://www.dge.go.kr/main/main.do',
               'list': ['https://www.dge.go.kr/main/na/ntt/selectNttList.do?mi=10179&bbsId=3913&currPage={p}'],
               'mode': 'dataid', 'detail': 'https://www.dge.go.kr/main/na/ntt/selectNttInfo.do?mi=10179&bbsId=3913&nttSn={id}'},
+    'chungnam': {'list': ['https://www.cne.go.kr/boardCnts/list.do?boardID=47&m=021201&s=cne&page={p}'],
+                 'mode': 'onclick', 'onclick': r"goView\('47'\s*,\s*'(\d+)'",
+                 'detail': 'https://www.cne.go.kr/boardCnts/view.do?boardID=47&boardSeq={id}&lev=0&s=cne&m=021201'},
     'gyeongbuk': {'delay': 4, 'list': ['https://www.gbe.kr/main/na/ntt/selectNttList.do?mi=3538&bbsId=1882&currPage={p}'],
                   'mode': 'dataid', 'detail': 'https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn={id}'},
     'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251'], 'mode': 'href', 'pages': 1},
@@ -60,8 +63,6 @@ BOARDS = {
 
 # 게시판 주소를 아직 모르는 곳: 메뉴에서 '임용' 들어간 링크 찾기
 DISCOVER = {
-    'chungnam': ['https://www.cne.go.kr/sub/info.do?m=010901&page=01060101&s=cne',
-                 'https://www.cne.go.kr/sub/info.do?m=010902&page=01060102&s=cne'],
     'sejong': ['https://www.sje.go.kr/sje/main.do'],
     'jeonnam': ['https://www.jne.go.kr/main/main.do'],
 }
@@ -97,8 +98,19 @@ def get(url, timeout=40, referer=None):
                 return r.geturl(), raw.decode(ct, 'ignore')
         except Exception as e:  # noqa: BLE001
             last = e
-            if 'CERTIFICATE' not in str(e).upper():
-                break
+            if 'CERTIFICATE' in str(e).upper():
+                continue
+            if 'timed out' in str(e) or 'reset' in str(e):
+                time.sleep(5)
+                try:
+                    with OPENERS[loose].open(req, timeout=timeout) as r:
+                        raw = r.read()
+                        ct = r.headers.get_content_charset() or 'utf-8'
+                        LAST[host] = r.geturl()
+                        return r.geturl(), raw.decode(ct, 'ignore')
+                except Exception as e2:  # noqa: BLE001
+                    last = e2
+            break
     raise last
 
 
