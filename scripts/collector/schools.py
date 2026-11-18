@@ -8,6 +8,7 @@ import re
 import sys
 import time
 import urllib.parse
+import urllib.error
 import urllib.request
 
 KEY = os.environ.get('DATA_GO_KR_KEY', '').strip()
@@ -34,9 +35,17 @@ def get(page, rows=1000):
     for attempt in range(3):
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'imyong-collector'}), timeout=60) as r:
-                return json.load(r)
+                raw = r.read().decode('utf-8', 'replace')
+            try:
+                return json.loads(raw)
+            except ValueError:
+                print('JSON 아님:', raw[:400].replace(KEY, '***'))
+                return {}
+        except urllib.error.HTTPError as e:
+            print('HTTP', e.code, e.read()[:300].decode('utf-8', 'replace').replace(KEY, '***'))
+            time.sleep(5)
         except Exception as e:  # noqa: BLE001
-            print('재시도', page, e)
+            print('재시도', page, str(e).replace(KEY, '***'))
             time.sleep(5)
     raise RuntimeError('API 실패')
 
@@ -48,7 +57,9 @@ def main():
     first = get(1)
     body = first.get('response', {}).get('body', {})
     total = int(body.get('totalCount', 0))
-    print('header', first.get('response', {}).get('header'), 'total', total)
+    print('header', first.get('response', {}).get('header'), 'total', total, 'keys', list(first.keys())[:5])
+    if not total:
+        print('응답 일부:', json.dumps(first, ensure_ascii=False)[:400])
     items = body.get('items', []) or []
     if items:
         print('항목 예시 키:', list(items[0].keys()))
