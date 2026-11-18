@@ -47,13 +47,37 @@ def xlsx_rows(path):
     wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
     rows = []
     for ws in wb.worksheets:
+        if rows:
+            rows.append(['[/표]'])
         rows.append([f'[시트] {ws.title}'])
+        rows.append(['[표]'])
         for r in ws.iter_rows(values_only=True):
             cells = ['' if v is None else re.sub(r'\s+', ' ', str(v)).strip() for v in r]
-            while cells and cells[-1] == '':
-                cells.pop()
+            # 엑셀은 칸 위치가 머리글과 같으므로 뒤쪽 빈 칸을 지우지 않음(칸 맞춤용)
             if any(cells):
                 rows.append(cells)
+    if rows:
+        rows.append(['[/표]'])
+    return rows
+
+
+def xls_rows(path):
+    """구형 엑셀(.xls) — xlrd 필요 (GitHub Actions 에서 설치)"""
+    import xlrd
+    wb = xlrd.open_workbook(path)
+    rows = []
+    for sh in wb.sheets():
+        rows.append([f'[시트] {sh.name}'])
+        rows.append(['[표]'])
+        for i in range(sh.nrows):
+            cells = []
+            for v in sh.row_values(i):
+                if isinstance(v, float) and v.is_integer():
+                    v = int(v)
+                cells.append(re.sub(r'\s+', ' ', str(v)).strip())
+            if any(cells):
+                rows.append(cells)
+        rows.append(['[/표]'])
     return rows
 
 
@@ -143,6 +167,8 @@ def rows_of(path):
         return hwpx_rows(path)
     if ext in ('xlsx', 'xlsm'):
         return xlsx_rows(path)
+    if ext == 'xls':
+        return xls_rows(path)
     if ext == 'pdf':
         return pdf_rows(path)
     raise ValueError(f'지원 안 함: {ext}')

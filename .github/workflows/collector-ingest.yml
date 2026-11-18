@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
       - run: |
           sudo apt-get install -y -qq poppler-utils >/dev/null
-          pip install -q pdfplumber openpyxl
+          pip install -q pdfplumber openpyxl xlrd
       - name: 숫자 뽑기 + 검증 + 검수 대기열 저장
         env:
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}

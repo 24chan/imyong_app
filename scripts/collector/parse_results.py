@@ -37,7 +37,7 @@ def num(s):
 def metric_of(h, doc_type):
     """표 머리글 → 지표 이름"""
     h = norm(h)
-    if not h or re.search(r'분야|구분|과목|교과', h):
+    if not h or re.search(r'분야|구분|과목|교과|율|경쟁|비율|증감|전년|\(남\)|\(여\)|남자|여자', h):
         return None
     if '선발' in h or '모집' in h:
         return 'selected' if '인원' in h or '예정' in h or h in ('선발', '모집') else None
@@ -66,39 +66,91 @@ def is_elem_field(label):
 
 
 def tables(rows):
-    cur = None
+    cur, sheet = None, ''
     for r in rows:
+        if r and r[0].startswith('[시트]'):
+            sheet = r[0]
         if r == ['[표]']:
+            # 엑셀에서 날짜별 시트(n일차)는 건너뜀 — 최종 시트만
+            if re.search(r'\d\s*일\s*차', sheet) and not re.search(r'최종|마감', sheet):
+                cur = None
+                continue
             cur = []
         elif r == ['[/표]']:
             if cur:
                 yield cur
             cur = None
+            sheet = ''
         elif cur is not None:
             cur.append(r)
 
 
+def is_header(r, doc_type):
+    ms = [metric_of(c, doc_type) for c in r]
+    ok = sum(1 for m in ms if m) >= 2 and any(m and ('passed' in m or 'cutoff' in m or m in ('applicants', 'takers')) for m in ms)
+    # 숫자가 들어 있으면 머리글이 아님
+    if ok and any(num(c) is not None and not re.search(r'[가-힣]', c) for c in r):
+        return None
+    return ms if ok else None
+
+
 def parse_table(tbl, doc_type):
-    """표 하나 → [(분야라벨, 구분, {지표: 값})]"""
-    # 머리글: 지표가 2개 이상 잡히는 첫 행
-    hi, metrics = None, None
-    for i, r in enumerate(tbl[:3]):
-        ms = [metric_of(c, doc_type) for c in r]
-        if sum(1 for m in ms if m) >= 2 and any(m and ('passed' in m or 'cutoff' in m) for m in ms):
-            hi, metrics = i, ms
-            break
-    if hi is None:
-        return []
-    head0 = norm(tbl[hi][0])
-    if re.search(r'사립|법인|학교명', head0):
-        return []
-    # 지표가 있는 머리글 칸을 오른쪽 기준 위치로 (병합 칸 때문에 행마다 칸 수가 달라서)
-    nh = len(metrics)
-    first_m = next(i for i, m in enumerate(metrics) if m)
-    kfull = nh - first_m  # 첫 지표 칸부터 끝까지 칸 수
-    out, field = [], ''
-    for r in tbl[hi + 1:]:
+    """표 하나 → [(분야라벨, 구분, {지표: 값})]. 한 표(엑셀 시트) 안에 머리글이 여러 번 나와도 됨"""
+    out, field, metrics = [], '', None
+    skip = prev_header = False
+    for idx, r in enumerate(tbl):
         if not any(c.strip() for c in r):
+            continue
+        ms = is_header(r, doc_type)
+        if ms:
+            # 두 줄 머리글이면 윗줄 지표를 이어받음
+            if metrics is not None and prev_header and len(ms) == len(metrics):
+                ms = [b or a for a, b in zip(metrics, ms)]
+            metrics, field = ms, ''
+            hdr_cells = r
+            prev_header = True
+            skip = bool(re.search(r'사립|법인|학교명', norm(r[0])))  # 사립 위탁 표는 건너뜀
+            nh = len(metrics)
+            first_m = next(i for i, m in enumerate(metrics) if m)
+            kfull = nh - first_m  # 첫 지표 칸부터 끝까지 칸 수
+            continue
+        if metrics is not None and prev_header and not any(num(c) is not None for c in r):
+            # 두 번째 머리글 줄 (예: 접수인원 아래 남 / 여 / 계)
+            filled, last = [], None
+            for c, m in zip(hdr_cells, metrics):
+                last = m if c.strip() else last
+                filled.append(m if c.strip() else last)
+            new = []
+            for i in range(len(metrics)):
+                t = norm(r[i]) if i < len(r) else ''
+                if re.search(r'남|여', t) and not re.search(r'합격|지원|접수|응시', t):
+                    new.append(None)
+                elif re.search(r'공립만|사립만|공립\+사립|사립\+공립|동시|복수', t):
+                    new.append(None)
+                elif re.search(r'남\)|여\)', t):
+                    new.append(None)
+                elif t in ('계', '합계', '소계', '전체'):
+                    new.append(filled[i])
+                else:
+                    new.append(metric_of(t, doc_type) or (metrics[i] if hdr_cells[i].strip() else None))
+            # 같은 지표가 여러 칸이면 '계' 칸만 남김
+            if any(norm(x) in ('계', '합계') for x in r):
+                for i, m in enumerate(new):
+                    if m and norm(r[i] if i < len(r) else '') not in ('계', '합계') and sum(1 for x in new if x == m) > 1:
+                        new[i] = None
+            metrics = new
+            nh = len(metrics)
+            first_m = next((i for i, m in enumerate(metrics) if m), 0)
+            kfull = nh - first_m
+            prev_header = False
+            continue
+        prev_header = False
+        if metrics is None or skip:
+            continue
+        if len(r) == 1 and not num(r[0]):
+            # 표 밖 제목 줄(엑셀) — '[사립]' 같은 구역 표시
+            if re.search(r'사립|국립', r[0]):
+                skip = True
             continue
         k = min(kfull, len(r) - 1) if len(r) > 1 else 0  # 오른쪽에서 맞출 칸 수
         vals = r[len(r) - k:] if k else []
@@ -126,10 +178,13 @@ def parse_table(tbl, doc_type):
                 if not m:
                     continue
                 if len(cats) == 1:
-                    rec[m] = num(' '.join(sv)) if len(sv) <= 1 or sv[-1] == '명' else num(sv[0])
+                    if len(sv) > 1 and all(re.fullmatch(r'[\d,]+', t) for t in sv):
+                        rec[m] = num(''.join(sv))  # PDF 글자 간격 때문에 '3 53' 처럼 쪼개진 숫자
+                    else:
+                        rec[m] = num(' '.join(sv)) if len(sv) <= 1 or sv[-1] == '명' else num(sv[0])
                 else:
                     rec[m] = num(sv[ci]) if ci < len(sv) else None
-            ckey = 'regional' if cat.startswith('지역') else CAT_NAME.get(cat, 'all')
+            ckey = 'regional' if cat.startswith('지역') or '지역' in field else CAT_NAME.get(cat, 'all')
             out.append((field, ckey, rec))
     return out
 
@@ -150,14 +205,30 @@ def parse_file(path, doc_type):
 def main(raw, out_path=None):
     merged = {}
     log = []
+    def doc_rank(m):
+        """같은 값을 여러 문서가 줄 때 믿을 순서: 합격 공고 > 최종 접수 > 장애 마감일 > 응시 현황"""
+        t = m['title'] + ' ' + m['file_name']
+        if m['type'] in ('first_pass', 'final_pass'):
+            return 0
+        if m['type'] == 'receipt':
+            if re.search(r'최종|마감|결과', t):
+                return 1
+            if re.search(r'5\s*일\s*차', t) and '장애' in t:
+                return 2
+            return 9  # 중간 집계(n일차)는 쓰지 않음
+        return 3
+
+    docs = []
     for mf in sorted(glob.glob(os.path.join(raw, '*', 'manifest.json'))):
-        for m in json.load(open(mf)):
-            if m['type'] not in ('first_pass', 'final_pass') or m['level'] != 'elementary':
+        docs += json.load(open(mf))
+    docs.sort(key=doc_rank)
+    for m in docs:
+            if m['type'] not in ('first_pass', 'final_pass', 'receipt', 'attend') or m['level'] != 'elementary' or doc_rank(m) >= 9:
                 continue
             ext = m['path'].rsplit('.', 1)[-1]
             if ext == 'hwp' and os.path.exists(os.path.join(raw, m['path'] + '.xhtml')):
                 ext = 'hwp'  # hwp5html 변환본 사용
-            elif ext not in ('pdf', 'hwpx', 'xlsx'):
+            elif ext not in ('pdf', 'hwpx', 'xlsx', 'xls'):
                 continue
             if SKIP_FILE.search(m['file_name']):
                 continue
@@ -172,6 +243,8 @@ def main(raw, out_path=None):
                     continue
                 if field.startswith('국립') or '국립' in field:
                     continue
+                if cat == 'all' and m['type'] == 'receipt' and '장애' in m['title'] + m['file_name']:
+                    cat = 'disabled'  # 장애 구분 모집 전용 표 (구분 칸 없음)
                 key = (m['region'], m['year'], 'elementary', None, cat)
                 cur = merged.setdefault(key, {'sources': []})
                 for k, v in rec.items():
