@@ -158,14 +158,27 @@ export default function CompareScreen() {
                 ))}
               />
             )}
-            <CompareRow label="경쟁률 (접수)" cells={picked.map((r) => <Val key={r.region} v={r.ratioApplied != null ? `${r.ratioApplied} : 1` : null} />)} />
-            <CompareRow label="경쟁률 (응시)" cells={picked.map((r) => <Val key={r.region} v={r.ratioActual != null ? `${r.ratioActual} : 1` : null} />)} />
-            <CompareRow label="1차 합격 인원" cells={picked.map((r) => <Val key={r.region} v={r.firstPassed != null ? `${r.firstPassed}명` : null} />)} />
-            <CompareRow label="1차 합격선" cells={picked.map((r) => <Val key={r.region} v={r.firstCutoff != null ? `${r.firstCutoff}점` : null} />)} />
-            <CompareRow label="최종 합격 인원" cells={picked.map((r) => <Val key={r.region} v={r.finalPassed != null ? `${r.finalPassed}명` : null} />)} />
-            <CompareRow label="최종 합격선" cells={picked.map((r) => <Val key={r.region} v={r.finalCutoff != null ? `${r.finalCutoff}점` : null} />)} />
-            <CompareRow label="합격률 (응시)" cells={picked.map((r) => <Val key={r.region} v={r.passRateActual != null ? `${r.passRateActual}%` : null} />)} />
-
+            {/* 비어 있는 줄은 숨김 · 경쟁률/합격률은 공개된 기준을 자동 선택(기준을 함께 표시) */}
+            {[
+              {
+                label: '경쟁률',
+                v: (r: (typeof picked)[number]) =>
+                  r.ratioApplied != null ? `${r.ratioApplied} : 1 (지원)` : r.ratioActual != null ? `${r.ratioActual} : 1 (응시)` : null,
+              },
+              { label: '1차 합격 인원', v: (r: (typeof picked)[number]) => (r.firstPassed != null ? `${r.firstPassed}명` : null) },
+              { label: '1차 합격선', v: (r: (typeof picked)[number]) => (r.firstCutoff != null ? `${r.firstCutoff}점` : null) },
+              { label: '최종 합격 인원', v: (r: (typeof picked)[number]) => (r.finalPassed != null ? `${r.finalPassed}명` : null) },
+              { label: '최종 합격선', v: (r: (typeof picked)[number]) => (r.finalCutoff != null ? `${r.finalCutoff}점` : null) },
+              {
+                label: '합격률',
+                v: (r: (typeof picked)[number]) =>
+                  r.passRateActual != null ? `${r.passRateActual}% (응시)` : r.passRateApplied != null ? `${r.passRateApplied}% (지원)` : null,
+              },
+            ]
+              .filter((row) => picked.some((r) => row.v(r) != null))
+              .map((row) => (
+                <CompareRow key={row.label} label={row.label} cells={picked.map((r) => <Val key={r.region} v={row.v(r)} />)} />
+              ))}
             <SourcesSummary rows={picked} />
           </View>
 

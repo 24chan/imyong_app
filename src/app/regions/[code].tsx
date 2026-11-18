@@ -49,10 +49,11 @@ export default function RegionDetailScreen() {
   const selectionSeries: Series[] = [
     { key: 'sel', label: '선발 인원', tone: 'brand', shape: 'circle', values: rows.map((r) => r.selection) },
   ];
-  const ratioSeries: Series[] = [
-    { key: 'applied', label: '접수 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.ratioApplied) },
+  const hasData = (x: Series) => x.values.some((v) => v != null); // 자료 없는 기준 선은 숨김
+  const ratioSeries: Series[] = ([
+    { key: 'applied', label: '지원 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.ratioApplied) },
     { key: 'actual', label: '응시 기준', tone: 'accent', shape: 'square', line: 'dash', values: rows.map((r) => r.ratioActual) },
-  ];
+  ] as Series[]).filter(hasData);
   const cutoffSeries: Series[] = [
     { key: 'cutoff', label: '1차 합격선', tone: 'brand', shape: 'circle', values: rows.map((r) => r.firstCutoff) },
   ];
@@ -60,10 +61,10 @@ export default function RegionDetailScreen() {
     { key: 'fcut', label: '최종 합격선', tone: 'brand', shape: 'circle', values: rows.map((r) => r.finalCutoff) },
   ];
   const hasFinalCutoff = rows.some((r) => r.finalCutoff != null);
-  const passSeries: Series[] = [
-    { key: 'pApplied', label: '접수 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.passRateApplied) },
+  const passSeries: Series[] = ([
+    { key: 'pApplied', label: '지원 기준', tone: 'brand', shape: 'circle', values: rows.map((r) => r.passRateApplied) },
     { key: 'pActual', label: '응시 기준', tone: 'accent', shape: 'square', line: 'dash', values: rows.map((r) => r.passRateActual) },
-  ];
+  ] as Series[]).filter(hasData);
 
   return (
     <>
