@@ -1,7 +1,9 @@
 """수집기 1단계: 교육청 임용 게시판 → 공고 목록 → 상세 → 첨부파일 링크
 결과는 로그로 출력 (아직 DB 저장 안 함). 사용: python crawl.py [지역...]
 """
+import http.cookiejar
 import json
+import time
 import re
 import ssl
 import sys
@@ -25,11 +27,19 @@ FILE_RE = re.compile(r'(download|filedown|fileDown|atchFile|FileDown|getFile|\.h
 # 목록 페이지 → 상세 링크 만드는 방법
 #   href: a 태그 href 그대로 / dataid: data-id 값을 detail 템플릿에 / onclick: 정규식 그룹을 detail 템플릿에
 BOARDS = {
-    'seoul': {'list': ['https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1094&q_currPage={p}'], 'mode': 'href'},
+    'seoul': {'list': ['https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1094'], 'mode': 'href', 'pages': 1},
+    'ulsan': {'list': ['https://use.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1913'], 'mode': 'href', 'pages': 1},
+    'incheon': {'warm': 'https://www.ice.go.kr/ice/main.do',
+                'list': ['https://www.ice.go.kr/ice/na/ntt/selectNttList.do?mi=10991&bbsId=1777&currPage={p}'],
+                'mode': 'dataid', 'detail': 'https://www.ice.go.kr/ice/na/ntt/selectNttInfo.do?mi=10991&bbsId=1777&nttSn={id}'},
+    'chungbuk': {'list': ['https://www.cbe.go.kr/cbe/na/ntt/selectNttList.do?mi=11700&bbsId=1793&currPage={p}',
+                          'https://www.cbe.go.kr/cbe/na/ntt/selectNttList.do?mi=11700&bbsId=1794&currPage={p}'],
+                 'mode': 'dataid', 'detail': 'https://www.cbe.go.kr/cbe/na/ntt/selectNttInfo.do?mi=11700&nttSn={id}'},
     'busan': {'list': ['https://www.pen.go.kr/main/na/ntt/selectNttList.do?mi=30361&bbsId=2342&currPage={p}'],
               'mode': 'dataid', 'detail': 'https://www.pen.go.kr/main/na/ntt/selectNttInfo.do?mi=30361&bbsId=2342&nttSn={id}'},
     'gwangju': {'list': ['https://gen.go.kr/xboard/board.php?tbnum=49&page={p}'], 'mode': 'href'},
-    'daejeon': {'list': ['https://www.dje.go.kr/boardCnts/list.do?boardID=64&m=031701&s=dje&page={p}'], 'mode': 'href'},
+    'daejeon': {'list': ['https://www.dje.go.kr/boardCnts/list.do?boardID=64&m=031701&s=dje&page={p}',
+                         'https://www.dje.go.kr/main.do?s=djeNew'], 'mode': 'href', 'pages': 1},
     'gyeonggi': {'list': ['https://www.goe.go.kr/goe/na/ntt/selectNttList.do?mi=10154&bbsId=2583&currPage={p}'],
                  'mode': 'dataid', 'detail': 'https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn={id}'},
     'gangwon': {'list': ['https://www.gwe.go.kr/main/bbs/list.do?key=bTIzMDcyMTA1ODIyNTA=&pageIndex={p}'],
@@ -40,31 +50,38 @@ BOARDS = {
                 'mode': 'href'},
     'gyeongbuk': {'list': ['https://www.gbe.kr/main/na/ntt/selectNttList.do?mi=3538&bbsId=1882&currPage={p}'],
                   'mode': 'dataid', 'detail': 'https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn={id}'},
-    'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251&q_currPage={p}'], 'mode': 'href'},
+    'gyeongnam': {'list': ['https://www.gne.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1251'], 'mode': 'href', 'pages': 1},
     'jeju': {'list': ['https://www.jje.go.kr/board/list.jje?boardId=BBS_0000002&paging=ok&startPage={p}'], 'mode': 'href'},
 }
 
 # 게시판 주소를 아직 모르는 곳: 메뉴에서 '임용' 들어간 링크 찾기
 DISCOVER = {
-    'daegu': ['https://www.dge.go.kr/main/sso/index.do', 'https://www.dge.go.kr/main/main.do?sso=N',
-              'https://www.dge.go.kr/main/na/ntt/selectNttList.do?mi=1040'],
-    'incheon': ['https://www.ice.go.kr/ice/na/ntt/selectNttList.do?bbsAllTy=exam&bbsAllView=Y&mi=12237',
-                'https://www.ice.go.kr/ice/main.do'],
-    'ulsan': ['https://use.go.kr/use/index.do', 'https://use.go.kr/use/sub.do?menukey=4089'],
-    'chungbuk': ['https://www.cbe.go.kr/cbe/main.do', 'https://www.cbe.go.kr/cbe/index.do'],
-    'chungnam': ['https://www.cne.go.kr/main.do', 'https://www.cne.go.kr/index.do'],
+    'daegu': ['https://www.dge.go.kr/sso/index.jsp', 'https://www.dge.go.kr/main/main.do'],
+    'chungnam': ['https://www.cne.go.kr/sub/info.do?m=010901&page=01060101&s=cne',
+                 'https://www.cne.go.kr/sub/info.do?m=010902&page=01060102&s=cne'],
     'sejong': ['https://www.sje.go.kr/sje/main.do'],
     'jeonnam': ['https://www.jne.go.kr/main/main.do'],
 }
 MENU_RE = re.compile(r'(교원\s*임용|임용\s*시험|시험\s*정보|시험\s*공고|채용\s*시험|임용\s*정보)')
 
 
-def get(url, timeout=40):
+JAR = http.cookiejar.CookieJar()  # 대구(SSO)·인천처럼 첫 방문 쿠키가 필요한 곳
+OPENERS = {
+    False: urllib.request.build_opener(urllib.request.HTTPCookieProcessor(JAR)),
+    True: urllib.request.build_opener(urllib.request.HTTPCookieProcessor(JAR), urllib.request.HTTPSHandler(context=CTX_LOOSE)),
+}
+
+
+def get(url, timeout=40, referer=None):
     last = None
+    time.sleep(0.7)  # 교육청 서버 부담 줄이기
     for loose in (False, True):
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept-Language': 'ko-KR,ko;q=0.9'})
-            with urllib.request.urlopen(req, timeout=timeout, context=CTX_LOOSE if loose else None) as r:
+            h = {'User-Agent': UA, 'Accept-Language': 'ko-KR,ko;q=0.9'}
+            if referer:
+                h['Referer'] = referer
+            req = urllib.request.Request(url, headers=h)
+            with OPENERS[loose].open(req, timeout=timeout) as r:
                 raw = r.read()
                 ct = r.headers.get_content_charset() or ('euc-kr' if b'euc-kr' in raw[:3000].lower() else 'utf-8')
                 return r.geturl(), raw.decode(ct, 'ignore')
@@ -87,8 +104,14 @@ def is_target(title):
     return bool(YEAR_RE.search(title) and '임용' in title and TEACHER_RE.search(title) and TOPIC_RE.search(title))
 
 
-def list_posts(cfg, pages=3):
+def list_posts(cfg):
     posts, seen = [], set()
+    pages = cfg.get('pages', 3)
+    if cfg.get('warm'):
+        try:
+            get(cfg['warm'])
+        except Exception as e:  # noqa: BLE001
+            print('  warm 실패', e)
     for tmpl in cfg['list']:
         for p in range(1, pages + 1):
             url = tmpl.format(p=p)
@@ -113,7 +136,17 @@ def list_posts(cfg, pages=3):
                 seen.add(link)
                 posts.append((text[:120], link))
                 got += 1
-            print(f'  목록 p{p}: len={len(html)} 대상 {got}건')
+            print(f'  목록 p{p}: {final[:90]} len={len(html)} 대상 {got}건')
+            if got == 0 and p == 1:
+                if len(html) < 2500:
+                    print('    짧음:', re.sub(r'\s+', ' ', html)[:300])
+                k = 0
+                for text, href, at in anchors(html, final):
+                    if '임용' in text or '학년도' in text:
+                        print(f'    ? {text[:80]} | {href[:120]} | {json.dumps({a: b[:80] for a, b in at.items() if a != "href"}, ensure_ascii=False)[:200]}')
+                        k += 1
+                        if k >= 5:
+                            break
             if p == 1 and cfg['mode'] == 'onclick' and got:
                 m = re.search(r'function\s+goView\s*\([^)]*\)\s*\{(.{0,600})', html, re.S)
                 if m:
@@ -125,9 +158,21 @@ def attachments(url):
     final, html = get(url)
     files = []
     for text, href, at in anchors(html, final):
-        blob = ' '.join([href, at.get('onclick', ''), text])
+        if '정보공개' in text or '매뉴얼' in text or '뷰어' in text or '품질인증' in text or text in ('미리보기', '미리듣기', 'PDF 다운로드'):
+            continue
+        oc = at.get('onclick', '')
+        blob = ' '.join([href, oc, text, ' '.join(v for k, v in at.items() if k.startswith('data-'))])
         if FILE_RE.search(blob):
-            files.append({'name': text[:100], 'href': href, 'onclick': at.get('onclick', '')[:160]})
+            m = re.search(r"https?://[^'\"]+\.(?:pdf|hwpx?|xlsx?)", oc)
+            files.append({'name': text[:100], 'href': href or (m.group(0) if m else ''), 'onclick': oc[:160],
+                          'data': {k: v[:60] for k, v in at.items() if k.startswith('data-')}})
+    # 경기처럼 파일 주소가 미리보기 onclick 에만 있는 경우 보충
+    for f, url in zip([f for f in files if not f['href']], re.findall(r"previewAjax\('([^']+)'", html)):
+        f['href'] = url
+    if not files:
+        idx = [m.start() for m in re.finditer(r'(첨부파일|fileDown|atchFile|downFile|\.hwp|\.pdf)', html)][:3]
+        for i in idx:
+            print('      [문맥]', re.sub(r'\s+', ' ', html[max(0, i - 200):i + 250])[:450])
     return final, len(html), files
 
 
@@ -149,7 +194,7 @@ def crawl(regions):
                 summary[region]['with_files'] += 1
             print(f'      상세 len={n} 첨부 {len(files)}개')
             for f in files[:5]:
-                print(f"        - {f['name']} | {f['href'][:160]} | {f['onclick']}")
+                print(f"        - {f['name']} | {f['href'][:170]} | {f['onclick'][:100]} {f['data'] or ''}")
     return summary
 
 
