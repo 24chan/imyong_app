@@ -4,6 +4,7 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, 
 // 기기에만 저장되는 사용자 설정 (MVP: 로그인 없음)
 export type Level = 'elementary' | 'secondary';
 export type ThemePref = 'system' | 'light' | 'dark';
+export type RegionView = 'map' | 'list' | 'grid';
 
 export type Settings = {
   onboarded: boolean;
@@ -11,6 +12,8 @@ export type Settings = {
   subjectCode: string | null; // 중등이면 필수
   regionCodes: string[]; // 관심 지역 (화면에 공개되지 않음)
   themePref: ThemePref;
+  /** 지역·TO 보기 방식: 지도 / 목록(한 줄) / 격자(2열) */
+  regionView: RegionView;
   /** 개발용: 접수 상태를 다른 날짜로 확인해 볼 때 (출시 전 제거) */
   devDate: string | null;
 };
@@ -22,6 +25,7 @@ const DEFAULT_SETTINGS: Settings = {
   regionCodes: [],
   themePref: 'system',
   devDate: null,
+  regionView: 'map',
 };
 
 const STORAGE_KEY = 'app-settings-v1';
