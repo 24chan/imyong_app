@@ -4,7 +4,7 @@ name: Publish preview update
 
 on:
   push:
-    branches: ['*']
+    branches: ['main']  # raw-files(수집 원문) 브랜치는 제외
 
 jobs:
   publish_preview_update:
