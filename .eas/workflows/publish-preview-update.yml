@@ -1,0 +1,14 @@
+# GitHub에 푸시할 때마다 자동으로 미리보기 업데이트를 발행합니다.
+# 결과는 expo.dev → 프로젝트 → Updates 에서 확인 (Preview → QR → Expo Go)
+name: Publish preview update
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  publish_preview_update:
+    name: Publish preview update
+    type: update
+    params:
+      branch: ${{ github.ref_name || 'test' }}
