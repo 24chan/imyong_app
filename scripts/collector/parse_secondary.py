@@ -26,6 +26,11 @@ _SUBJ = [(code, re.compile(rf'^(?:{rx})(?:교사)?$')) for code, rx in SUBJECTS.
 def subject_code(label, allow_other=False):
     t = re.sub(r'[\s\d.]+', '', label or '')  # 연번·공백 제거
     t = re.sub(r'^\d+', '', t)
+    if re.search(r'\(초\w*\)$', t):
+        return None  # 보건(초등) 등은 초등 몫
+    t = re.sub(r'\((중|중등)\)$', '', t)
+    if t.startswith('특수') and '중' in t:
+        t = '특수(중등)'
     if not t or re.search(r'계|합계|소계|총계', t):
         return None
     for code, rx in _SUBJ:
@@ -87,7 +92,8 @@ def parse_wide(tbl, doc_type):
             break
     if start is None:
         return []
-    hdr = [r for r in tbl[max(0, start - 4):start] if not has_num(r) and len(r) > 2]
+    # 머리글 줄: 숫자 없고 글자가 2칸 이상 (제목 한 줄짜리는 제외 — 제목이 모든 칸에 번지지 않게)
+    hdr = [r for r in tbl[max(0, start - 4):start] if not has_num(r) and sum(1 for c in r if c.strip()) >= 2]
     if not hdr:
         return []
     width = max(len(r) for r in tbl[start:start + 5] + hdr)
@@ -114,6 +120,10 @@ def parse_wide(tbl, doc_type):
         r = list(r) + [''] * (width - len(r))
         lab = ' '.join(c for c in r[:first_metric_col] if c.strip())
         last = lab.split(' ')[-1] if lab else ''
+        dis_row = bool(re.search(r'\(장애[^)]*\)', lab))
+        if dis_row:
+            last = re.sub(r'\(장애[^)]*\)', '', last)
+            lab = re.sub(r'\(장애[^)]*\)', '', lab)
         code = subject_code(last) or subject_code(lab) or (subject_code(last, allow_other=True) if known >= 5 and has_num(r) else None)
         if not code:
             continue
@@ -130,7 +140,7 @@ def parse_wide(tbl, doc_type):
         elif 'total' in recs:
             recs['all'] = {**recs.pop('total'), **recs.get('all', {})}
         for cat, rec in recs.items():
-            out.append((code, cat, rec))
+            out.append((code, 'disabled' if dis_row and cat in ('all', 'general') else cat, rec))
     return out
 
 
@@ -154,7 +164,7 @@ def main(raw, out_path=None):
     for mf in sorted(glob.glob(os.path.join(raw, '*', 'manifest.json'))):
         docs += [m for m in json.load(open(mf)) if m['level'] == 'secondary']
     docs.sort(key=doc_rank)
-    merged, log = {}, []
+    merged, log, agreements = {}, [], {}
     for m in docs:
         if doc_rank(m) >= 9:
             continue
@@ -199,17 +209,29 @@ def main(raw, out_path=None):
                 cat = 'disabled'
             key = (m['region'], m['year'], 'secondary', code, cat)
             cur = merged.setdefault(key, {'sources': []})
+            agree = agreements.setdefault(key, {'docs': set(), 'conflict': False})
             for k, v in rec.items():
                 if k in cur and cur[k] != v:
                     log.append(f"충돌 {key} {k}: {cur[k]} vs {v} ({m['path']})")
+                    if k == 'selected':
+                        agree['conflict'] = True
                     continue
                 cur[k] = v
+                if k == 'selected':
+                    agree['docs'].add(m['post_url'])  # 같은 선발 인원을 준 서로 다른 공고
             if m['post_url'] not in cur['sources']:
                 cur['sources'].append(m['post_url'])
             got += 1
         log.append(f"{'OK ' if got else '-- '}{m['region']} {m['year']} {m['type']} {m['path'].split('/')[-1]} rows={got}")
+    has_cat = {k[:4] for k in merged if k[4] in ('general', 'disabled', 'regional')}
+    for k, v in merged.items():
+        a = agreements.get(k, {'docs': set(), 'conflict': False})
+        v['agree'] = len(a['docs'])
+        v['conflict'] = a['conflict']
     out = [{'region': k[0], 'year': k[1], 'level': k[2], 'subject': k[3], 'category': k[4], **v}
-           for k, v in sorted(merged.items(), key=lambda x: (x[0][0], x[0][1], x[0][3], x[0][4]))]
+           for k, v in sorted(merged.items(), key=lambda x: (x[0][0], x[0][1], x[0][3], x[0][4]))
+           if not (k[4] == 'all' and k[:4] in has_cat)
+           and not (k[3].startswith('x:') and re.search(r'교과|합|계|공통|전체|소계|선발|인원|구분', k[3]))]
     if out_path:
         json.dump(out, open(out_path, 'w'), ensure_ascii=False, indent=1)
     return out, log

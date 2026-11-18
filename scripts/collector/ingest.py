@@ -82,9 +82,66 @@ def schedule_rows(raw):
     return rows
 
 
+KNOWN_SUBJECTS = {'korean', 'english', 'math', 'social', 'history', 'geography', 'ethics', 'physics', 'chemistry', 'biology',
+                  'earth', 'pe', 'music', 'art', 'tech', 'homeec', 'info', 'hanmun', 'japanese', 'chinese', 'health',
+                  'counsel', 'librarian', 'nutrition', 'special'}
+
+
+def secondary_rows(raw):
+    """중등: 과목마다 '서로 다른 공고 2건 이상이 같은 선발 인원'일 때만 확인된 과목으로 올림.
+    지역 합계가 교육부 표와 맞으면 메모에 함께 적음."""
+    import check_secondary
+    import parse_secondary
+    recs, _ = parse_secondary.main(raw)
+    status = check_secondary.check(recs)
+    groups = {}
+    for r in recs:
+        groups.setdefault((r['region'], r['year']), []).append(r)
+    rows = []
+    for (region, year), rs in sorted(groups.items()):
+        by_subj = {}
+        for r in rs:
+            by_subj.setdefault(r['subject'], []).append(r)
+        keep = []
+        for subj, srs in by_subj.items():
+            if subj not in KNOWN_SUBJECTS:
+                continue
+            main_r = next((x for x in srs if x['category'] in ('general', 'all')), None)
+            if not main_r or main_r.get('agree', 0) < 2 or main_r.get('conflict'):
+                continue
+            bad = any((x.get('final_passed') or 0) > (x.get('selected') or 10 ** 6) for x in srs)
+            if bad:
+                continue
+            keep += [{k: v for k, v in x.items() if k not in ('agree', 'conflict')} for x in srs if not x.get('conflict')]
+        if not keep:
+            continue
+        n_subj = len({x['subject'] for x in keep})
+        moe = status.get((region, year), [])
+        moe_ok = [g for g, v, e, ok in moe if e is not None and ok]
+        note = f'검증 통과: 공고 2건 이상 일치한 과목 {n_subj}개' + (f' · 교육부 합계 일치({", ".join(moe_ok)})' if moe_ok else '')
+        srcs = sorted({sv for x in keep for sv in x['sources']})
+        rows.append({
+            'region': region, 'level': 'secondary', 'doc_type': 'exam_results',
+            'title': f'{year}학년도 {region} 중등 과목별 ({n_subj}과목, 공고 {len(srcs)}건)',
+            'source_url': f'parsed:{region}:{year}:secondary',
+            'file_url': f'parsed:exam_results:secondary:{year}:{region}',
+            'parsed': {'year': year, 'records': keep, 'sources': srcs},
+            'status': 'pending', 'note': '검증 통과' if n_subj >= 5 else note.replace('검증 통과', '확인 필요(과목 적음)'),
+            '_detail': note,
+        })
+    print(f'중등 묶음 {len(rows)}개: ' + ', '.join(f"{r['region']}{r['parsed']['year']}={len({x['subject'] for x in r['parsed']['records']})}" for r in rows))
+    for r in rows:
+        r.pop('_detail')
+    return rows
+
+
 def main(raw):
     notices(raw)
     sched = schedule_rows(raw)
+    try:
+        sched += secondary_rows(raw)
+    except Exception as e:  # noqa: BLE001
+        print('중등 처리 실패:', e)
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
     recs += manual_records()
     _, problems = check_results.check(recs)
