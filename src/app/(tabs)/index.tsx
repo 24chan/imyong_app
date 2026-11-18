@@ -6,9 +6,10 @@ import { useModeLabel, ViewModeBanner } from '../../components/ModeToggle';
 import { Card, Screen, Txt } from '../../components/ui';
 import { daysUntil, dDayLabel, EVENT_LABEL, getReceiptInfo, shortDate } from '../../data/receiptStatus';
 import { regionByCode } from '../../data/regions';
-import { getRegionSummaries, getSchedules } from '../../data/repository';
+import { getNotices, getRegionSummaries, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
+import { NoticeItem } from '../../features/news/NoticeList';
 import { useRegionFilters } from '../../features/region/useRegionFilters';
 import { useAppSettings, useToday } from '../../store/AppSettings';
 import { radius, space } from '../../theme/tokens';
@@ -37,6 +38,14 @@ export default function HomeScreen() {
     () => (f.latestYear ? getSchedules(f.viewLevel, f.latestYear) : Promise.resolve([])),
     [f.viewLevel, f.latestYear],
   );
+
+  const notices = useAsync(() => getNotices(f.viewLevel, 300), [f.viewLevel]);
+  // 관심 지역 소식 먼저, 없으면 전체에서 최근 4개
+  const allNotices = notices.data ?? [];
+  const mineNotices = allNotices.filter((x) => interest.includes(x.region));
+  const homeNotices = (mineNotices.length >= 2 ? mineNotices : allNotices).slice(0, 4);
+  const summaryOf = (year: number, region: string) =>
+    year === f.latestYear ? (rows.data ?? []).find((r) => r.region === region) : undefined;
 
   const regionEvents = (schedules.data ?? []).filter((s) => s.region === scheduleRegion);
   const nextKey = regionEvents.find((e) => KEY_EVENTS.includes(e.event) && daysUntil(e.date, today) >= 0) ?? null;
@@ -163,6 +172,25 @@ export default function HomeScreen() {
             );
           })}
         </View>
+      )}
+
+      {/* 임용 소식 (교육청 공고 모음) */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Txt variant="heading">임용 소식</Txt>
+        <Pressable onPress={() => router.push('/news')} hitSlop={8}>
+          <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
+            전체 보기 ›
+          </Txt>
+        </Pressable>
+      </View>
+      {homeNotices.length === 0 ? (
+        <Card>
+          <Txt variant="sub">교육청 공고를 모으는 중이에요. 곧 여기에 사전예고·시행계획·접수 현황·합격 발표가 올라와요.</Txt>
+        </Card>
+      ) : (
+        homeNotices.map((x) => (
+          <NoticeItem key={x.url} item={x} summary={summaryOf(x.year, x.region)} highlight={interest.includes(x.region)} />
+        ))
       )}
 
       {/* 바로가기 */}

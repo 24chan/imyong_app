@@ -5,6 +5,7 @@
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,7 +43,26 @@ def manual_records():
     return out
 
 
+def notices(raw):
+    """수집한 공고 목록(raw/<지역>/posts.json) → notices 테이블 (제목·링크만이라 바로 올림)"""
+    import glob
+    rows = []
+    for f in sorted(glob.glob(os.path.join(raw, '*', 'posts.json'))):
+        for url, p in json.load(open(f)).items():
+            rows.append({'url': url, 'region': p['region'], 'level': p['level'], 'year': p['year'], 'doc_type': p['type'],
+                         'title': p['title'][:300], 'posted_at': p.get('posted_at'), 'files': p.get('files', [])})
+    print(f'임용 소식 {len(rows)}건 (등록일 있는 글 {sum(1 for r in rows if r["posted_at"])}건)')
+    if KEY and rows:
+        try:
+            for i in range(0, len(rows), 200):
+                upsert('notices', rows[i:i + 200], 'url')
+            print('notices 저장 완료')
+        except urllib.error.HTTPError as e:
+            print('notices 저장 실패 (0006 SQL 실행 전이면 정상):', e.code, e.read()[:200])
+
+
 def main(raw):
+    notices(raw)
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
     recs += manual_records()
     _, problems = check_results.check(recs)

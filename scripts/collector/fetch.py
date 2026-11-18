@@ -44,6 +44,9 @@ def level_of(title):
 
 
 def classify(title):
+    # 사립학교 위탁 선발 공고 (공·사립 함께 내는 본 공고는 제외)
+    if '사립' in title and re.search(r'위탁|공동\s*전형', title) and not re.search(r'공\s*[·ㆍ.,‧]?\s*사립|국\s*[·ㆍ.,‧]\s*공|공립', title):
+        return 'private'
     if SKIP_TITLE.search(title) or (SKIP_UNLESS_PASS.search(title) and '합격' not in title):
         return None
     for name, rx in TYPES:
@@ -186,6 +189,8 @@ def main(regions):
         manifest_path = os.path.join(OUT, region, 'manifest.json')  # 지역별 목록 (병렬 실행)
         manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else []
         have = {m['file_url'] for m in manifest}
+        posts_path = os.path.join(OUT, region, 'posts.json')  # 공고 목록 (홈 '임용 소식'용)
+        post_index = json.load(open(posts_path)) if os.path.exists(posts_path) else {}
         cfg = crawl.BOARDS[region]
         crawl.DELAY[0] = cfg.get('delay', 0.7)
         print(f'\n===== {region}')
@@ -194,7 +199,9 @@ def main(regions):
         n_files = 0
         for post in posts:
             try:
-                _, _, files = crawl.attachments(post['post_url'])
+                _, _, files, pdate = crawl.attachments(post['post_url'])
+                post_index[post['post_url']] = {**post, 'posted_at': pdate or post_index.get(post['post_url'], {}).get('posted_at'),
+                                           'files': [{'name': f['name'], 'url': f['href']} for f in files if f['href']][:10]}
             except Exception as e:  # noqa: BLE001
                 print(f"  상세 실패 {post['title'][:50]}: {type(e).__name__}")
                 continue
@@ -222,6 +229,7 @@ def main(regions):
                 n_files += 1
                 print(f"  + {rel} ({len(data)//1024}KB) {f['name'][:60]}", flush=True)
                 json.dump(manifest, open(manifest_path, 'w'), ensure_ascii=False, indent=1)
+        json.dump(post_index, open(posts_path, 'w'), ensure_ascii=False, indent=1)
         stats[region] = {'posts': len(posts), 'new_files': n_files}
         json.dump(manifest, open(manifest_path, 'w'), ensure_ascii=False, indent=1)
     print('\n요약', json.dumps(stats, ensure_ascii=False))

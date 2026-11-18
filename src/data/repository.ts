@@ -3,6 +3,7 @@ import type { Level } from '../store/AppSettings';
 import type {
   DataQuery,
   ExamResult,
+  Notice,
   RegionSummary,
   ScheduleEvent,
   SelectionCount,
@@ -128,6 +129,35 @@ export async function getAvailableSubjects(): Promise<string[]> {
     const rows = data as unknown as { subject: string; subjects: { sort: number } | null }[];
     const sortOf = new Map(rows.map((r) => [r.subject, r.subjects?.sort ?? 999]));
     return [...sortOf.keys()].sort((a, b) => sortOf.get(a)! - sortOf.get(b)!);
+  });
+}
+
+/** 홈 '임용 소식': 최근 공고 (등록일 최신순). 0006 SQL 실행 전이면 빈 목록 */
+export async function getNotices(level: Level, limit = 100): Promise<Notice[]> {
+  return cached(`notices:${level}:${limit}`, async () => {
+    const { data, error } = await supabase
+      .from('notices')
+      .select('url,region,level,year,doc_type,title,posted_at,files')
+      .eq('level', level)
+      .order('posted_at', { ascending: false, nullsFirst: false })
+      .order('year', { ascending: false })
+      .limit(limit);
+    if (error) {
+      if (/notices/.test(error.message)) return []; // 테이블이 아직 없음
+      throw new DataError('임용 소식', error.message);
+    }
+    return (data ?? []).map(
+      (x: { url: string; region: string; level: Level; year: number; doc_type: Notice['docType']; title: string; posted_at: string | null; files: Notice['files'] | null }) => ({
+        url: x.url,
+        region: x.region,
+        level: x.level,
+        year: x.year,
+        docType: x.doc_type,
+        title: x.title,
+        postedAt: x.posted_at,
+        files: x.files ?? [],
+      }),
+    );
   });
 }
 

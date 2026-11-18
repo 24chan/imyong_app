@@ -78,6 +78,7 @@ OPENERS = {
 
 LAST = {}  # 사이트별 직전 주소(Referer) — 인천처럼 외부 유입을 막는 곳
 DELAY = [0.7]
+DEBUG = False
 
 
 def iri(url):
@@ -211,14 +212,29 @@ def attachments(url):
     have = {f['name'] for f in files if f['href']}
     files = [f for f in files if f['name'].strip() and (f['href'] or f['name'] not in have)]
     nohref = [f for f in files if not f['href']]
-    if nohref:
+    if nohref and DEBUG:
         i = html.find(nohref[0]['name'][:15])
         print('      [원본]', re.sub(r'\s+', ' ', html[max(0, i - 450):i + 150])[:600])
-    if not files:
+    if not files and DEBUG:
         idx = [m.start() for m in re.finditer(r'(첨부\s*파일|첨부)', html)][-2:]
         for i in idx:
             print('      [문맥]', re.sub(r'\s+', ' ', html[max(0, i - 200):i + 250])[:450])
-    return final, len(html), files
+    return final, len(html), files, post_date(html)
+
+
+DATE_RE = re.compile(r'(등록일|작성일|게시일|등록일자|작성일자|등록|작성|날짜)\s*[:：]?\s*(?:<[^>]+>\s*)*(20\d\d)\s*[.\-/년]\s*(\d{1,2})\s*[.\-/월]\s*(\d{1,2})')
+
+
+def post_date(html):
+    """상세 화면의 등록일 (YYYY-MM-DD). 못 찾으면 None"""
+    text = re.sub(r'<[^>]+>', ' ', html)
+    m = DATE_RE.search(text)
+    if not m:
+        return None
+    y, mo, d = int(m.group(2)), int(m.group(3)), int(m.group(4))
+    if not (1 <= mo <= 12 and 1 <= d <= 31):
+        return None
+    return f'{y:04d}-{mo:02d}-{d:02d}'
 
 
 def crawl(regions):
@@ -232,7 +248,7 @@ def crawl(regions):
         for title, link in posts[:6]:
             print(f'  * {title}\n      {link}')
             try:
-                final, n, files = attachments(link)
+                final, n, files, _ = attachments(link)
             except Exception as e:  # noqa: BLE001
                 print(f'      상세 실패: {type(e).__name__}: {str(e)[:120]}')
                 continue

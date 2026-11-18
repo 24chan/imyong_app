@@ -92,3 +92,16 @@ export type ScheduleEvent = {
 };
 
 export type DataQuery = { level: Level; subject?: string | null };
+
+/** 홈 '임용 소식': 수집기가 찾은 교육청 공고 */
+export type NoticeType = 'prelim' | 'plan' | 'receipt' | 'attend' | 'first_pass' | 'final_pass' | 'private';
+export type Notice = {
+  url: string;
+  region: string;
+  level: 'elementary' | 'secondary';
+  year: number;
+  docType: NoticeType;
+  title: string;
+  postedAt: string | null; // YYYY-MM-DD
+  files: { name: string; url: string }[];
+};
