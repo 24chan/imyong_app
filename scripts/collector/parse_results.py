@@ -60,7 +60,7 @@ def metric_of(h, doc_type):
 
 def is_elem_field(label):
     t = norm(label)
-    if re.search(r'특수|유치원|사립|국립|법인|학원|학교\(|초등학교\(|\(.*학교', t):
+    if re.search(r'특수|유치원|사립|국립|법인|학원|대학|부설|학교\(|초등학교\(|\(.*학교', t):
         return False
     return '초등' in t
 
