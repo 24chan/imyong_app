@@ -45,7 +45,7 @@ def level_of(title):
 
 def classify(title):
     # 사립학교 위탁 선발 공고 (공·사립 함께 내는 본 공고는 제외)
-    if '사립' in title and re.search(r'위탁|공동\s*전형', title) and not re.search(r'공\s*[·ㆍ.,‧]?\s*사립|국\s*[·ㆍ.,‧]\s*공|공립', title):
+    if '사립' in title and re.search(r'위탁|공동\s*전형', title) and not re.search(r'공\s*[·ㆍ.,‧]?\s*사립|국\s*[·ㆍ.,‧]\s*공|공립|위탁\s*포함', title):
         return 'private'
     if SKIP_TITLE.search(title) or (SKIP_UNLESS_PASS.search(title) and '합격' not in title):
         return None

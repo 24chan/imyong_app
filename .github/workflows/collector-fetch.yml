@@ -6,6 +6,8 @@ on:
         description: '지역 코드(공백 구분, 비우면 전체)'
         required: false
         default: 'seoul busan daegu gwangju daejeon ulsan gyeonggi gangwon chungbuk chungnam jeonbuk gyeongbuk gyeongnam jeju'
+  schedule:
+    - cron: '17 20 * * *'   # 매일 05:17 (한국 시간). 끝나면 collector-ingest 가 자동으로 이어서 실행
 permissions:
   contents: write
 jobs:
@@ -16,7 +18,7 @@ jobs:
     steps:
       - id: r
         run: |
-          R="${{ github.event.inputs.regions }}"
+          R="${{ github.event.inputs.regions || 'seoul busan daegu gwangju daejeon ulsan gyeonggi gangwon chungbuk chungnam jeonbuk gyeongbuk gyeongnam jeju' }}"
           echo "regions=$(echo $R | jq -Rc 'split(" ")')" >> "$GITHUB_OUTPUT"
   fetch:
     needs: plan
