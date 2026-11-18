@@ -41,3 +41,11 @@
 
 ## 해외 차단 대안 (세종·전남·인천 등)
 - 국내 IP가 필요한 곳은 (a) 사용자가 공고 파일을 직접 올리기, (b) 국내 클라우드 무료 실행 환경, (c) 컴퓨터 세션 때 자체 실행기(self-hosted runner) 중 선택
+
+## 학교 위치 (`collector-schools`)
+
+- 공공데이터포털 **전국초중등학교위치표준데이터** API (GitHub Secret `DATA_GO_KR_KEY`)
+- 매달 4일 새벽 자동 실행 (Actions 탭에서 `collector-schools` → Run workflow 로 바로 실행 가능)
+- 결과: `raw-files` 브랜치 `raw/schools/<지역>.json`, `meta.json` → 앱 '학교 지도'가 직접 읽음 (DB·승인 불필요)
+- 항목: `[학교명, 학교급 e/m/h, 설립 p공립/s사립/n국립, 위도, 경도, 시군구]`
+- 2026.7 출범한 **전남광주통합특별시** 주소는 임용이 아직 따로라서 옛 경계(광주 5개 구)로 광주·전남을 나눔
