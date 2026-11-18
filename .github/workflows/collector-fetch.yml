@@ -60,9 +60,16 @@ jobs:
         with:
           pattern: raw-*
           path: /tmp/new
-      - name: 합쳐서 raw-files 브랜치에 저장
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 합치기 + 구형 한글(.hwp) 변환
         run: |
           for d in /tmp/new/raw-*; do [ -d "$d" ] || continue; r=${d#/tmp/new/raw-}; mkdir -p /tmp/raw/$r; cp -r $d/. /tmp/raw/$r/; done
+          pip install -q pyhwp lxml six
+          (cd /tmp && bash $GITHUB_WORKSPACE/scripts/collector/convert_hwp.sh) || true
+      - name: raw-files 브랜치에 저장
+        run: |
           git config user.name "imyong-collector"
           git config user.email "actions@users.noreply.github.com"
           git checkout -q --orphan raw-files-new

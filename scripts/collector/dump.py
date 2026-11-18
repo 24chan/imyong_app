@@ -77,8 +77,68 @@ def pdf_rows(path):
     return rows
 
 
+def html_rows(path):
+    """hwp5html 로 바꾼 구형 한글(.hwp) 문서 → 표 행 (표 안의 표는 바깥 셀 글자로 합침)"""
+    from html.parser import HTMLParser
+
+    class P(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.rows, self.depth, self.cell, self.row, self.text = [], 0, None, None, []
+
+        def handle_starttag(self, tag, a):
+            if tag == 'table':
+                self.depth += 1
+                if self.depth == 1:
+                    self.flush_text()
+                    self.rows.append(['[표]'])
+            elif tag == 'tr' and self.depth == 1:
+                self.row = []
+            elif tag in ('td', 'th') and self.depth == 1:
+                self.cell = []
+            elif tag in ('p', 'br') and self.cell is not None:
+                self.cell.append(' ')
+            elif tag == 'p' and self.depth == 0:
+                self.flush_text()
+
+        def handle_endtag(self, tag):
+            if tag == 'table':
+                if self.depth == 1:
+                    self.rows.append(['[/표]'])
+                self.depth -= 1
+            elif tag in ('td', 'th') and self.depth == 1 and self.cell is not None:
+                self.row.append(re.sub(r'\s+', ' ', ''.join(self.cell)).strip())
+                self.cell = None
+            elif tag == 'tr' and self.depth == 1 and self.row is not None:
+                if any(self.row):
+                    self.rows.append(self.row)
+                self.row = None
+
+        def handle_data(self, d):
+            if self.cell is not None:
+                self.cell.append(d)
+            elif self.depth == 0:
+                self.text.append(d)
+
+        def flush_text(self):
+            t = re.sub(r'\s+', ' ', ''.join(self.text)).strip()
+            if t:
+                self.rows.append([t])
+            self.text = []
+
+    p = P()
+    p.feed(open(path, encoding='utf-8', errors='ignore').read())
+    p.flush_text()
+    return p.rows
+
+
 def rows_of(path):
+    import os
+    if path.lower().endswith('.hwp') and os.path.exists(path + '.xhtml'):
+        return html_rows(path + '.xhtml')
     ext = path.rsplit('.', 1)[-1].lower()
+    if ext in ('xhtml', 'html'):
+        return html_rows(path)
     if ext == 'hwpx':
         return hwpx_rows(path)
     if ext in ('xlsx', 'xlsm'):

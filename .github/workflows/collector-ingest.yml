@@ -1,0 +1,31 @@
+name: collector-ingest
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [collector-fetch]
+    types: [completed]
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: 원문 파일 받기 (raw-files 브랜치)
+        run: |
+          git fetch -q origin raw-files
+          git archive FETCH_HEAD raw | tar -x
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get install -y -qq poppler-utils >/dev/null
+          pip install -q pdfplumber openpyxl
+      - name: 숫자 뽑기 + 검증 + 검수 대기열 저장
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python -I -u scripts/collector/ingest.py raw
+      - uses: actions/upload-artifact@v4
+        with:
+          name: parsed
+          path: raw/parsed_*.json
+          retention-days: 7
