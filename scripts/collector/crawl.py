@@ -9,7 +9,7 @@ import ssl
 import sys
 import urllib.request
 from html import unescape
-from urllib.parse import urljoin
+from urllib.parse import quote, urljoin
 
 UA = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Mobile Safari/537.36'
 CTX_LOOSE = ssl.create_default_context()
@@ -80,7 +80,13 @@ LAST = {}  # 사이트별 직전 주소(Referer) — 인천처럼 외부 유입�
 DELAY = [0.7]
 
 
+def iri(url):
+    """한글이 섞인 주소를 안전하게 (%인코딩)"""
+    return quote(url, safe="/:?&=%#;,+@!$'()*~")
+
+
 def get(url, timeout=40, referer=None):
+    url = iri(url)
     last = None
     time.sleep(DELAY[0])  # 교육청 서버 부담 줄이기
     host = url.split('/')[2]
@@ -171,6 +177,12 @@ def list_posts(cfg):
                         k += 1
                         if k >= 5:
                             break
+            if p == 1 and 'opMovePage' in html and cfg.get('pages') == 1:
+                m = re.search(r'function\s+opMovePage\s*\([^)]*\)\s*\{(.{0,400})', html, re.S)
+                print('  opMovePage:', re.sub(r'\s+', ' ', m.group(1))[:400] if m else '-')
+                fm = re.search(r'<form[^>]*>(.{0,3000}?)</form>', html[html.find('opMovePage') - 20000:], re.S)
+                inputs = re.findall(r'<input[^>]*name="([^"]+)"[^>]*value="([^"]*)"', fm.group(0)) if fm else []
+                print('  form:', re.findall(r'<form[^>]*>', fm.group(0))[:1] if fm else '-', inputs[:15])
             if p == 1 and cfg['mode'] == 'onclick' and got:
                 m = re.search(r'function\s+goView\s*\([^)]*\)\s*\{(.{0,600})', html, re.S)
                 if m:

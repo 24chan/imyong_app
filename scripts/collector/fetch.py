@@ -31,7 +31,7 @@ SKIP_TITLE = re.compile(r'한국사|소명|연수|제출\s*서류|수정\s*동�
 SKIP_UNLESS_PASS = re.compile(r'장소|유의\s*사항')  # '1차 합격자 및 2차 시험 장소'는 살림
 DAILY = re.compile(r'\d\s*일\s*차|\d+\.\s*\d+\.\s*\d+\s*\.?\s*\d*\s*시\s*기준')
 FINAL_WORD = re.compile(r'최종|마감')
-SKIP_FILE = re.compile(r'서식|양식|유의\s*사항|접수\s*(방법|요령)|원서\s*접수\s*안내|수정\s*동의|매뉴얼|답안지|변경\s*사항|품질인증')
+SKIP_FILE = re.compile(r'미리보기|새창|서식|양식|유의\s*사항|접수\s*(방법|요령)|원서\s*접수\s*안내|수정\s*동의|매뉴얼|답안지|변경\s*사항|품질인증')
 FILE_EXT = re.compile(r'\.(pdf|hwpx?|xlsx?)\b', re.I)
 
 
@@ -103,6 +103,14 @@ def list_all(region, cfg):
                 pag = [f"{t}|{h[:90]}|{a.get('onclick', '')[:60]}" for t, h, a in crawl.anchors(html, final)
                        if t.strip() in ('2', '3', '다음', '다음페이지') or 'Page' in a.get('onclick', '')][:4]
                 print('  쪽 넘김 링크:', pag)
+                m = re.search(r'function\s+opMovePage\s*\([^)]*\)\s*\{(.{0,400})', html, re.S)
+                if m:
+                    print('  opMovePage:', re.sub(r'\s+', ' ', m.group(1))[:400])
+                for fm in re.finditer(r'<form[^>]*>.*?</form>', html, re.S):
+                    if 'q_currPage' in fm.group(0) or 'currPage' in fm.group(0):
+                        print('  form:', re.findall(r'<form[^>]*>', fm.group(0))[0][:200],
+                              re.findall(r'<input[^>]*name="([^"]+)"[^>]*value="([^"]*)"', fm.group(0))[:15])
+                        break
             if not links or links == prev_links:
                 break
             if years and max(years) < 2024:
@@ -114,12 +122,19 @@ def list_all(region, cfg):
 def get_bytes(url, referer):
     time.sleep(crawl.DELAY[0])
     host = url.split('/')[2]
+    url = crawl.iri(url)
     req = urllib.request.Request(url, headers={'User-Agent': crawl.UA, 'Referer': referer or crawl.LAST.get(host, '')})
     last = None
     for loose in (False, True):
         try:
-            with crawl.OPENERS[loose].open(req, timeout=60) as r:
-                return r.read(), r.headers.get('Content-Disposition', '')
+            for attempt in range(2):
+                try:
+                    with crawl.OPENERS[loose].open(req, timeout=120) as r:
+                        return r.read(), r.headers.get('Content-Disposition', '')
+                except (TimeoutError, ConnectionResetError) as e:
+                    last = e
+                    time.sleep(5)
+            break
         except Exception as e:  # noqa: BLE001
             last = e
             if 'CERTIFICATE' not in str(e).upper():
