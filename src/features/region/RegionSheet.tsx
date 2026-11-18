@@ -15,11 +15,12 @@ type Props = {
   title: string; // 예: '2027학년도 초등'
   onClose: () => void;
   onOpenDetail: (region: string) => void;
+  onOpenSchools?: (region: string) => void;
   onReport: (region: string) => void;
 };
 
 /** 지도에서 지역을 누르면 아래에서 올라오는 상세 */
-export function RegionSheet({ row, info, title, onClose, onOpenDetail, onReport }: Props) {
+export function RegionSheet({ row, info, title, onClose, onOpenDetail, onOpenSchools, onReport }: Props) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   return (
@@ -68,6 +69,9 @@ export function RegionSheet({ row, info, title, onClose, onOpenDetail, onReport 
           <View style={{ gap: space.xs, marginTop: space.xs }}>
             <PrimaryButton label="추이·그래프 보기" onPress={() => onOpenDetail(row.region)} />
             <CompareButton region={row.region} />
+            {onOpenSchools && (
+              <PrimaryButton label="학교 지도 (공립·사립 위치)" variant="ghost" onPress={() => onOpenSchools(row.region)} />
+            )}
             <PrimaryButton
               label="오류 신고"
               variant="ghost"

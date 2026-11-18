@@ -106,3 +106,9 @@ export type Notice = {
   files: { name: string; url: string }[];
   images: string[]; // 첨부 PDF 앞쪽을 그린 그림 주소 (앱에서 바로 보기)
 };
+
+/** 학교 위치 (공공데이터포털 전국초중등학교위치표준데이터) */
+export type SchoolKind = 'e' | 'm' | 'h'; // 초·중·고
+export type SchoolFound = 'p' | 's' | 'n'; // 공립·사립·국립
+export type School = { name: string; kind: SchoolKind; found: SchoolFound; lat: number; lng: number; sigungu: string };
+export type SchoolMeta = { updated: string; source: string };

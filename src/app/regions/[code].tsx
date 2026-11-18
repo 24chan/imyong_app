@@ -10,6 +10,7 @@ import { getRegionTrend, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
 import { CompareButton } from '../../features/region/CompareButton';
+import { SchoolMapLink } from '../../features/region/SchoolMapLink';
 import { Level, useToday } from '../../store/AppSettings';
 import { space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -74,6 +75,8 @@ export default function RegionDetailScreen() {
 
         {trend.loading && <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />}
         {trend.error && <Txt color="down">데이터를 불러오지 못했어요: {trend.error.message}</Txt>}
+
+        <SchoolMapLink region={params.code} level={level} />
 
         {/* 접수 상태 (올해) */}
         {info && schedules.data && (

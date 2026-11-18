@@ -180,6 +180,10 @@ export default function RegionScreen() {
         title={`${f.year}학년도 ${modeTitle}`}
         onClose={() => setSheetRegion(null)}
         onOpenDetail={openDetail}
+        onOpenSchools={(region) => {
+          setSheetRegion(null);
+          router.push({ pathname: '/schools', params: { region, level: f.viewLevel } });
+        }}
         onReport={(region) => {
           setSheetRegion(null);
           router.push({

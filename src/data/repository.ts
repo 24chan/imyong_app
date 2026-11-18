@@ -6,6 +6,8 @@ import type {
   Notice,
   RegionSummary,
   ScheduleEvent,
+  School,
+  SchoolMeta,
   SelectionCount,
   Source,
 } from '../types/data';
@@ -280,4 +282,29 @@ export async function checkServer(): Promise<{ ok: boolean; message: string }> {
   const { count, error } = await supabase.from('regions').select('code', { count: 'exact', head: true });
   if (error) return { ok: false, message: error.message };
   return { ok: (count ?? 0) > 0, message: `시도 ${count ?? 0}개 확인` };
+}
+
+// ───── 학교 위치 (수집기가 GitHub raw-files 브랜치에 올린 JSON) ─────
+
+const SCHOOLS_BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/schools';
+
+/** 지역의 초·중·고 위치 목록. 매달 자동 갱신 */
+export async function getSchools(region: string): Promise<School[]> {
+  return cached(`schools:${region}`, async () => {
+    const res = await fetch(`${SCHOOLS_BASE}/${region}.json`);
+    if (!res.ok) throw new DataError('학교 위치', `HTTP ${res.status}`);
+    const rows = (await res.json()) as [string, School['kind'], School['found'], number, number, string][];
+    return rows.map(([name, kind, found, lat, lng, sigungu]) => ({ name, kind, found, lat, lng, sigungu }));
+  });
+}
+
+export async function getSchoolMeta(): Promise<SchoolMeta | null> {
+  return cached('schools:meta', async () => {
+    try {
+      const res = await fetch(`${SCHOOLS_BASE}/meta.json`);
+      return res.ok ? ((await res.json()) as SchoolMeta) : null;
+    } catch {
+      return null;
+    }
+  });
 }

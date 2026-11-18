@@ -74,6 +74,9 @@ def main():
     pages = (total + 999) // 1000
     for p in range(2, pages + 1):
         items += body_of(get(p))[1]
+    for it in items:
+        if it.get('schoolNm') in ('각화초등학교', '광주제일고등학교'):
+            print('표본:', {k: it.get(k) for k in ('schoolNm', 'cddcNm', 'rdnmadr', 'lnmadr', 'edcSportNm')})
     by = {}
     skipped = 0
     for it in items:
