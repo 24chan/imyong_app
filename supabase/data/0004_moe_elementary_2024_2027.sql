@@ -1,12 +1,12 @@
--- 실제 데이터: 초등 2024~2027학년도 시도별 선발 인원 (사전예고 / 모집공고=확정)
--- 출처: 교육부 보도참고자료 「2027학년도 공립 유치원·초등·특수(유치원·초등)교사 임용후보자 선정경쟁시험 모집공고 현황」 (2026.9.9)
--- 원본 파일: supabase/data/sources/moe_20260909_elementary_recruit.hwpx, 생성: scripts/moe_elementary_to_sql.py
--- 검증: 학년도·단계별 17개 시도 합계 = 전국 합계 (2027 확정 2821, 2026 3113, 2025 4272, 2024 3157)
--- 0003 실행 후 SQL Editor에서 한 번 Run
+/* 실제 데이터: 초등 2024~2027학년도 시도별 선발 인원 (사전예고 / 모집공고=확정) */
+/* 출처: 교육부 보도참고자료 「2027학년도 공립 유치원·초등·특수(유치원·초등)교사 임용후보자 선정경쟁시험 모집공고 현황」 (2026.9.9) */
+/* 원본 파일: supabase/data/sources/moe_20260909_elementary_recruit.hwpx, 생성: scripts/moe_elementary_to_sql.py */
+/* 검증: 학년도·단계별 17개 시도 합계 = 전국 합계 (2027 확정 2821, 2026 3113, 2025 4272, 2024 3157) */
+/* 0003 실행 후 SQL Editor에서 한 번 Run */
 
 begin;
 
--- 초등 샘플 지우기 (중등 샘플은 유지)
+/* 초등 샘플 지우기 (중등 샘플은 유지) */
 delete from exam_schedules where source_id = 'sample' and level = 'elementary';
 delete from exam_results where source_id = 'sample' and level = 'elementary';
 delete from selection_counts where source_id = 'sample' and level = 'elementary';
@@ -154,11 +154,11 @@ insert into selection_counts (year, level, region, subject, stage, general, disa
   (2024, 'elementary', 'jeju', null, 'preliminary', null, null, null, 87, 'moe-20260909-elem', '2026-09-09'),
   (2024, 'elementary', 'jeju', null, 'confirmed', null, null, null, 87, 'moe-20260909-elem', '2026-09-09');
 
--- 경기 2027 확정: 공고 원문의 일반/장애/지역 (일반 815, 장애 68, 지역 구분모집 없음)
+/* 경기 2027 확정: 공고 원문의 일반/장애/지역 (일반 815, 장애 68, 지역 구분모집 없음) */
 update selection_counts set general = 815, disabled = 68, regional = 0, source_id = 'goe-20260909-plan'
   where year = 2027 and level = 'elementary' and region = 'gyeonggi' and stage = 'confirmed' and total = 883;
 
--- 2027 일정: 사전예고 8/5, 시행계획(모집공고) 9/9 = 교육부 / 나머지는 수집기가 교육청 공고에서 채움
+/* 2027 일정: 사전예고 8/5, 시행계획(모집공고) 9/9 = 교육부 / 나머지는 수집기가 교육청 공고에서 채움 */
 insert into exam_schedules (year, level, region, event, date, source_id)
 select 2027, 'elementary', r.code, e.ev::schedule_event, e.d, 'moe-20260909-elem'
 from regions r cross join (values ('plan', date '2026-09-09')) as e(ev, d)

@@ -112,7 +112,10 @@ def main(path):
     out.append('')
     out.append("select count(*) as 초등_선발인원_행수, sum(total) filter (where year = 2027 and stage = 'confirmed') as 확정2027_합계")
     out.append("from selection_counts where level = 'elementary';")
-    print('\n'.join(out))
+    # 태블릿에서 복사하면 줄바꿈이 사라질 수 있어 '--' 주석 대신 /* */ 주석으로
+    text = '\n'.join(out)
+    text = '\n'.join(('/* ' + l[3:].strip() + ' */') if l.startswith('-- ') else l for l in text.split('\n'))
+    print(text)
 
 
 if __name__ == '__main__':
