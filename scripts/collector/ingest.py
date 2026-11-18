@@ -61,8 +61,30 @@ def notices(raw):
             print('notices 저장 실패 (0006 SQL 실행 전이면 정상):', e.code, e.read()[:200])
 
 
+def schedule_rows(raw):
+    import parse_schedule
+    rows = []
+    for r in parse_schedule.main(raw):
+        if r['year'] < 2024:
+            continue
+        support_ok = all(int(v.split('/')[0]) >= 3 for v in r.get('support', {}).values())
+        rows.append({
+            'region': r['region'], 'level': r['level'], 'doc_type': 'exam_schedules',
+            'title': f"{r['year']}학년도 {r['region']} {r['level']} 시험 일정 ({len(r['events'])}개)",
+            'source_url': f"parsed:{r['region']}:{r['year']}:{r['level']}",
+            'file_url': f"parsed:exam_schedules:{r['level']}:{r['year']}:{r['region']}",
+            'parsed': {'year': r['year'], 'events': r['events'], 'source_url': r['source_url'], 'title': r['title'],
+                       'support': r.get('support', {})},
+            'status': 'pending',
+            'note': '검증 통과' if support_ok and len(r['events']) >= 4 else '확인 필요: 일정 일부만 확인됨',
+        })
+    print(f'일정 묶음 {len(rows)}개 (확인 필요 {sum(1 for r in rows if r["note"] != "검증 통과")}개)')
+    return rows
+
+
 def main(raw):
     notices(raw)
+    sched = schedule_rows(raw)
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
     recs += manual_records()
     _, problems = check_results.check(recs)
@@ -85,17 +107,18 @@ def main(raw):
             'status': 'pending',
             'note': '검증 통과' if not probs else '확인 필요: ' + ' / '.join(probs),
         })
+    rows += sched
     print(f'묶음 {len(rows)}개, 확인 필요 {sum(1 for r in rows if r["note"] != "검증 통과")}개')
     for r in rows:
         print(' ', r['file_url'], r['note'][:100])
         if r['note'] != '검증 통과':
-            for x in r['parsed']['records']:
+            for x in r['parsed'].get('records', []):
                 print('      ', x['category'], {k: v for k, v in x.items() if k not in ('region', 'year', 'level', 'subject', 'category', 'sources')})
     if not KEY:
         print('SUPABASE_SECRET_KEY 없음 → DB 저장은 건너뜀 (GitHub Secrets 에 등록하면 저장됨)')
         return
     # 이미 승인된 묶음은 숫자가 그대로면 다시 올리지 않음 (승인 상태 유지)
-    req = urllib.request.Request(f'{URL}/rest/v1/ingest_queue?select=source_url,file_url,parsed,status&doc_type=eq.exam_results',
+    req = urllib.request.Request(f'{URL}/rest/v1/ingest_queue?select=source_url,file_url,parsed,status&limit=5000',
                                  headers={'apikey': KEY, 'Authorization': f'Bearer {KEY}'})
     with urllib.request.urlopen(req, timeout=60) as r:
         old = {(x['source_url'], x['file_url']): x for x in json.load(r)}
