@@ -98,7 +98,10 @@ def secondary_rows(raw):
     for r in recs:
         groups.setdefault((r['region'], r['year']), []).append(r)
     rows = []
+    NONSUBJ = {'special', 'health', 'nutrition', 'librarian', 'counsel'}
     for (region, year), rs in sorted(groups.items()):
+        # 교육부 표 합계가 맞은 묶음(교과 전체 / 비교과 과목별)은 공고 1건만 있어도 확인된 것으로 봄
+        moe_ok_groups = {g for g, v, e, ok in status.get((region, year), []) if e is not None and ok}
         by_subj = {}
         for r in rs:
             by_subj.setdefault(r['subject'], []).append(r)
@@ -107,7 +110,10 @@ def secondary_rows(raw):
             if subj not in KNOWN_SUBJECTS:
                 continue
             main_r = next((x for x in srs if x['category'] in ('general', 'all')), None)
-            if not main_r or main_r.get('agree', 0) < 2 or main_r.get('conflict'):
+            group = subj if subj in NONSUBJ else '교과'
+            if not main_r or main_r.get('conflict'):
+                continue
+            if main_r.get('agree', 0) < 2 and group not in moe_ok_groups:
                 continue
             bad = any((x.get('final_passed') or 0) > (x.get('selected') or 10 ** 6) for x in srs)
             if bad:

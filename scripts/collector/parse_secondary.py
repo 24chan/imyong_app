@@ -144,6 +144,20 @@ def parse_wide(tbl, doc_type):
     return out
 
 
+def split_side_by_side(tbl):
+    """'연번|과목|일반|장애|소계 | 연번|과목|일반|장애|소계' 처럼 좌우로 두 번 반복된 표를 둘로 나눔"""
+    for r in tbl[:4]:
+        idx = [j for j, c in enumerate(r) if re.search(r'과\s*목', c)]
+        if len(idx) >= 2:
+            starts = []
+            for j in idx:
+                k = j - 1 if j > 0 and re.search(r'연\s*번|순', r[j - 1]) else j
+                starts.append(k)
+            bounds = starts + [max(len(x) for x in tbl)]
+            return [[row[a:b] for row in tbl] for a, b in zip(bounds, bounds[1:])]
+    return [tbl]
+
+
 def doc_rank(m):
     t = m['title'] + ' ' + m['file_name']
     if m['type'] in ('first_pass', 'final_pass'):
@@ -187,7 +201,7 @@ def main(raw, out_path=None):
                     if cur_tbl is not None:
                         head = ' '.join(' '.join(x) for x in cur_tbl[:2])
                         if not re.search(r'사립|국립|위탁|법인', ctx + ' ' + head):
-                            rr = parse_wide(cur_tbl, m['type'])
+                            rr = [x for part in split_side_by_side(cur_tbl) for x in parse_wide(part, m['type'])]
                             if re.search(r'장애', ctx) and not any(c != 'all' for _, c, _ in rr):
                                 rr = [(a, 'disabled', b) for a, _, b in rr]
                             recs += rr
