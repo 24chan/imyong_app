@@ -35,6 +35,7 @@ function RootStack() {
         <Stack.Screen name="regions/[code]" options={{ title: '', headerBackTitle: '지역·TO' }} />
         <Stack.Screen name="compare" options={{ title: '지역 비교', headerBackTitle: '지역·TO' }} />
         <Stack.Screen name="trend" options={{ title: '추이·합격률', headerBackTitle: '지역·TO' }} />
+        <Stack.Screen name="notice" options={{ title: '공고', headerBackTitle: '소식' }} />
         <Stack.Screen name="news" options={{ title: '임용 소식', headerBackTitle: '홈' }} />
         <Stack.Screen name="report" options={{ title: '오류 신고', presentation: 'modal' }} />
       </Stack>

@@ -68,6 +68,8 @@ jobs:
           for d in /tmp/new/raw-*; do [ -d "$d" ] || continue; r=${d#/tmp/new/raw-}; mkdir -p /tmp/raw/$r; cp -r $d/. /tmp/raw/$r/; done
           pip install -q pyhwp lxml six
           (cd /tmp && bash $GITHUB_WORKSPACE/scripts/collector/convert_hwp.sh) || true
+          sudo apt-get install -y -qq poppler-utils >/dev/null
+          python -I scripts/collector/render_images.py /tmp/raw || true
       - name: raw-files 브랜치에 저장
         run: |
           git config user.name "imyong-collector"

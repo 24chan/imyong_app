@@ -146,8 +146,9 @@ export async function getNotices(level: Level, limit = 100): Promise<Notice[]> {
       if (/notices/.test(error.message)) return []; // 테이블이 아직 없음
       throw new DataError('임용 소식', error.message);
     }
+    type Raw = { name?: string; url?: string; images?: string[] };
     return (data ?? []).map(
-      (x: { url: string; region: string; level: Level; year: number; doc_type: Notice['docType']; title: string; posted_at: string | null; files: Notice['files'] | null }) => ({
+      (x: { url: string; region: string; level: Level; year: number; doc_type: Notice['docType']; title: string; posted_at: string | null; files: Raw[] | null }) => ({
         url: x.url,
         region: x.region,
         level: x.level,
@@ -155,7 +156,8 @@ export async function getNotices(level: Level, limit = 100): Promise<Notice[]> {
         docType: x.doc_type,
         title: x.title,
         postedAt: x.posted_at,
-        files: x.files ?? [],
+        files: (x.files ?? []).filter((f): f is { name: string; url: string } => !!f.name && !!f.url),
+        images: (x.files ?? []).flatMap((f) => f.images ?? []),
       }),
     );
   });

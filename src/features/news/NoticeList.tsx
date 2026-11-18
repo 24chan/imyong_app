@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ReactNode } from 'react';
-import { Linking, Pressable, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, View } from 'react-native';
 import { Txt } from '../../components/ui';
 import { regionByCode } from '../../data/regions';
 import { useToday } from '../../store/AppSettings';
@@ -64,9 +65,9 @@ export function NoticeRow({
   const isNew = daysSince(item.postedAt, today) <= 3;
   return (
     <Pressable
-      onPress={() => Linking.openURL(item.url).catch(() => {})}
-      accessibilityRole="link"
-      accessibilityHint="교육청 원문 공고를 열어요"
+      onPress={() => router.push({ pathname: '/notice', params: { url: item.url, level: item.level } })}
+      accessibilityRole="button"
+      accessibilityHint="공고 내용을 앱에서 봐요"
       style={({ pressed }) => ({
         paddingVertical: space.md,
         paddingHorizontal: space.lg,
@@ -95,7 +96,8 @@ export function NoticeRow({
           </View>
         )}
         <View style={{ flex: 1 }} />
-        <Ionicons name="open-outline" size={15} color={colors.textSub} />
+        {item.images.length > 0 && <Ionicons name="image-outline" size={15} color={colors.textSub} />}
+        <Ionicons name="chevron-forward" size={15} color={colors.textSub} />
       </View>
       <Txt numberOfLines={2} style={{ fontSize: 16, fontWeight: '700', lineHeight: 22 }}>
         {item.title}

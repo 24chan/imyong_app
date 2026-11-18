@@ -3,6 +3,7 @@
 사용: python ingest.py <raw 폴더>
 """
 import json
+import re
 import os
 import sys
 import urllib.error
@@ -47,10 +48,23 @@ def notices(raw):
     """수집한 공고 목록(raw/<지역>/posts.json) → notices 테이블 (제목·링크만이라 바로 올림)"""
     import glob
     rows = []
+    base = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/'
     for f in sorted(glob.glob(os.path.join(raw, '*', 'posts.json'))):
+        region_dir = os.path.dirname(f)
+        mf = os.path.join(region_dir, 'manifest.json')
+        manifest = json.load(open(mf)) if os.path.exists(mf) else []
         for url, p in json.load(open(f)).items():
+            # 이 공고의 PDF 첨부를 그린 그림 (공고문을 먼저, 최대 6장)
+            pdfs = [m for m in manifest if m['post_url'] == url and m['path'].endswith('.pdf')]
+            pdfs.sort(key=lambda m: (0 if re.search(r'공고|결과|현황|합격', m['file_name']) else 1, m['file_name']))
+            images = []
+            for m in pdfs:
+                for img in sorted(glob.glob(os.path.join(region_dir, 'img', m['sha1'] + '_p*.jpg'))):
+                    images.append(base + os.path.relpath(img, os.path.dirname(os.path.abspath(raw))).replace(os.sep, '/'))
+            files = [{**x} for x in p.get('files', [])]
             rows.append({'url': url, 'region': p['region'], 'level': p['level'], 'year': p['year'], 'doc_type': p['type'],
-                         'title': p['title'][:300], 'posted_at': p.get('posted_at'), 'files': p.get('files', [])})
+                         'title': p['title'][:300], 'posted_at': p.get('posted_at'),
+                         'files': files + ([{'images': images[:6]}] if images else [])})
     print(f'임용 소식 {len(rows)}건 (등록일 있는 글 {sum(1 for r in rows if r["posted_at"])}건)')
     if KEY and rows:
         try:
