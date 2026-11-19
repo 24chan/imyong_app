@@ -48,5 +48,5 @@ jobs:
           git config user.name "imyong-collector"
           git config user.email "actions@users.noreply.github.com"
           git add raw/geo
-          git commit -qm "시군구 경계 갱신 $(date +%F)" || exit 0
+          git commit -qm "행정구역 경계 갱신 $(date +%F)" || exit 0
           git push -q origin HEAD:raw-files

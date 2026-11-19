@@ -1,5 +1,6 @@
-"""시군구 경계(admdongkor, 통계청 행정구역 기반) → 지역별 JSON (학교 지도 배경)
-결과: raw/geo/<지역>.json = {"version": 키, "sgg": [{"n": 시군구, "p": [[[lng,lat],...], ...]}]}
+"""시군구·읍면동 경계(admdongkor, 통계청 SGIS 기반, CC BY 4.0) → 지역별 JSON (학교 지도 배경)
+결과: raw/geo/<지역>.json      = {"version": 키, "sgg": [{"n": 시군구, "c": [lng,lat], "p": [[[lng,lat],...], ...]}]}
+      raw/geo/dong/<지역>.json = {"version": 키, "dong": [{"n": 읍면동, "g": 시군구, "c": [lng,lat], "p": [...]}]}
 """
 import json
 import os
@@ -39,6 +40,61 @@ def rings(geom, nd=4):
     return out
 
 
+def label_pt(geom):
+    # 이름 놓을 자리: 가장 큰 덩어리 안쪽의 점
+    polys = [geom] if geom.geom_type == 'Polygon' else list(geom.geoms) if geom.geom_type == 'MultiPolygon' else []
+    if not polys:
+        return None
+    big = max(polys, key=lambda p: p.area)
+    pt = big.representative_point()
+    return [round(pt.x, 4), round(pt.y, 4)]
+
+
+def get_dong(key, n_sgg):
+    # 읍면동 단계 이름이 버전마다 다를 수 있어 차례로 시도
+    tries = [('adm',), ('emd',), ('dong',), ('읍면동',), ()]
+    for t in tries:
+        try:
+            g = adk.get(key, *t, crs='EPSG:4326')
+        except Exception as e:  # noqa: BLE001
+            print('읍면동 시도 실패', t, str(e)[:120])
+            continue
+        if len(g) > n_sgg * 3:
+            print('읍면동 단계', t, len(g), list(g.columns))
+            print(g.drop(columns='geometry').head(3).to_dict('records'))
+            return g
+    return None
+
+
+def dong_files(key, gdf_sgg_count, out):
+    g = get_dong(key, gdf_sgg_count)
+    if g is None:
+        print('읍면동 경계를 못 받음 → 생략')
+        return
+    cols = list(g.columns)
+    name_col = next((c for c in cols if c.lower() in ('adm_nm', 'admnm', 'adm_name')), None) or \
+        next((c for c in cols if 'nm' in c.lower() or 'name' in c.lower()), None)
+    print('이름 열', name_col)
+    by = {}
+    for _, r in g.iterrows():
+        toks = str(r[name_col]).split()
+        if len(toks) < 3:
+            continue
+        sido, dong, sgg = toks[0], toks[-1], ' '.join(toks[1:-1])
+        reg = region_of(sido, sgg)
+        if not reg:
+            continue
+        geom = r.geometry.simplify(0.00015, preserve_topology=True)
+        rs = rings(geom, 4)
+        if rs:
+            by.setdefault(reg, []).append({'n': dong, 'g': sgg, 'c': label_pt(geom), 'p': rs})
+    os.makedirs(os.path.join(out, 'dong'), exist_ok=True)
+    for reg, items in by.items():
+        f = os.path.join(out, 'dong', f'{reg}.json')
+        json.dump({'version': key, 'dong': items}, open(f, 'w'), ensure_ascii=False, separators=(',', ':'))
+        print('읍면동', reg, len(items), os.path.getsize(f) // 1024, 'KB')
+
+
 def main():
     vers = adk.versions()
     keys = sorted(str(v.get('key') if isinstance(v, dict) else v) for v in (vers if isinstance(vers, (list, tuple)) else list(vers)))
@@ -61,12 +117,13 @@ def main():
         geom = r.geometry.simplify(0.0004, preserve_topology=True)
         rs = rings(geom)
         if rs:
-            by.setdefault(reg, []).append({'n': sgg.replace(sido, '').strip() or sgg, 'p': rs})
+            by.setdefault(reg, []).append({'n': sgg.replace(sido, '').strip() or sgg, 'c': label_pt(geom), 'p': rs})
     os.makedirs(OUT, exist_ok=True)
     for reg, items in by.items():
         json.dump({'version': key, 'sgg': items}, open(os.path.join(OUT, f'{reg}.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
         print(reg, len(items), os.path.getsize(os.path.join(OUT, f'{reg}.json')) // 1024, 'KB')
-    json.dump({'version': key, 'updated': time.strftime('%Y-%m-%d'), 'source': 'admdongkor (통계청 행정구역 경계 기반)'},
+    dong_files(key, len(gdf), OUT)
+    json.dump({'version': key, 'updated': time.strftime('%Y-%m-%d'), 'source': 'admdongkor (통계청 SGIS 행정구역 경계 기반, CC BY 4.0)'},
               open(os.path.join(OUT, 'meta.json'), 'w'), ensure_ascii=False)
 
 
