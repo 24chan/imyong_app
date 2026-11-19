@@ -4,6 +4,7 @@ where source_id in (select id from sources where title like '%학원 집계%' or
 delete from sources
 where (title like '%학원 집계%' or url like '%ssamplus%')
   and id not in (select source_id from exam_results)
-  and id not in (select source_id from selection_counts);
+  and id not in (select source_id from selection_counts)
+  and id not in (select source_id from exam_schedules);
 delete from ingest_queue where title like '%학원 집계%' or parsed::text like '%ssamplus%';
 select * from approve_ingest_all();
