@@ -1,3 +1,4 @@
+import type React from 'react';
 import { View } from 'react-native';
 import { useAppSettings } from '../store/AppSettings';
 import { space } from '../theme/tokens';
@@ -10,11 +11,13 @@ export function TabPlaceholder({
   elementary,
   secondary,
   stage,
+  footer,
 }: {
   title: string;
   elementary: string[];
   secondary: string[];
   stage: string; // 예: 'MVP 3단계', 'v1'
+  footer?: React.ReactNode;
 }) {
   const { viewLevel } = useAppSettings();
   const modeLabel = useModeLabel();
@@ -37,6 +40,7 @@ export function TabPlaceholder({
           ))}
         </View>
       </Card>
+      {footer}
     </Screen>
   );
 }

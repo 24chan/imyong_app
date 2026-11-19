@@ -4,6 +4,7 @@ import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { AppSettingsProvider, useAppSettings } from '../store/AppSettings';
+import { AuthProvider } from '../store/Auth';
 import { useTheme } from '../theme/useTheme';
 
 function RootStack() {
@@ -39,6 +40,7 @@ function RootStack() {
         <Stack.Screen name="trend" options={{ title: '추이·합격률', headerBackTitle: '지역·TO' }} />
         <Stack.Screen name="notice" options={{ title: '공고', headerBackTitle: '소식' }} />
         <Stack.Screen name="news" options={{ title: '임용 소식', headerBackTitle: '홈' }} />
+        <Stack.Screen name="login" options={{ title: '로그인 · 가입', presentation: 'modal' }} />
         <Stack.Screen name="report" options={{ title: '오류 신고', presentation: 'modal' }} />
       </Stack>
     </>
@@ -48,7 +50,9 @@ function RootStack() {
 export default function RootLayout() {
   return (
     <AppSettingsProvider>
-      <RootStack />
+      <AuthProvider>
+        <RootStack />
+      </AuthProvider>
     </AppSettingsProvider>
   );
 }
