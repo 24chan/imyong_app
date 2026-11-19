@@ -1,7 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect, router } from 'expo-router';
+import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
-import { Pressable, View } from 'react-native';
 import { ModeToggle } from '../../components/ModeToggle';
 import { useAppSettings } from '../../store/AppSettings';
 import { useTheme } from '../../theme/useTheme';
@@ -46,22 +45,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons name={focused ? t.iconActive : t.icon} size={size} color={String(color)} />
             ),
-            ...(t.name === 'index' && {
-              headerTitle: '임용맵',
-              headerRight: () => (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <ModeToggle />
-                  <Pressable
-                    onPress={() => router.push('/settings')}
-                    accessibilityLabel="설정"
-                    hitSlop={10}
-                    style={{ marginRight: 16 }}
-                  >
-                    <Ionicons name="settings-outline" size={22} color={colors.text} />
-                  </Pressable>
-                </View>
-              ),
-            }),
+            ...(t.name === 'index' && { headerShown: false }),
           }}
         />
       ))}
