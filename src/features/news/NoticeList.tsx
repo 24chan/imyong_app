@@ -115,7 +115,7 @@ export function NoticeRow({
 }
 
 /** 게시판 상자: 색 아이콘 머리글 + 테두리 + 줄 구분 (에브리타임 '즐겨찾는 게시판' 느낌) */
-export function NoticeBoard({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
+export function NoticeBoard({ title, action, children, icon = 'megaphone' }: { title: string; action?: ReactNode; children: ReactNode; icon?: keyof typeof Ionicons.glyphMap }) {
   const { colors } = useTheme();
   return (
     <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, backgroundColor: colors.background, overflow: 'hidden' }}>
@@ -132,7 +132,7 @@ export function NoticeBoard({ title, action, children }: { title: string; action
         }}
       >
         <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name="megaphone" size={15} color={colors.background} />
+          <Ionicons name={icon} size={15} color={colors.background} />
         </View>
         <Txt variant="heading" style={{ flex: 1 }}>
           {title}

@@ -9,6 +9,7 @@ import { regionByCode } from '../../data/regions';
 import { getNotices, getRegionSummaries, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
 import { useAsync } from '../../data/useAsync';
+import { HomeHotPosts } from '../../features/community/HomeHotPosts';
 import { NoticeBoard, NoticeRow } from '../../features/news/NoticeList';
 import { useRegionFilters } from '../../features/region/useRegionFilters';
 import { useAppSettings, useToday } from '../../store/AppSettings';
@@ -230,13 +231,8 @@ export default function HomeScreen() {
         ))}
       </View>
 
-      {/* v1에서 열릴 영역 */}
-      <Card>
-        <Txt variant="heading">새 스터디 · 인기글</Txt>
-        <Txt variant="sub">
-          {f.isSecondary ? '선택 과목' : '초등'} 스터디 모집과 커뮤니티 인기글이 여기에 보여요. (v1에서 열려요)
-        </Txt>
-      </Card>
+      {/* 커뮤니티 인기글 */}
+      <HomeHotPosts />
     </Screen>
   );
 }

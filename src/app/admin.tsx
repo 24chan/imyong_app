@@ -1,7 +1,8 @@
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Linking, Pressable, TextInput, View } from 'react-native';
-import { Card, Chip, PrimaryButton, Screen, Txt } from '../components/ui';
+import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
+import { adminAppeal, adminAppeals, adminReports, adminResolve, ReportGroup, Sanction, SANCTION_LABEL } from '../data/community';
 import { subjectByCode } from '../data/subjects';
 import { useAsync } from '../data/useAsync';
 import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
@@ -16,7 +17,10 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
+  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals'>('verify');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
+  const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
+  const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
   const univs = useAsync(() => getUnivs(), []);
 
   if (!isAdmin) {
@@ -32,16 +36,60 @@ export default function AdminScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '운영자 · 인증 검수' }} />
+      <Stack.Screen options={{ title: '운영자' }} />
       <Screen>
-        <Txt variant="sub">승인하거나 거절하면 사진은 저장소에서 바로 지워지고, 결과(라벨)만 남아요.</Txt>
+        <Segmented
+          value={tab}
+          onChange={setTab}
+          options={[
+            { value: 'verify', label: `인증 ${(list.data ?? []).length}` },
+            { value: 'reports', label: `신고 ${(reports.data ?? []).length}` },
+            { value: 'appeals', label: `이의 ${(appeals.data ?? []).length}` },
+          ]}
+        />
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
-        {list.loading && <ActivityIndicator color={colors.brand} />}
-        {list.error && <Txt color="down">{list.error.message}</Txt>}
-        {!list.loading && (list.data ?? []).length === 0 && <Txt variant="sub">확인할 신청이 없어요.</Txt>}
-        {(list.data ?? []).map((v) => (
-          <ReviewCard key={v.id} v={v} univ={univName(v.univCode)} onDone={() => setReload((n) => n + 1)} />
-        ))}
+        {tab === 'verify' && (
+          <>
+            <Txt variant="sub">승인하거나 거절하면 사진은 저장소에서 바로 지워지고, 결과(라벨)만 남아요.</Txt>
+            {list.loading && <ActivityIndicator color={colors.brand} />}
+            {list.error && <Txt color="down">{list.error.message}</Txt>}
+            {!list.loading && (list.data ?? []).length === 0 && <Txt variant="sub">확인할 신청이 없어요.</Txt>}
+            {(list.data ?? []).map((v) => (
+              <ReviewCard key={v.id} v={v} univ={univName(v.univCode)} onDone={() => setReload((n) => n + 1)} />
+            ))}
+          </>
+        )}
+        {tab === 'reports' && (
+          <>
+            <Txt variant="sub">신고가 많은 순서예요. 5명 이상 신고된 글·댓글은 이미 자동으로 가려져 있어요. 쪽지는 신고된 것만 보여요.</Txt>
+            {reports.error && <Txt color="down">{reports.error.message}</Txt>}
+            {!reports.loading && (reports.data ?? []).length === 0 && <Txt variant="sub">처리할 신고가 없어요.</Txt>}
+            {(reports.data ?? []).map((r) => (
+              <ReportCard key={`${r.targetType}-${r.targetId}`} r={r} onDone={() => setReload((n) => n + 1)} />
+            ))}
+          </>
+        )}
+        {tab === 'appeals' && (
+          <>
+            {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
+            {!appeals.loading && (appeals.data ?? []).length === 0 && <Txt variant="sub">이의 신청이 없어요.</Txt>}
+            {(appeals.data ?? []).map((a) => (
+              <Card key={a.id} style={{ borderWidth: 1, borderColor: colors.line }}>
+                <Txt variant="heading">{SANCTION_LABEL[a.level]}</Txt>
+                <Txt variant="sub">제한 사유: {a.reason}</Txt>
+                <Txt>이의 내용: {a.appeal}</Txt>
+                <View style={{ flexDirection: 'row', gap: space.sm }}>
+                  <View style={{ flex: 1 }}>
+                    <PrimaryButton label="받아들이기 (제한 해제)" onPress={() => adminAppeal(a.id, true).then(() => setReload((n) => n + 1))} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <PrimaryButton label="유지" variant="ghost" onPress={() => adminAppeal(a.id, false).then(() => setReload((n) => n + 1))} />
+                  </View>
+                </View>
+              </Card>
+            ))}
+          </>
+        )}
       </Screen>
     </>
   );
@@ -127,6 +175,50 @@ function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: strin
           <View style={{ flex: 1 }}>
             <PrimaryButton label="거절" variant="ghost" onPress={() => act(false)} />
           </View>
+        </View>
+      )}
+    </Card>
+  );
+}
+
+const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지' } as const;
+
+function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [sanction, setSanction] = useState<Sanction['level'] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const act = async (action: 'keep' | 'hide' | 'delete', hideDays?: number) => {
+    setBusy(true);
+    try {
+      await adminResolve(r.targetType, r.targetId, action, action === 'keep' ? null : sanction, r.reasons, hideDays ?? null);
+      onDone();
+    } catch (e) {
+      Alert.alert('처리하지 못했어요', (e as Error).message);
+      setBusy(false);
+    }
+  };
+  return (
+    <Card style={{ borderWidth: 1, borderColor: r.contentStatus === 'hidden' ? colors.down : colors.line }}>
+      <Txt variant="heading">
+        {TYPE_LABEL[r.targetType]} · 신고 {r.reports}건{r.contentStatus === 'hidden' ? ' · 가려짐' : ''}
+      </Txt>
+      <Txt variant="sub">사유: {r.reasons}</Txt>
+      <Txt style={{ backgroundColor: colors.background, padding: space.sm, borderRadius: radius.sm }}>{r.content ?? '(지워진 내용)'}</Txt>
+      <Txt variant="sub">작성자 이전 제재 {r.authorSanctions}회</Txt>
+      <Txt variant="sub">작성자 제재 (선택)</Txt>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+        {(['warning', 'write_7d', 'write_30d', 'permanent'] as const).map((l) => (
+          <Chip key={l} label={SANCTION_LABEL[l]} selected={sanction === l} onPress={() => setSanction(sanction === l ? null : l)} />
+        ))}
+      </View>
+      {busy ? (
+        <ActivityIndicator color={colors.brand} />
+      ) : (
+        <View style={{ gap: space.xs }}>
+          <PrimaryButton label="문제없음 (다시 보이기)" variant="ghost" onPress={() => act('keep')} />
+          {r.targetType === 'post' && <PrimaryButton label="임시조치 30일 가리기" variant="ghost" onPress={() => act('hide', 30)} />}
+          {r.targetType !== 'message' && <PrimaryButton label="가리기" variant="ghost" onPress={() => act('hide')} />}
+          <PrimaryButton label="삭제" onPress={() => act('delete')} />
         </View>
       )}
     </Card>

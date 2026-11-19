@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Alert, View } from 'react-native';
 import { RegionPicker, SubjectPicker } from '../components/pickers';
 import { AccountCard } from '../features/account/AccountCard';
+import { CommunitySettings } from '../features/account/CommunitySettings';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
 import { checkServer, clearDataCache } from '../data/repository';
@@ -54,6 +55,7 @@ export default function SettingsScreen() {
   return (
     <Screen>
       <AccountCard />
+      <CommunitySettings />
 
       <Card>
         <Txt variant="heading">화면 테마</Txt>

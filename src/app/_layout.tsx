@@ -40,6 +40,12 @@ function RootStack() {
         <Stack.Screen name="trend" options={{ title: '추이·합격률', headerBackTitle: '지역·TO' }} />
         <Stack.Screen name="notice" options={{ title: '공고', headerBackTitle: '소식' }} />
         <Stack.Screen name="news" options={{ title: '임용 소식', headerBackTitle: '홈' }} />
+        <Stack.Screen name="community/[id]" options={{ title: '', headerBackTitle: '커뮤니티' }} />
+        <Stack.Screen name="community/write" options={{ title: '글쓰기', presentation: 'modal' }} />
+        <Stack.Screen name="messages/index" options={{ title: '쪽지함', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="messages/[id]" options={{ title: '쪽지', headerBackTitle: '쪽지함' }} />
+        <Stack.Screen name="rules" options={{ title: '이용 규칙', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="scraps" options={{ title: '내 스크랩', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="verify" options={{ title: '학교·교사 인증', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="admin" options={{ title: '운영자', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="login" options={{ title: '로그인 · 가입', presentation: 'modal' }} />
