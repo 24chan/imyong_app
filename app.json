@@ -37,7 +37,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "학교·교사 인증 서류와 쪽지 사진을 고르기 위해 사진 보관함에 접근해요.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ]
   }
 }

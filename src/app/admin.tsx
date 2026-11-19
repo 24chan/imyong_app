@@ -1,0 +1,134 @@
+import { Stack } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, TextInput, View } from 'react-native';
+import { Card, Chip, PrimaryButton, Screen, Txt } from '../components/ui';
+import { subjectByCode } from '../data/subjects';
+import { useAsync } from '../data/useAsync';
+import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
+import { useAuth } from '../store/Auth';
+import { radius, space } from '../theme/tokens';
+import { useTheme } from '../theme/useTheme';
+
+const REASONS = ['사진이 흐려요', '학교·학과 확인이 안 돼요', '서류 종류가 달라요', '이름·발급일이 안 보여요'];
+
+// 운영자 메뉴: 인증 검수 (승인·거절하면 사진은 바로 삭제)
+export default function AdminScreen() {
+  const { colors } = useTheme();
+  const { isAdmin } = useAuth();
+  const [reload, setReload] = useState(0);
+  const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
+  const univs = useAsync(() => getUnivs(), []);
+
+  if (!isAdmin) {
+    return (
+      <Screen>
+        <Stack.Screen options={{ title: '운영자' }} />
+        <Txt>운영자만 볼 수 있어요.</Txt>
+      </Screen>
+    );
+  }
+
+  const univName = (code: string | null) => (univs.data ?? []).find((u) => u.code === code);
+
+  return (
+    <>
+      <Stack.Screen options={{ title: '운영자 · 인증 검수' }} />
+      <Screen>
+        <Txt variant="sub">승인하거나 거절하면 사진은 저장소에서 바로 지워지고, 결과(라벨)만 남아요.</Txt>
+        <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
+        {list.loading && <ActivityIndicator color={colors.brand} />}
+        {list.error && <Txt color="down">{list.error.message}</Txt>}
+        {!list.loading && (list.data ?? []).length === 0 && <Txt variant="sub">확인할 신청이 없어요.</Txt>}
+        {(list.data ?? []).map((v) => (
+          <ReviewCard key={v.id} v={v} univ={univName(v.univCode)} onDone={() => setReload((n) => n + 1)} />
+        ))}
+      </Screen>
+    </>
+  );
+}
+
+function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: string; label: string }; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [urls, setUrls] = useState<string[] | null>(null);
+  const [reason, setReason] = useState<string | null>(null);
+  const [label, setLabel] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    signedDocUrls(v.docPaths)
+      .then(setUrls)
+      .catch(() => setUrls([]));
+  }, [v.docPaths]);
+
+  const target =
+    v.kind === 'teacher'
+      ? `${v.teacherLevel === 'elementary' ? '초등교사' : '중등교사'}${v.subjectCode ? ` (${subjectByCode(v.subjectCode)?.name ?? v.subjectCode})` : ''}`
+      : univ
+        ? `${univ.name} → 라벨 '${univ.label}'`
+        : `직접 입력: ${v.univInput}`;
+
+  const act = async (approve: boolean) => {
+    if (!approve && !reason) {
+      Alert.alert('거절 사유를 골라 주세요');
+      return;
+    }
+    if (approve && v.kind === 'school' && !v.univCode && label.trim().length < 2) {
+      Alert.alert('라벨을 입력해 주세요', "예: ○○대 사범대");
+      return;
+    }
+    setBusy(true);
+    try {
+      await reviewVerification(v, approve, { reason: reason ?? undefined, label: label.trim() || undefined });
+      onDone();
+    } catch (e) {
+      Alert.alert('처리하지 못했어요', (e as Error).message);
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card style={{ borderWidth: 1, borderColor: colors.line }}>
+      <Txt variant="heading">{v.kind === 'teacher' ? '교사 인증' : '학교 인증'} · {METHOD_LABEL[v.method]}</Txt>
+      <Txt>{target}</Txt>
+      <Txt variant="sub">{new Date(v.createdAt).toLocaleString('ko-KR')}</Txt>
+      {urls === null ? (
+        <ActivityIndicator color={colors.brand} />
+      ) : (
+        <View style={{ gap: space.sm }}>
+          {urls.map((u, i) => (
+            <Pressable key={u} onPress={() => Linking.openURL(u)} accessibilityLabel={`서류 사진 ${i + 1} 크게 보기`}>
+              <Image source={{ uri: u }} style={{ width: '100%', aspectRatio: 1.4, borderRadius: radius.md, backgroundColor: colors.line }} resizeMode="contain" />
+            </Pressable>
+          ))}
+          {urls.length === 0 && <Txt variant="sub">사진을 불러오지 못했어요.</Txt>}
+        </View>
+      )}
+      {v.kind === 'school' && !v.univCode && (
+        <TextInput
+          value={label}
+          onChangeText={setLabel}
+          placeholder="라벨 (예: ○○대 사범대)"
+          placeholderTextColor={colors.textSub}
+          style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text, backgroundColor: colors.background }}
+        />
+      )}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
+        {REASONS.map((r) => (
+          <Chip key={r} label={r} selected={reason === r} onPress={() => setReason(reason === r ? null : r)} />
+        ))}
+      </View>
+      {busy ? (
+        <ActivityIndicator color={colors.brand} />
+      ) : (
+        <View style={{ flexDirection: 'row', gap: space.sm }}>
+          <View style={{ flex: 1 }}>
+            <PrimaryButton label="승인" onPress={() => act(true)} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <PrimaryButton label="거절" variant="ghost" onPress={() => act(false)} />
+          </View>
+        </View>
+      )}
+    </Card>
+  );
+}
