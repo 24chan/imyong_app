@@ -42,7 +42,7 @@ def manual_records():
                 if cat in e:
                     out.append({'region': e['region'], 'year': e['year'], 'level': 'elementary', 'subject': None,
                                 'category': cat, **{k: v for k, v in zip(d['cols'], e[cat]) if v is not None},
-                                'sources': [d['source_url']], 'source_title': d['source_title']})
+                                'sources': [d['source_url']] if d.get('source_url') else [], 'source_title': d['source_title']})
         for r in d.get('elementary', []):
             out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
                         'category': r['category'], **{k: v for k, v in r.items() if k != 'category' and not k.startswith('_')},
