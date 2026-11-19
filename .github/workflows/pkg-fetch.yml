@@ -1,0 +1,26 @@
+name: pkg-fetch
+# 작업 환경(npm 설치 불가)에서 타입 확인용으로 node_modules 일부를 받아 가기 위한 워크플로
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'node_modules 안 폴더 이름 (공백 구분)'
+        required: true
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - env:
+          PKGS: ${{ github.event.inputs.packages }}
+        run: tar czf pkgs.tgz $(for p in $PKGS; do echo node_modules/$p; done)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pkgs
+          path: pkgs.tgz
+          retention-days: 1

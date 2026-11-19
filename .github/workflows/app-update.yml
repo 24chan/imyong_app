@@ -25,6 +25,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: 타입 검사
+        run: npx tsc --noEmit
       - name: Expo 업데이트 발행 (branch main)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
