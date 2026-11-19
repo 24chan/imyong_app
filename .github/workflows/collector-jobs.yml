@@ -1,0 +1,30 @@
+name: collector-jobs
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 21 * * *'   # 매일 06:41 (한국 시간)
+permissions:
+  contents: write
+jobs:
+  jobs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: raw-files
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 정교사 채용 공고 모으기
+        run: python -I -u app/scripts/collector/jobs.py raw/jobs
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/jobs
+          git commit -qm "채용 공고 갱신 $(date +%F)" || exit 0
+          git push -q origin HEAD:raw-files
