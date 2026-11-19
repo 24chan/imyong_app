@@ -52,7 +52,7 @@ def label_pt(geom):
 
 def get_dong(key, n_sgg):
     # 읍면동 단계 이름이 버전마다 다를 수 있어 차례로 시도
-    tries = [('adm',), ('emd',), ('dong',), ('읍면동',), ()]
+    tries = [('emd',), ()]
     for t in tries:
         try:
             g = adk.get(key, *t, crs='EPSG:4326')
@@ -71,16 +71,10 @@ def dong_files(key, gdf_sgg_count, out):
     if g is None:
         print('읍면동 경계를 못 받음 → 생략')
         return
-    cols = list(g.columns)
-    name_col = next((c for c in cols if c.lower() in ('adm_nm', 'admnm', 'adm_name')), None) or \
-        next((c for c in cols if 'nm' in c.lower() or 'name' in c.lower()), None)
-    print('이름 열', name_col)
     by = {}
     for _, r in g.iterrows():
-        toks = str(r[name_col]).split()
-        if len(toks) < 3:
-            continue
-        sido, dong, sgg = toks[0], toks[-1], ' '.join(toks[1:-1])
+        sido, sgg_raw, dong = str(r['sidonm']), str(r['sggnm']), str(r['emdnm'])
+        sgg = sgg_raw.replace(sido, '').strip() or sgg_raw
         reg = region_of(sido, sgg)
         if not reg:
             continue
