@@ -13,6 +13,8 @@ import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/st
 import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, LECTURE_AREA, PendingEnrollment } from '../data/academy';
 import type { Level } from '../store/AppSettings';
 import { adminAddPassStat, adminPassCerts, adminReviewPassCert, passDocUrls, PendingCert } from '../data/univPass';
+import { JobTip, listPendingTips, reviewJobTip } from '../data/jobs';
+import { regionByCode } from '../data/regions';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -23,7 +25,7 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'pass'>('verify');
+  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'pass' | 'jobs'>('verify');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -54,6 +56,7 @@ export default function AdminScreen() {
             { value: 'mock', label: '모의' },
             { value: 'academy', label: '강의' },
             { value: 'pass', label: '합격' },
+            { value: 'jobs', label: '제보' },
           ]}
         />
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
@@ -81,6 +84,7 @@ export default function AdminScreen() {
         {tab === 'mock' && <MockAdmin />}
         {tab === 'academy' && <AcademyAdmin />}
         {tab === 'pass' && <PassAdmin />}
+        {tab === 'jobs' && <JobTipsAdmin />}
         {tab === 'appeals' && (
           <>
             {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
@@ -501,6 +505,47 @@ function PassAdmin() {
         <TextInput value={f.date} onChangeText={(v) => setF({ ...f, date: v })} placeholder="기준일 2026-11-01" placeholderTextColor={colors.textSub} style={input} />
         <PrimaryButton label="등록" onPress={add} disabled={!f.passed || !f.title.trim()} />
       </Card>
+    </>
+  );
+}
+
+// 채용 공고 제보 검토: 링크를 열어 확인 → 제목 다듬고 승인 / 거절
+function JobTipsAdmin() {
+  const { colors } = useTheme();
+  const [reload, setReload] = useState(0);
+  const tips = useAsync(() => listPendingTips(), [reload]);
+  const [titles, setTitles] = useState<Record<number, string>>({});
+  const act = (t: JobTip, ok: boolean) =>
+    reviewJobTip(t.id, ok, titles[t.id])
+      .then(() => setReload((n) => n + 1))
+      .catch((e) => Alert.alert('처리하지 못했어요', (e as Error).message));
+  return (
+    <>
+      {tips.error && <Txt color="down">{tips.error.message} (0015 SQL 실행 전이면 정상)</Txt>}
+      {!tips.loading && (tips.data ?? []).length === 0 && <Txt variant="sub">검토할 제보가 없어요.</Txt>}
+      {(tips.data ?? []).map((t) => (
+        <Card key={t.id} style={{ borderWidth: 1, borderColor: colors.line }}>
+          <Txt variant="sub">
+            {t.region ? regionByCode(t.region)?.shortName : '지역 미상'} · {t.level === 'elementary' ? '초등' : t.level === 'secondary' ? '중등' : '학교급 미상'} · {t.created_at.slice(0, 10)}
+          </Txt>
+          <TextInput
+            value={titles[t.id] ?? t.title}
+            onChangeText={(v) => setTitles((m) => ({ ...m, [t.id]: v }))}
+            style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text }}
+          />
+          <Txt color="brand" onPress={() => Linking.openURL(t.url)} numberOfLines={1}>
+            {t.url}
+          </Txt>
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            <View style={{ flex: 1 }}>
+              <PrimaryButton label="승인" onPress={() => act(t, true)} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <PrimaryButton label="거절" variant="ghost" onPress={() => act(t, false)} />
+            </View>
+          </View>
+        </Card>
+      ))}
     </>
   );
 }

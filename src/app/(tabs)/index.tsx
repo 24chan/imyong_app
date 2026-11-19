@@ -15,6 +15,7 @@ import { HomeHotPosts } from '../../features/community/HomeHotPosts';
 import { NoticeBoard, NoticeRow } from '../../features/news/NoticeList';
 import { useRegionFilters } from '../../features/region/useRegionFilters';
 import { Level, useAppSettings, useToday } from '../../store/AppSettings';
+import { getTeacherJobs, isOpen, jobsFor } from '../../data/jobs';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { ScheduleEventType } from '../../types/data';
@@ -70,6 +71,8 @@ export default function HomeScreen() {
       params: { code: region, level: f.viewLevel, subject: f.isSecondary ? (f.subject ?? '') : '', year: String(f.latestYear) },
     });
 
+  const jobs = useAsync(() => getTeacherJobs(), []);
+  const openJobs = jobsFor(jobs.data ?? [], viewLevel).filter((j) => isOpen(j, today)).length;
   const onBrand = colors.background; // 브랜드색 위 글자 (라이트: 흰색, 다크: 아주 어두운 색)
   const nextAfter = nextKey ? upcoming.find((e) => e !== nextKey && KEY_EVENTS.includes(e.event)) : undefined;
   const receipt = getReceiptInfo(regionEvents, today);
@@ -234,6 +237,22 @@ export default function HomeScreen() {
             ))
           )}
         </NoticeBoard>
+
+        {/* 학교별(사립·법인) 정교사 채용 바로가기 */}
+        {openJobs > 0 && (
+          <Pressable
+            onPress={() => router.push({ pathname: '/news', params: { type: 'jobs' } })}
+            accessibilityRole="button"
+            style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: 18, borderRadius: radius.xl, backgroundColor: colors.accent + '1A' }}
+          >
+            <Ionicons name="briefcase-outline" size={22} color={colors.accent} />
+            <View style={{ flex: 1 }}>
+              <Txt style={{ fontWeight: '800' }}>사립·법인 정교사 채용 {openJobs}건 모집 중</Txt>
+              <Txt variant="sub">학교별 공고를 매일 모아요</Txt>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.textSub} />
+          </Pressable>
+        )}
 
         {/* 커뮤니티 인기글 */}
         <HomeHotPosts />
