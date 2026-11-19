@@ -1,3 +1,4 @@
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
@@ -5,11 +6,13 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { AppSettingsProvider, useAppSettings } from '../store/AppSettings';
 import { AuthProvider } from '../store/Auth';
+import { FONT_FILES } from '../theme/fonts';
 import { useTheme } from '../theme/useTheme';
 
 function RootStack() {
   const { hydrated } = useAppSettings();
   const { scheme, colors } = useTheme();
+  const [fontsLoaded, fontError] = useFonts(FONT_FILES);
 
   // 화면 전환 때 뒤 배경이 하얗게 번쩍이지 않도록
   useEffect(() => {
@@ -17,7 +20,7 @@ function RootStack() {
   }, [colors.background]);
 
   // 저장된 설정을 불러오기 전에는 빈 배경만 보여줌
-  if (!hydrated) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+  if (!hydrated || (!fontsLoaded && !fontError)) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
 
   return (
     <>
@@ -26,6 +29,8 @@ function RootStack() {
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
+          headerTitleStyle: { fontFamily: 'Pretendard-Bold' },
+          headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
           headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.background },
         }}

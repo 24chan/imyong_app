@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextProps, View, ViewStyle } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextProps, TextStyle, View, ViewStyle } from 'react-native';
+import { fontFor } from '../theme/fonts';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -14,7 +15,10 @@ export function Txt({ variant = 'body', color, style, ...rest }: TxtProps) {
   const { colors } = useTheme();
   const base = textStyles[variant];
   const c = colors[color ?? (variant === 'sub' ? 'textSub' : 'text')];
-  return <Text {...rest} style={[base, { color: c }, style]} />;
+  // 굵기에 맞는 Pretendard 파일을 고름 (안드로이드는 굵기 값만으로는 바뀌지 않음)
+  const flat: TextStyle = StyleSheet.flatten([base, style]) ?? {};
+  const fontFamily = flat.fontFamily ?? fontFor(flat.fontWeight);
+  return <Text {...rest} style={[base, { color: c }, style, { fontFamily, fontWeight: undefined }]} />;
 }
 
 const textStyles = StyleSheet.create({

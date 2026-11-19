@@ -365,10 +365,10 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
               <Svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
                 {labels.map((l) => (
                   <G key={`t-${l.key}`}>
-                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontWeight={l.big ? '700' : '500'} textAnchor="middle" stroke={colors.background} strokeWidth={3.5} strokeLinejoin="round" fill={colors.background}>
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontFamily={l.big ? 'Pretendard-Bold' : 'Pretendard-Medium'} textAnchor="middle" stroke={colors.background} strokeWidth={3.5} strokeLinejoin="round" fill={colors.background}>
                       {l.t}
                     </SvgText>
-                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontWeight={l.big ? '700' : '500'} textAnchor="middle" fill={l.big ? colors.text : colors.textSub}>
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontFamily={l.big ? 'Pretendard-Bold' : 'Pretendard-Medium'} textAnchor="middle" fill={l.big ? colors.text : colors.textSub}>
                       {l.t}
                     </SvgText>
                   </G>

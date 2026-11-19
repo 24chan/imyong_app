@@ -27,7 +27,8 @@ export default function TabsLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: '800' },
+        headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold' },
+        tabBarLabelStyle: { fontFamily: 'Pretendard-SemiBold', fontSize: 11 },
         headerShadowVisible: false,
         headerRight: () => <ModeToggle />,
         tabBarActiveTintColor: colors.brand,
