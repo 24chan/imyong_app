@@ -1,0 +1,35 @@
+name: font-fetch
+# Pretendard(OFL 1.1) 글꼴 파일을 받아 assets/fonts 에 커밋
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 받기
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          url=$(gh api repos/orioncactus/pretendard/releases/latest --jq '.assets[] | select(.name|test("^Pretendard-[0-9.]+\\.zip$")) | .browser_download_url')
+          echo "$url"
+          curl -sSL "$url" -o /tmp/p.zip
+          mkdir -p /tmp/p && unzip -q /tmp/p.zip -d /tmp/p
+          find /tmp/p -name 'Pretendard-*.otf' | head -20
+          mkdir -p assets/fonts
+          for w in Regular Medium SemiBold Bold ExtraBold; do
+            f=$(find /tmp/p -path '*static*' -name "Pretendard-$w.otf" | head -1)
+            [ -z "$f" ] && f=$(find /tmp/p -name "Pretendard-$w.otf" | head -1)
+            cp "$f" assets/fonts/
+          done
+          lic=$(find /tmp/p -iname 'LICENSE*' | head -1); [ -n "$lic" ] && cp "$lic" assets/fonts/Pretendard-LICENSE.txt
+          ls -la assets/fonts
+      - name: 커밋
+        run: |
+          git config user.name "imyong-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/fonts
+          git commit -m "Pretendard 글꼴 추가" || exit 0
+          git push
