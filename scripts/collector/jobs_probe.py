@@ -10,11 +10,11 @@ def req(url, data=None):
     except Exception as e: return 'ERR ' + str(e)
 clean = lambda s: re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', s)).strip()
 g = req('https://www.goe.go.kr/recruit/ad/func/pb/hnfpPbancList.do', {'mi': '10500', 'currPage': '1', 'srchOcptCd': 'D', 'srchOcptNm': '사립학교 교원정규채용', 'srchEcptDl': 'N'})
-m = re.search(r'pbancSn\s*\(|fn\w*View\(|goDetail', g)
-i = g.find('채용인원'); print('GOE ITEM', g[max(0,i-2500):i+600])
-print('GOE PAGING', re.findall(r'goPaging\((\d+)\)', g)[-3:])
-for q in ['q_srchJob=jd001', 'jobType=jd001&q_srchJob=jd001', 'q_jobCategory=jd001']:
+i = g.find('function goView'); print('GOVIEW', g[i:i+700])
+for q in ['q_jobCategory=jd001', 'q_jobCategory=jd002']:
     s = req('https://work.sen.go.kr/work/search/recInfo/BD_selectSrchRecInfo.do?' + q + '&q_rowPerPage=50')
-    ids = re.findall(r'rcrtSn=(\d+)|selectRecDetail\W+(\d+)', s)
-    print('\nSEN', q, len(s), ids[:10])
-    k = s.find('content-list-item'); print(s[k:k+2500] if k > 0 else '')
+    i = s.find('rcrtSn=')
+    j = s.rfind('<li', 0, i)
+    print('\nSEN', q, s[j:j+2200])
+    k = s.find('totalCount'); print('TOTAL', clean(s[k-200:k+200]) if k > 0 else clean(s[s.find('총'):s.find('총')+60]))
+    print([clean(x)[:80] for x in re.findall(r'<li[^>]*>(?:(?!</li>).)*rcrtSn=\d+(?:(?!</li>).)*</li>', s, re.S)][:12])
