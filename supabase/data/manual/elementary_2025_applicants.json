@@ -1,0 +1,38 @@
+{
+ "_설명": "보완 통계표 PDF의 2025 초등(일반) 확정 경쟁률 × 교육청 원문 선발 인원으로 계산한 지원자 수(반올림, 1~2명 오차 가능). 사용자 결정 2026-11-19.",
+ "source_title": "교육청 합격자 발표 기준",
+ "source_url": "",
+ "cols": [
+  "applicants"
+ ],
+ "entries": [
+  {
+   "region": "seoul",
+   "year": 2025,
+   "general": [
+    637
+   ]
+  },
+  {
+   "region": "gwangju",
+   "year": 2025,
+   "general": [
+    163
+   ]
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2025,
+   "general": [
+    3138
+   ]
+  },
+  {
+   "region": "gangwon",
+   "year": 2025,
+   "general": [
+    238
+   ]
+  }
+ ]
+}

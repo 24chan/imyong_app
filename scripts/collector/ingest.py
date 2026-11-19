@@ -195,7 +195,22 @@ def main(raw):
     except Exception as e:  # noqa: BLE001
         print('중등 처리 실패:', e)
     recs, log = parse_results.main(raw, os.path.join(raw, 'parsed_elementary.json'))
-    recs += manual_records()
+    # 원문 기록이 있으면 원문 우선, 정리표 값은 빈 칸만 채움 (같은 지역·연도·구분은 한 줄로)
+    merged = {}
+    for r in recs + manual_records():
+        k = (r['region'], r['year'], r['level'], r.get('subject'), r['category'])
+        if k not in merged:
+            merged[k] = dict(r)
+            continue
+        m = merged[k]
+        for f, v in r.items():
+            if f in ('sources', 'source_title', '_unverified'):
+                continue
+            if m.get(f) is None and v is not None:
+                m[f] = v
+        if r.get('source_title') and not m.get('source_title') and not m.get('sources'):
+            m['source_title'] = r['source_title']
+    recs = list(merged.values())
     _, problems = check_results.check(recs)
     for line in log:
         if 'seoul' in line and ('충돌' in line or 'xls' in line):

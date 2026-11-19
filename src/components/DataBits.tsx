@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Linking, View } from 'react-native';
 import { RECEIPT_STATUS_LABEL, ReceiptStatus } from '../data/receiptStatus';
 import { isSampleSource } from '../data/repository';
@@ -51,10 +52,21 @@ export function SampleBadge({ sourceIds }: { sourceIds: (string | null | undefin
   );
 }
 
+/** 오차 안내 + 제보 (여러 자료를 모은 숫자) */
+export function ErrorHint() {
+  return (
+    <Txt variant="sub" onPress={() => router.push({ pathname: '/report', params: { target: 'data:general', label: '숫자 오차 제보' } })} suppressHighlighting>
+      일부 숫자는 여러 자료를 모은 것이라 1~2명 오차가 있을 수 있어요. 다른 점을 보면 알려 주세요.
+      <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}> 제보하기 ›</Txt>
+    </Txt>
+  );
+}
+
 /** 모든 수치 아래에 붙이는 출처·기준일. 링크가 있으면 눌러서 원문 열기 */
 export function SourceNote({ source, baseDate }: { source: Source | null; baseDate: string | null }) {
   const url = source?.url;
   return (
+    <>
     <Txt
       variant="sub"
       onPress={url ? () => Linking.openURL(url).catch(() => {}) : undefined}
@@ -63,6 +75,8 @@ export function SourceNote({ source, baseDate }: { source: Source | null; baseDa
       출처: {source ? `${source.publisher} · ${source.title}` : '—'} | 기준일: {baseDate ?? '—'}
       {url ? <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}> 원문 보기 ›</Txt> : null}
     </Txt>
+    <ErrorHint />
+    </>
   );
 }
 
@@ -72,9 +86,12 @@ export function SourcesSummary({ rows }: { rows: { source: Source | null; baseDa
   if (ids.size <= 1) return <SourceNote source={rows[0]?.source ?? null} baseDate={rows[0]?.baseDate ?? null} />;
   const latest = rows.map((r) => r.baseDate ?? '').sort().at(-1) || '—';
   return (
-    <Txt variant="sub">
-      출처: 시도교육청 공고·보도 (지역마다 달라요 — 지역을 누르면 출처와 원문 링크가 보여요) | 최근 기준일: {latest}
-    </Txt>
+    <>
+      <Txt variant="sub">
+        출처: 시도교육청 공고·보도 (지역마다 달라요 — 지역을 누르면 출처와 원문 링크가 보여요) | 최근 기준일: {latest}
+      </Txt>
+      <ErrorHint />
+    </>
   );
 }
 
