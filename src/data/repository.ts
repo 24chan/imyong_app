@@ -121,14 +121,13 @@ export async function getYears(level: Level = 'elementary'): Promise<number[]> {
 /** 중등에서 데이터가 있는 과목 code 목록 (과목 순서대로) */
 export async function getAvailableSubjects(): Promise<string[]> {
   return cached('subjects-with-data', async () => {
-    const years = await getYears('secondary');
-    if (!years.length) return [];
+    // 어느 학년도든 실제 자료가 있는 과목 (최근 해만 보면 확정 전 과목이 빠짐)
     const { data, error } = await supabase
       .from('selection_counts')
       .select('subject, subjects(sort)')
       .eq('level', 'secondary')
-      .eq('stage', 'confirmed')
-      .eq('year', years[0]);
+      .neq('source_id', 'sample')
+      .limit(5000);
     if (error) throw new DataError('과목', error.message);
     const rows = data as unknown as { subject: string; subjects: { sort: number } | null }[];
     const sortOf = new Map(rows.map((r) => [r.subject, r.subjects?.sort ?? 999]));

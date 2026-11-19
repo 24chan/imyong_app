@@ -1,0 +1,24 @@
+name: app-build
+# 설치용 안드로이드 앱(APK) 만들기 — EAS 클라우드 빌드. 끝나면 expo.dev 빌드 페이지에서 설치 링크·QR
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: '빌드 종류 (preview = 설치 파일 APK)'
+        required: true
+        default: 'preview'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: EAS 빌드 요청
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx --yes eas-cli@latest build --platform android --profile "${{ github.event.inputs.profile }}" --non-interactive --no-wait
