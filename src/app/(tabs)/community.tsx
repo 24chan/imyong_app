@@ -72,7 +72,8 @@ export default function CommunityScreen() {
   const quick = useMemo(() => {
     const ids = ['hot', defaultBoard, 'free', 'review'];
     if (viewLevel === 'secondary' && defaultBoard !== 'sec') ids.push('sec');
-    settings.regionCodes.forEach((r) => ids.push(`reg_${r}`));
+    // 관심 지역은 첫 번째 하나만 (나머지는 '다른 게시판'에서)
+    if (settings.regionCodes[0]) ids.push(`reg_${settings.regionCodes[0]}`);
     return [...new Set(ids)];
   }, [defaultBoard, viewLevel, settings.regionCodes]);
   const nameOf = (id: string) => (id === 'hot' ? 'HOT' : byId[id]?.name ?? (id === 'elem' ? '초등' : id));
@@ -131,18 +132,19 @@ export default function CommunityScreen() {
           onPress={() => setShowAll((v) => !v)}
           style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.line, flexDirection: 'row', gap: 4, alignItems: 'center' }}
         >
-          <Txt style={{ fontWeight: '700', fontSize: 14 }}>전체 게시판</Txt>
+          <Txt style={{ fontWeight: '700', fontSize: 14 }}>다른 게시판</Txt>
           <Ionicons name={showAll ? 'chevron-up' : 'chevron-down'} size={14} color={colors.text} />
         </Pressable>
       </ScrollView>
       {showAll && (
         <View style={{ gap: space.sm }}>
-          {(['level', 'subject', 'region'] as const).map((k) => (
+          {/* 초등 모드에서는 과목 게시판을 숨김 */}
+          {(viewLevel === 'elementary' ? (['level', 'region'] as const) : (['level', 'subject', 'region'] as const)).map((k) => (
             <View key={k} style={{ gap: 6 }}>
               <Txt variant="sub">{k === 'level' ? '구분' : k === 'subject' ? '과목' : '지역'}</Txt>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
                 {boards
-                  .filter((b) => b.kind === k)
+                  .filter((b) => b.kind === k && !quick.includes(b.id))
                   .map((b) => (
                     <BoardChip key={b.id} id={b.id} />
                   ))}

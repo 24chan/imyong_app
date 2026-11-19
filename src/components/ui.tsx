@@ -22,11 +22,11 @@ export function Txt({ variant = 'body', color, style, ...rest }: TxtProps) {
 }
 
 const textStyles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: '800' },
-  heading: { fontSize: 17, fontWeight: '700' },
+  title: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
+  heading: { fontSize: 17, fontWeight: '800', letterSpacing: -0.2 },
   body: { fontSize: 15, lineHeight: 22 },
   sub: { fontSize: 13, lineHeight: 19 },
-  number: { fontSize: 28, fontWeight: '800' },
+  number: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
 });
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
@@ -37,7 +37,7 @@ export function Screen({ children, scroll = true }: { children: ReactNode; scrol
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: space.lg, gap: space.md, paddingBottom: space.xl * 2 }}
+      contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xl * 2 }}
     >
       {children}
     </ScrollView>
@@ -49,7 +49,7 @@ export function Card({ children, style }: { children: ReactNode; style?: ViewSty
   return (
     <View
       style={[
-        { backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.lg, gap: space.sm },
+        { backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: space.sm },
         style,
       ]}
     >
@@ -163,13 +163,13 @@ export function PrimaryButton({
       accessibilityRole="button"
       style={{
         alignItems: 'center',
-        paddingVertical: 15,
-        borderRadius: radius.md,
+        paddingVertical: 16,
+        borderRadius: 14,
         backgroundColor: solid ? colors.brand : 'transparent',
         opacity: disabled ? 0.4 : 1,
       }}
     >
-      <Txt style={{ fontWeight: '700', fontSize: 16 }} color={solid ? 'background' : 'textSub'}>
+      <Txt style={{ fontWeight: '800', fontSize: 16 }} color={solid ? 'background' : 'textSub'}>
         {label}
       </Txt>
     </Pressable>
@@ -194,7 +194,7 @@ export function SelectCard({
       accessibilityRole="button"
       accessibilityState={{ selected }}
       style={{
-        borderRadius: radius.lg,
+        borderRadius: radius.xl,
         padding: space.lg,
         gap: space.xs,
         borderWidth: 2,

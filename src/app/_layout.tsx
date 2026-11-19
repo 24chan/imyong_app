@@ -1,5 +1,6 @@
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
@@ -8,6 +9,9 @@ import { AppSettingsProvider, useAppSettings } from '../store/AppSettings';
 import { AuthProvider } from '../store/Auth';
 import { FONT_FILES } from '../theme/fonts';
 import { useTheme } from '../theme/useTheme';
+
+// 글꼴·설정을 다 불러올 때까지 처음 화면(로고)을 유지
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function RootStack() {
   const { hydrated } = useAppSettings();
@@ -20,7 +24,12 @@ function RootStack() {
   }, [colors.background]);
 
   // 저장된 설정을 불러오기 전에는 빈 배경만 보여줌
-  if (!hydrated || (!fontsLoaded && !fontError)) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+  const ready = hydrated && (fontsLoaded || !!fontError);
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync().catch(() => {});
+  }, [ready]);
+
+  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
 
   return (
     <>
