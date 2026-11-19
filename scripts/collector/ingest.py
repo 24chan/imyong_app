@@ -42,7 +42,8 @@ def manual_records():
                 if cat in e:
                     out.append({'region': e['region'], 'year': e['year'], 'level': 'elementary', 'subject': None,
                                 'category': cat, **{k: v for k, v in zip(d['cols'], e[cat]) if v is not None},
-                                'sources': [d['source_url']] if d.get('source_url') else [], 'source_title': d['source_title']})
+                                'sources': [d['source_url']] if d.get('source_url') else [], 'source_title': d['source_title'],
+                                **({'_unverified': True} if d.get('unverified') else {})})
         for r in d.get('elementary', []):
             out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
                         'category': r['category'], **{k: v for k, v in r.items() if k != 'category' and not k.startswith('_')},
@@ -119,10 +120,11 @@ def secondary_rows(raw):
         groups.setdefault((r['region'], r['year']), []).append(r)
     # 사용자가 보내준 정리표(원문과 대조함): 원문에 없는 칸만 채움
     manual = {}
-    mf = os.path.join(MANUAL_DIR, 'secondary_compiled.json')
-    if os.path.exists(mf):
-        for m in json.load(open(mf))['records']:
-            manual.setdefault((m['region'], m['year']), []).append(m)
+    import glob
+    for mf in sorted(glob.glob(os.path.join(MANUAL_DIR, 'secondary_compiled*.json'))):
+        md = json.load(open(mf))
+        for m in md['records']:
+            manual.setdefault((m['region'], m['year']), []).append({**m, '_unverified': bool(md.get('unverified'))})
             groups.setdefault((m['region'], m['year']), [])
     rows = []
     NONSUBJ = {'special', 'health', 'nutrition', 'librarian', 'counsel'}
@@ -147,17 +149,20 @@ def secondary_rows(raw):
                 continue
             keep += [{k: v for k, v in x.items() if k not in ('agree', 'conflict')} for x in srs if not x.get('conflict')]
         used_manual = False
+        unverified = False
         for m in manual.get((region, year), []):
-            vals = {k: v for k, v in m.items() if k not in ('region', 'year', 'subject')}
+            vals = {k: v for k, v in m.items() if k not in ('region', 'year', 'subject', '_unverified')}
             x = next((x for x in keep if x['subject'] == m['subject'] and x['category'] in ('general', 'all')), None)
             if x:
                 add = {k: v for k, v in vals.items() if x.get(k) is None}
                 x.update(add)
                 used_manual = used_manual or bool(add)
+                unverified = unverified or (bool(add) and m['_unverified'])
             else:
                 keep.append({'region': region, 'year': year, 'level': 'secondary', 'subject': m['subject'], 'category': 'general',
                              'sources': [], **vals})
                 used_manual = True
+                unverified = unverified or m['_unverified']
         if not keep:
             continue
         n_subj = len({x['subject'] for x in keep})
@@ -171,7 +176,9 @@ def secondary_rows(raw):
             'source_url': f'parsed:{region}:{year}:secondary',
             'file_url': f'parsed:exam_results:secondary:{year}:{region}',
             'parsed': {'year': year, 'records': keep, 'sources': srcs},
-            'status': 'pending', 'note': '검증 통과' if n_subj >= 5 or used_manual else note.replace('검증 통과', '확인 필요(과목 적음)'),
+            'status': 'pending',
+            'note': '확인 필요: 원문 대조 못 함(보내준 정리표)' if unverified
+            else '검증 통과' if n_subj >= 5 or used_manual else note.replace('검증 통과', '확인 필요(과목 적음)'),
             '_detail': note,
         })
     print(f'중등 묶음 {len(rows)}개: ' + ', '.join(f"{r['region']}{r['parsed']['year']}={len({x['subject'] for x in r['parsed']['records']})}" for r in rows))
@@ -199,9 +206,11 @@ def main(raw):
     rows = []
     for (region, year, level), rs in sorted(groups.items()):
         probs = [p for p in problems if p.startswith(f"('{region}', {year})")]
+        if any(r.get('_unverified') for r in rs):
+            probs.append('원문 대조 못 함(보내준 정리표)')
         srcs = sorted({s for r in rs for s in r['sources']})
         ref = next((r['source_title'] for r in rs if r.get('source_title')), None)
-        rs = [{k: v for k, v in r.items() if k != 'source_title'} for r in rs]
+        rs = [{k: v for k, v in r.items() if k not in ('source_title', '_unverified')} for r in rs]
         rows.append({
             'region': region, 'level': level, 'doc_type': 'exam_results',
             'title': ref or f'{year}학년도 {region} {level} 선발·지원·1차·최종 합격 (공고 {len(srcs)}건)',
