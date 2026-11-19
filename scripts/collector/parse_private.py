@@ -103,12 +103,19 @@ def records_pdf(path):
                     if not subj or re.search(r'합계|과목|분야', subj):
                         continue
                     # 인원 칸은 표 선이 없는 경우가 많아, 같은 높이의 숫자를 좌표로 찾음
-                    if cells[hm['count']] is not None and to_int(text(cells[hm['count']])) is not None:
-                        n = to_int(text(cells[hm['count']]))
-                    else:
-                        hits = [w['text'] for w in words
-                                if w['x0'] >= cx[0] - 2 and w['x1'] <= cx[2] + 2 and sc[1] - 1 <= (w['top'] + w['bottom']) / 2 <= sc[3] + 1]
-                        n = to_int(' '.join(hits))
+                    ct = text(cells[hm['count']]) if cells[hm['count']] is not None else None
+                    if ct is None or not re.search(r'\d', ct):
+                        ct = ' '.join(w['text'] for w in words
+                                      if w['x0'] >= cx[0] - 2 and w['x1'] <= cx[2] + 2 and sc[1] - 1 <= (w['top'] + w['bottom']) / 2 <= sc[3] + 1)
+                    nums = [int(x) for x in re.findall(r'\d+', ct.replace(',', ''))]
+                    toks = subj.split()
+                    if len(toks) > 1 and len(nums) == len(toks):
+                        # 한 칸에 과목 여러 개가 줄바꿈으로 들어간 표 (제주): 과목마다 인원 짝짓기
+                        for t, k in zip(toks, nums):
+                            out.append({'corp': state.get('corp'), 'method': state.get('method'), 'school': state.get('school'),
+                                        'url': state.get('url'), 'subject': t, 'count': k})
+                        continue
+                    n = nums[0] if len(nums) == 1 else None
                     out.append({'corp': state.get('corp'), 'method': state.get('method'), 'school': state.get('school'),
                                 'url': state.get('url'), 'subject': subj, 'count': n})
     return out
@@ -141,12 +148,17 @@ def records_rows(path):
         subj = clean(cells[hm['subj']])
         if not subj or re.search(r'합계|과목|분야', subj):
             continue
-        out.append({'corp': state.get('corp'), 'method': state.get('method'), 'school': state.get('school'),
-                    'url': state.get('url'), 'subject': subj, 'count': to_int(cells[hm['count']])})
+        nums = [int(x) for x in re.findall(r'\d+', (cells[hm['count']] or '').replace(',', ''))]
+        toks = subj.split()
+        pairs = list(zip(toks, nums)) if len(toks) > 1 and len(nums) == len(toks) else [(subj, nums[0] if len(nums) == 1 else None)]
+        for t, k in pairs:
+            out.append({'corp': state.get('corp'), 'method': state.get('method'), 'school': state.get('school'),
+                        'url': state.get('url'), 'subject': t, 'count': k})
     return out
 
 
-BAD = re.compile(r'장애|시험|신청|※|영역|편의|휴대|기준|서류|평가|배점|^소?계$|합계')
+BAD = re.compile(r'장애|시험|신청|※|영역|편의|휴대|기준|서류|평가|배점|합계')
+TOTAL = re.compile(r'^(소\s*계|계|합\s*계|총\s*계)$')
 
 
 def norm_subject(t):
@@ -164,7 +176,8 @@ def valid(r):
         return False
     if not (1 <= r['count'] <= 50) or '학교' not in r['school'] or len(r['school']) > 40:
         return False
-    if len(r['subject']) > 20 or re.search(r'\d', r['subject']) or BAD.search(r['subject'] + r['corp'] + r['school']):
+    if len(r['subject']) > 20 or re.search(r'\d', r['subject']) or TOTAL.match(r['subject']) \
+            or BAD.search(r['subject'] + r['corp'] + r['school']):
         return False
     return 2 <= len(r['corp']) <= 30
 
