@@ -1,0 +1,27 @@
+name: db-apply
+# Supabase 데이터베이스에 SQL 파일 실행 (붙여넣기 대신)
+# 필요한 비밀값: SUPABASE_DB_URL = Supabase → Connect → Session pooler 주소 ([YOUR-PASSWORD]를 DB 비밀번호로 바꾼 것)
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: '실행할 SQL 파일 (저장소 기준 경로)'
+        required: true
+        default: 'supabase/v1_setup.sql'
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: SQL 실행
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          FILE: ${{ github.event.inputs.file }}
+        run: |
+          if [ -z "$DB_URL" ]; then echo "SUPABASE_DB_URL 비밀값이 없어요"; exit 1; fi
+          case "$FILE" in supabase/*.sql|supabase/*/*.sql) ;; *) echo "supabase 폴더의 .sql 파일만 실행해요"; exit 1;; esac
+          test -f "$FILE" || { echo "파일이 없어요: $FILE"; exit 1; }
+          sudo apt-get install -y -qq postgresql-client >/dev/null 2>&1 || true
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "$FILE"
+          echo "완료: $FILE"

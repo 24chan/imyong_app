@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
 import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { regionByCode } from '../data/regions';
 import { getSchoolMeta, getSchools } from '../data/repository';
@@ -32,6 +33,7 @@ export default function SchoolsScreen() {
   const [found, setFound] = useState<FoundFilter>('all');
   const [selected, setSelected] = useState<School | null>(null);
   const [listN, setListN] = useState(LIST_STEP);
+  const [q, setQ] = useState('');
   const mapRef = useRef<SchoolMapHandle>(null);
 
   // 모드에 맞는 학교급 (초등 모드 → 초등학교, 중등 모드 → 중·고)
@@ -46,10 +48,16 @@ export default function SchoolsScreen() {
   );
   const count = (f: SchoolFound) => levelSchools.filter((s) => s.found === f).length;
   // 목록: 사립·국립을 먼저 (공립은 수가 많아 지도 위주로)
+  // 검색어가 있으면 공립 포함 전체에서 이름·시군구로 찾음
+  const query = q.replace(/\s/g, '');
   const listed = useMemo(() => {
-    const src = found === 'all' ? levelSchools.filter((s) => s.found !== 'p') : shown;
+    const src = query
+      ? shown.filter((s) => s.name.replace(/\s/g, '').includes(query) || (s.sigungu ?? '').includes(query))
+      : found === 'all'
+        ? levelSchools.filter((s) => s.found !== 'p')
+        : shown;
     return [...src].sort((a, b) => a.sigungu.localeCompare(b.sigungu, 'ko') || a.name.localeCompare(b.name, 'ko'));
-  }, [levelSchools, shown, found]);
+  }, [levelSchools, shown, found, query]);
 
   const title = `${region?.shortName ?? ''} 학교 지도`;
   const filters: { value: FoundFilter; label: string }[] = [
@@ -136,11 +144,35 @@ export default function SchoolsScreen() {
 
             {selected && <SchoolRow school={selected} highlight onPress={() => setSelected(null)} />}
 
+            {/* 학교 검색 */}
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.md, height: 46, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface }}
+            >
+              <Ionicons name="search" size={18} color={colors.textSub} />
+              <TextInput
+                value={q}
+                onChangeText={(t) => {
+                  setQ(t);
+                  setListN(LIST_STEP);
+                }}
+                placeholder="학교 이름이나 구·군으로 검색 (공립 포함)"
+                placeholderTextColor={colors.textSub}
+                returnKeyType="search"
+                accessibilityLabel="학교 검색"
+                style={{ flex: 1, color: colors.text, fontSize: 15, paddingVertical: 0 }}
+              />
+              {q.length > 0 && (
+                <Pressable onPress={() => setQ('')} accessibilityRole="button" accessibilityLabel="검색어 지우기" hitSlop={10}>
+                  <Ionicons name="close-circle" size={18} color={colors.textSub} />
+                </Pressable>
+              )}
+            </View>
+
             <Card style={{ gap: 0, paddingVertical: space.sm }}>
               <Txt variant="heading" style={{ paddingVertical: space.sm }}>
-                {found === 'all' ? '사립·국립 학교' : `${FOUND_LABEL[found]} 학교`} {listed.length}곳
+                {query ? `'${q.trim()}' 검색 결과` : found === 'all' ? '사립·국립 학교' : `${FOUND_LABEL[found]} 학교`} {listed.length}곳
               </Txt>
-              {listed.length === 0 && <Txt variant="sub">해당하는 학교가 없어요.</Txt>}
+              {listed.length === 0 && <Txt variant="sub">{query ? '찾는 학교가 없어요. 이름을 다시 확인해 주세요.' : '해당하는 학교가 없어요.'}</Txt>}
               {listed.slice(0, listN).map((s) => (
                 <SchoolRow key={`${s.name}-${s.lat}`} school={s} onPress={() => pick(s)} highlight={s === selected} />
               ))}

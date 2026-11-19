@@ -339,7 +339,19 @@ export async function getPrivateOpenings(region: string): Promise<PrivateYear[]>
 }
 
 /** 지역 시군구 경계 (raw-files/raw/geo/<지역>.json). 없으면 null */
-export type RegionGeo = { version: string; sgg: { n: string; p: [number, number][][] }[] };
+export type RegionGeo = { version: string; sgg: { n: string; c?: [number, number] | null; p: [number, number][][] }[] };
+export type RegionDong = { version: string; dong: { n: string; g: string; c?: [number, number] | null; p: [number, number][][] }[] };
+/** 읍면동 경계 (지도를 확대했을 때만 받음) */
+export async function getRegionDong(region: string): Promise<RegionDong | null> {
+  return cached(`dong:${region}`, async () => {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/dong/${region}.json`);
+      return res.ok ? ((await res.json()) as RegionDong) : null;
+    } catch {
+      return null;
+    }
+  });
+}
 export async function getRegionGeo(region: string): Promise<RegionGeo | null> {
   return cached(`geo:${region}`, async () => {
     try {

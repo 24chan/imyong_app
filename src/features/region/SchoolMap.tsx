@@ -3,13 +3,54 @@ import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, u
 import { ActivityIndicator, Animated, GestureResponderEvent, LayoutChangeEvent, PanResponder, Pressable, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle, G, Path, Polygon, Rect, Text as SvgText } from 'react-native-svg';
 import { Txt } from '../../components/ui';
-import { getRegionGeo, RegionGeo } from '../../data/repository';
+import { getRegionDong, getRegionGeo, RegionDong, RegionGeo } from '../../data/repository';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { School, SchoolFound } from '../../types/data';
 
 const MAX_ZOOM = 12; // 처음 화면 대비 최대 확대
 const TAP_PX = 22;
+const DONG_ZOOM = 2.2; // 이만큼 확대하면 읍면동 경계·이름
+
+type Shape = { key: string; name: string; d: string; lx: number; ly: number; bw: number; x0: number; x1: number; y0: number; y1: number };
+// 경계 → 지도 경로 + 이름 위치(자료에 있으면 그 점, 없으면 가장 큰 덩어리 가운데) + 범위
+function toShapes(items: { n: string; c?: [number, number] | null; p: [number, number][][] }[], pre: string): Shape[] {
+  return items.map((f, i) => {
+    let best: [number, number][] = f.p[0] ?? [];
+    let bestArea = 0;
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    const d = f.p
+      .map((ring) => {
+        let a = 0;
+        for (let j = 0; j < ring.length - 1; j++) a += ring[j][0] * ring[j + 1][1] - ring[j + 1][0] * ring[j][1];
+        if (Math.abs(a) > bestArea) {
+          bestArea = Math.abs(a);
+          best = ring;
+        }
+        return (
+          'M' +
+          ring
+            .map(([lng, lat]) => {
+              const x = X(lng), y = Y(lat);
+              if (x < x0) x0 = x;
+              if (x > x1) x1 = x;
+              if (y < y0) y0 = y;
+              if (y > y1) y1 = y;
+              return `${x.toFixed(4)},${y.toFixed(4)}`;
+            })
+            .join('L') +
+          'Z'
+        );
+      })
+      .join('');
+    const xs = best.map((p) => X(p[0]));
+    const ys = best.map((p) => Y(p[1]));
+    const bx0 = Math.min(...xs), bx1 = Math.max(...xs), by0 = Math.min(...ys), by1 = Math.max(...ys);
+    const lx = f.c ? X(f.c[0]) : (bx0 + bx1) / 2;
+    const ly = f.c ? Y(f.c[1]) : (by0 + by1) / 2;
+    return { key: `${pre}${f.n}-${i}`, name: f.n, d, lx, ly, bw: bx1 - bx0, x0, x1, y0, y1 };
+  });
+}
 
 // 지도 좌표: 경도 그대로, 위도는 메르카토르 (단위 = 도). 위아래가 같은 비율로 보임
 const merc = (lat: number) => (Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) * 180) / Math.PI;
@@ -66,29 +107,10 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
     getRegionGeo(region).then(setGeo);
   }, [region]);
 
-  // 시군구 경로 (지도 좌표) + 이름 위치 (가장 큰 덩어리의 가운데)
-  const shapes = useMemo(() => {
-    if (!geo) return [];
-    return geo.sgg.map((f, i) => {
-      let best: [number, number][] = f.p[0] ?? [];
-      let bestArea = 0;
-      const d = f.p
-        .map((ring) => {
-          let a = 0;
-          for (let j = 0; j < ring.length - 1; j++) a += ring[j][0] * ring[j + 1][1] - ring[j + 1][0] * ring[j][1];
-          if (Math.abs(a) > bestArea) {
-            bestArea = Math.abs(a);
-            best = ring;
-          }
-          return 'M' + ring.map(([lng, lat]) => `${X(lng).toFixed(4)},${Y(lat).toFixed(4)}`).join('L') + 'Z';
-        })
-        .join('');
-      const xs = best.map((p) => X(p[0]));
-      const ys = best.map((p) => Y(p[1]));
-      const bx0 = Math.min(...xs), bx1 = Math.max(...xs), by0 = Math.min(...ys), by1 = Math.max(...ys);
-      return { key: `${f.n}-${i}`, name: f.n, d, lx: (bx0 + bx1) / 2, ly: (by0 + by1) / 2, bw: bx1 - bx0 };
-    });
-  }, [geo]);
+  const shapes = useMemo(() => (geo ? toShapes(geo.sgg, 'g') : []), [geo]);
+  const [dong, setDong] = useState<RegionDong | null | undefined>(undefined);
+  useEffect(() => setDong(undefined), [region]);
+  const dongShapes = useMemo(() => (dong ? toShapes(dong.dong, 'd') : []), [dong]);
 
   // 전체 범위(경계+학교)와 처음 화면(학교 2~98% 범위)
   const extent = useMemo(() => {
@@ -146,6 +168,10 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
 
   const k = W / view.w; // 지도 1단위 = k px
   const zoom = initial.w / view.w;
+  const showDong = zoom >= DONG_ZOOM;
+  useEffect(() => {
+    if (showDong && dong === undefined) getRegionDong(region).then(setDong);
+  }, [showDong, dong, region]);
 
   // 손가락으로 움직이는 동안만 화면 변형(빠름) → 떼면 그 배율로 다시 그림(선명)
   const live = useRef({ s: 1, tx: 0, ty: 0 });
@@ -289,9 +315,30 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
     return x > view.x - pad && x < view.x + view.w + pad && y > view.y - pad && y < view.y + view.h + pad;
   });
   const dots = visible.map((s, i) => mark(s, `s-${i}`, r, colors.background, 1.2 * u));
-  // 시군구 이름: 화면에서 충분히 넓은 곳만 (겹침 방지)
-  const labels = showSigungu ? shapes.filter((s) => s.bw * k > 46 && s.lx > view.x && s.lx < view.x + view.w && s.ly > view.y && s.ly < view.y + view.h) : [];
-  const fs = 11.5 * u;
+  // 화면 안 읍면동 경계만
+  const inView = (sh: Shape) => sh.x1 > view.x && sh.x0 < view.x + view.w && sh.y1 > view.y && sh.y0 < view.y + view.h;
+  const dongVisible = showDong ? dongShapes.filter(inView) : [];
+
+  // 이름표: 화면 좌표(px)로 따로 그림. 시군구 먼저, 확대하면 읍면동. 겹치면 생략
+  const labels = useMemo(() => {
+    const out: { key: string; x: number; y: number; t: string; big: boolean }[] = [];
+    const boxes: [number, number, number, number][] = [];
+    const put = (sh: Shape, big: boolean, minW: number) => {
+      const x = (sh.lx - view.x) * k;
+      const y = (sh.ly - view.y) * k;
+      if (x < 0 || x > W || y < 0 || y > H || sh.bw * k < minW) return;
+      const fsz = big ? 13 : 10.5;
+      const hw = (sh.name.length * fsz * 0.95) / 2 + 3;
+      const hh = fsz * 0.75;
+      const box: [number, number, number, number] = [x - hw, y - hh, x + hw, y + hh];
+      if (boxes.some((o) => o[0] < box[2] && box[0] < o[2] && o[1] < box[3] && box[1] < o[3])) return;
+      boxes.push(box);
+      out.push({ key: sh.key, x, y, t: sh.name, big });
+    };
+    if (showSigungu) shapes.forEach((sh) => put(sh, true, 30));
+    dongVisible.forEach((sh) => put(sh, false, 24));
+    return out;
+  }, [shapes, dongVisible, view, k, W, H, showSigungu]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLayout = (e: LayoutChangeEvent) => setCw(Math.floor(e.nativeEvent.layout.width));
 
@@ -303,17 +350,26 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
             <Animated.View pointerEvents="none" style={{ width: W, height: H, transform: [{ translateX: aX }, { translateY: aY }, { scale: aS }] }}>
               <Svg width={W} height={H} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}>
                 {shapes.map((s, i) => (
-                  <Path key={s.key} d={s.d} fill={i % 2 ? colors.background : colors.brand + '0D'} stroke={colors.textSub} strokeOpacity={0.35} strokeWidth={0.9 * u} strokeLinejoin="round" />
+                  <Path key={s.key} d={s.d} fill={i % 2 ? colors.background : colors.brand + '0D'} />
+                ))}
+                {dongVisible.map((sh) => (
+                  <Path key={sh.key} d={sh.d} fill="none" stroke={colors.textSub} strokeOpacity={0.22} strokeWidth={0.7 * u} strokeDasharray={`${3 * u},${2 * u}`} />
+                ))}
+                {shapes.map((s) => (
+                  <Path key={`o-${s.key}`} d={s.d} fill="none" stroke={colors.textSub} strokeOpacity={0.45} strokeWidth={1.1 * u} strokeLinejoin="round" />
                 ))}
                 <G>{dots}</G>
                 {selected && mark(selected, 'sel', r + 3 * u, colors.text, 2.4 * u)}
+              </Svg>
+              {/* 이름표는 화면 픽셀 좌표로 (아주 작은 글자 크기는 안드로이드에서 안 그려짐) */}
+              <Svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
                 {labels.map((l) => (
                   <G key={`t-${l.key}`}>
-                    <SvgText x={l.lx} y={l.ly} fontSize={fs} fontWeight="700" textAnchor="middle" stroke={colors.background} strokeWidth={3 * u} strokeLinejoin="round" fill={colors.background}>
-                      {l.name}
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontWeight={l.big ? '700' : '500'} textAnchor="middle" stroke={colors.background} strokeWidth={3.5} strokeLinejoin="round" fill={colors.background}>
+                      {l.t}
                     </SvgText>
-                    <SvgText x={l.lx} y={l.ly} fontSize={fs} fontWeight="700" textAnchor="middle" fill={colors.textSub}>
-                      {l.name}
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 3.5)} fontSize={l.big ? 13 : 10.5} fontWeight={l.big ? '700' : '500'} textAnchor="middle" fill={l.big ? colors.text : colors.textSub}>
+                      {l.t}
                     </SvgText>
                   </G>
                 ))}
@@ -353,7 +409,7 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
         </View>
       )}
       <Txt variant="sub" style={{ alignSelf: 'stretch' }}>
-        두 손가락으로 확대·축소하고 끌어서 움직여요. 점을 누르면 학교 이름이 보여요. 경계: 통계청 행정구역 기반(admdongkor)
+        두 손가락으로 확대·축소하고 끌어서 움직여요. 점을 누르면 학교 이름이 보여요. 크게 확대하면 동 이름도 보여요. 경계: 통계청 SGIS 기반 admdongkor(github.com/vuski/admdongkor, CC BY 4.0)
       </Txt>
     </View>
   );
