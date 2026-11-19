@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { SubjectPicker } from '../../components/pickers';
 import { Card, Chip, PrimaryButton, Segmented, Txt } from '../../components/ui';
 import { AREA_LABEL, createMaterial, getMaterial, Material, updateMaterial } from '../../data/study';

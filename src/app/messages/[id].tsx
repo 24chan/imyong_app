@@ -2,7 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, KeyboardAvoidingView, Linking, Platform, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, KeyboardAvoidingView, Linking, Platform, Pressable, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Txt } from '../../components/ui';
 import { blockAuthor, getMessages, leaveConversation, Message, messageImageUrls, sendMessage } from '../../data/community';
@@ -110,7 +111,7 @@ export default function ThreadScreen() {
                 <View
                   style={{
                     backgroundColor: m.isMine ? colors.brand : colors.surface,
-                    borderRadius: radius.lg,
+                    borderRadius: radius.xl,
                     borderBottomRightRadius: m.isMine ? 4 : radius.lg,
                     borderBottomLeftRadius: m.isMine ? radius.lg : 4,
                     paddingHorizontal: space.md,
@@ -150,7 +151,7 @@ export default function ThreadScreen() {
             placeholder="쪽지 입력"
             placeholderTextColor={colors.textSub}
             multiline
-            style={{ flex: 1, maxHeight: 120, backgroundColor: colors.surface, borderRadius: radius.lg, paddingHorizontal: space.md, paddingVertical: 10, color: colors.text, fontSize: 15 }}
+            style={{ flex: 1, maxHeight: 120, backgroundColor: colors.surface, borderRadius: radius.xl, paddingHorizontal: space.md, paddingVertical: 10, color: colors.text, fontSize: 15 }}
           />
           <Pressable
             onPress={send}

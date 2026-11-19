@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Chip, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { AcademyEvent, Ad, Area, EVENT_KIND, LECTURE_AREA, Lecture, listAds, listEvents, listLectures, requestLecture } from '../../data/academy';

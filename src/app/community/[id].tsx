@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Txt } from '../../components/ui';
 import {
@@ -249,7 +250,7 @@ export default function PostScreen() {
             placeholderTextColor={colors.textSub}
             multiline
             onFocus={() => guard()}
-            style={{ flex: 1, maxHeight: 120, backgroundColor: colors.surface, borderRadius: radius.lg, paddingHorizontal: space.md, paddingVertical: 10, color: colors.text, fontSize: 15 }}
+            style={{ flex: 1, maxHeight: 120, backgroundColor: colors.surface, borderRadius: radius.xl, paddingHorizontal: space.md, paddingVertical: 10, color: colors.text, fontSize: 15 }}
           />
           <Pressable
             onPress={send}

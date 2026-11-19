@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { Board, createPost, getBoards, getPost, updatePost } from '../../data/community';
 import { LabelChooser, useWriterLabels } from '../../features/community/parts';

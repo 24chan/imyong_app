@@ -1,6 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { RegionPicker, SubjectPicker } from '../../components/pickers';
 import { Card, Chip, PrimaryButton, Segmented, Txt } from '../../components/ui';
 import { createStudy, MODE_LABEL, STAGE_LABEL, Study } from '../../data/study';

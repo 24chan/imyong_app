@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { ago } from '../../data/community';
 import { deleteMockReview, getMockExam, listMockReviews, MockExam, MockReview, upsertMockReview } from '../../data/study';

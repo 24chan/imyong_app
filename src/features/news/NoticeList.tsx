@@ -118,7 +118,7 @@ export function NoticeRow({
 export function NoticeBoard({ title, action, children, icon = 'megaphone' }: { title: string; action?: ReactNode; children: ReactNode; icon?: keyof typeof Ionicons.glyphMap }) {
   const { colors } = useTheme();
   return (
-    <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, backgroundColor: colors.background, overflow: 'hidden' }}>
+    <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.xl, backgroundColor: colors.background, overflow: 'hidden' }}>
       <View
         style={{
           flexDirection: 'row',

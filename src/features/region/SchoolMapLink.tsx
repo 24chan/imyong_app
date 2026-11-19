@@ -20,7 +20,7 @@ export function SchoolMapLink({ region, level }: { region: string; level: Level 
         alignItems: 'center',
         gap: space.md,
         padding: space.md,
-        borderRadius: radius.lg,
+        borderRadius: radius.xl,
         borderWidth: 1,
         borderColor: colors.line,
         backgroundColor: colors.background,

@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { ReactNode, useEffect, useState } from 'react';
-import { Alert, Modal, Pressable, TextInput, View } from 'react-native';
+import { Alert, Modal, Pressable, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { ago, appealSanction, blockAuthor, Post, REPORT_REASONS, reportContent, ReportTarget, Sanction, SANCTION_LABEL } from '../../data/community';
@@ -228,7 +229,7 @@ export function SanctionBanner({ s, onChanged }: { s: Sanction; onChanged: () =>
   const [text, setText] = useState('');
   const until = s.endsAt ? new Date(s.endsAt).toLocaleString('ko-KR') : '무기한';
   return (
-    <View style={{ borderWidth: 1, borderColor: colors.down + '66', backgroundColor: colors.down + '12', borderRadius: radius.lg, padding: space.md, gap: space.xs }}>
+    <View style={{ borderWidth: 1, borderColor: colors.down + '66', backgroundColor: colors.down + '12', borderRadius: radius.xl, padding: space.md, gap: space.xs }}>
       <Txt style={{ fontWeight: '800' }} color="down">
         {SANCTION_LABEL[s.level]}
         {s.level !== 'warning' ? ` · ${until}까지` : ''}

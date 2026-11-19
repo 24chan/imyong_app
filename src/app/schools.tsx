@@ -1,7 +1,8 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { ActivityIndicator, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
+import { TextInput } from '../components/TextField';
 import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { regionByCode } from '../data/regions';
 import { getSchoolMeta, getSchools } from '../data/repository';

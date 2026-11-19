@@ -110,7 +110,7 @@ export default function CompareScreen() {
             collapsable={false}
             style={{
               backgroundColor: colors.background,
-              borderRadius: radius.lg,
+              borderRadius: radius.xl,
               borderWidth: 1,
               borderColor: colors.line,
               padding: space.lg,

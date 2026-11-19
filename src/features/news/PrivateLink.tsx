@@ -24,7 +24,7 @@ export function PrivateLink({ region }: { region?: string }) {
         alignItems: 'center',
         gap: space.md,
         padding: space.md,
-        borderRadius: radius.lg,
+        borderRadius: radius.xl,
         borderWidth: 1,
         borderColor: colors.accent + '66',
         backgroundColor: colors.accent + '14',

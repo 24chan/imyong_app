@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Pressable, TextInput, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
+import { TextInput } from '../../components/TextField';
 import { Card, Chip, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { addMockScore, deleteMockScore, mockScoreStats, MockScore, myMockScores, ScoreBand } from '../../data/study';
 import { subjectByCode } from '../../data/subjects';

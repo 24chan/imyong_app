@@ -1,6 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { ComponentRef, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { TextInput } from '../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../components/ui';
 import { authErrorText, useAuth } from '../store/Auth';
 import { radius, space } from '../theme/tokens';

@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, Pressable, View } from 'react-native';
+import { TextInput } from '../components/TextField';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { adminAppeal, adminAppeals, adminReports, adminResolve, ReportGroup, Sanction, SANCTION_LABEL } from '../data/community';
 import { subjectByCode } from '../data/subjects';

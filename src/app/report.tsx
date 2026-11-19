@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, View } from 'react-native';
+import { TextInput } from '../components/TextField';
 import { PrimaryButton, Screen, Txt } from '../components/ui';
 import { submitErrorReport } from '../data/repository';
 import { radius, space } from '../theme/tokens';

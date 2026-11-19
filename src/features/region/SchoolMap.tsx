@@ -345,7 +345,7 @@ export const SchoolMap = forwardRef<SchoolMapHandle, Props>(function SchoolMap({
   return (
     <View onLayout={onLayout} style={{ gap: space.xs, alignItems: 'center' }}>
       {cw > 0 && (
-        <View style={{ width: W, height: H, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, overflow: 'hidden' }}>
+        <View style={{ width: W, height: H, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, overflow: 'hidden' }}>
           <View style={{ width: W, height: H }} {...responder.panHandlers} accessibilityLabel="학교 지도. 두 손가락으로 확대, 점을 누르면 학교 이름">
             <Animated.View pointerEvents="none" style={{ width: W, height: H, transform: [{ translateX: aX }, { translateY: aY }, { scale: aS }] }}>
               <Svg width={W} height={H} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}>
