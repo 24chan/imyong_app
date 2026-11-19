@@ -138,6 +138,43 @@ def para_text(b):
     return re.sub(r'[\ue000-\uf8ff\U000f0000-\U0010ffff]', '', t)
 
 
+def _msvc_rand(seed):
+    st = seed
+    while True:
+        st = (st * 214013 + 2531011) & 0xFFFFFFFF
+        yield (st >> 16) & 0x7FFF
+
+
+def view_text(raw, compressed):
+    """배포용 문서: ViewText 스트림 = [배포 데이터 레코드 256바이트] + AES-128(ECB) 암호화된 본문.
+    열쇠는 배포 데이터 안에 들어 있음 (한글 문서 규격 '배포용 문서 데이터')"""
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    h = struct.unpack_from('<I', raw, 0)[0]
+    tag, size = h & 0x3FF, h >> 20
+    if tag != 28 or size != 256:
+        raise ValueError('배포용 데이터 없음')
+    payload = raw[4:260]
+    seed = struct.unpack_from('<I', payload, 0)[0]
+    rnd = _msvc_rand(seed)
+    dec = bytearray(256)
+    i = 0
+    while i < 256:
+        b = next(rnd) & 0xFF
+        n = (next(rnd) & 0xF) + 1
+        for _ in range(n):
+            if i >= 256:
+                break
+            dec[i] = payload[i] ^ b
+            i += 1
+    off = 4 + (seed & 0xF)
+    key = bytes(dec[off:off + 16])
+    body = raw[260:]
+    body = body[:len(body) - len(body) % 16]
+    d = Cipher(algorithms.AES(key), modes.ECB()).decryptor()
+    plain = d.update(body) + d.finalize()
+    return zlib.decompressobj(-15).decompress(plain) if compressed else plain
+
+
 def rows(path):
     data = open(path, 'rb').read()
     cfb = Cfb(data)
@@ -147,16 +184,19 @@ def rows(path):
     flags = struct.unpack_from('<I', head, 36)[0]
     if flags & 0x2:
         raise ValueError('암호 걸린 문서')
-    if flags & 0x4:
-        raise ValueError('배포용 문서 (본문 암호화)')
+    distributed = bool(flags & 0x4)  # 배포용 문서 (본문 암호화)
     compressed = bool(flags & 0x1)
+    folder = 'ViewText' if distributed else 'BodyText'
     out = []
-    sections = sorted(cfb.list('BodyText'), key=lambda s: int(re.sub(r'\D', '', s) or 0))
+    sections = sorted(cfb.list(folder), key=lambda s: int(re.sub(r'\D', '', s) or 0))
     for sec in sections:
-        raw = cfb.read(f'BodyText/{sec}')
+        raw = cfb.read(f'{folder}/{sec}')
         if raw is None:
             continue
-        buf = zlib.decompress(raw, -15) if compressed else raw
+        if distributed:
+            buf = view_text(raw, compressed)
+        else:
+            buf = zlib.decompressobj(-15).decompress(raw) if compressed else raw
         stack = []  # 열린 표: {'level', 'nrows', 'ncols', 'grid', 'cell', 'cell_level'}
         top_text = []
 

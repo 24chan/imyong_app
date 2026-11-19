@@ -74,7 +74,7 @@ jobs:
           python -I scripts/collector/render_images.py /tmp/raw || true
       - name: 사립 위탁 채용 표 뽑기
         run: |
-          pip install -q pdfplumber
+          pip install -q pdfplumber cryptography
           python -I scripts/collector/parse_private.py /tmp/raw || true
       - name: raw-files 브랜치에 저장
         run: |

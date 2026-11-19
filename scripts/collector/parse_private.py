@@ -119,6 +119,9 @@ def records_rows(path):
     hm = None
     state = {}
     for cells in rows_of(path):
+        if cells == ['[/표]']:
+            hm = None  # 표가 끝나면 머리글도 끝
+            continue
         if not isinstance(cells, list) or len(cells) < 3:
             continue
         h = header_map(cells)
@@ -143,13 +146,36 @@ def records_rows(path):
     return out
 
 
+BAD = re.compile(r'장애|시험|신청|※|영역|편의|휴대|기준|서류|평가|배점|^소?계$|합계')
+
+
+def norm_subject(t):
+    t = clean(t)
+    t = re.sub(r'^특수\s*(학교|교사)?\s*\(\s*', '특수(', t)  # 특수학교 (초등), 특수교사(초등) → 특수(초등)
+    t = re.sub(r'^특수\((유|유치원)\)', '특수(유)', t)
+    t = re.sub(r'^(특수\([^)]*\))\s*교사$', r'\1', t)
+    t = re.sub(r'^초등\s*(학교)?\s*(교사)?$', '초등', t)  # 초등학교교사 → 초등
+    return re.sub(r'\s*교사$', '', t).strip()
+
+
+def valid(r):
+    """표 머리글이 우연히 맞은 다른 표(장애 유형·시험 과목 등)를 걸러냄"""
+    if not (r['corp'] and r['school'] and r['subject'] and r['count']):
+        return False
+    if not (1 <= r['count'] <= 50) or '학교' not in r['school'] or len(r['school']) > 40:
+        return False
+    if len(r['subject']) > 20 or re.search(r'\d', r['subject']) or BAD.search(r['subject'] + r['corp'] + r['school']):
+        return False
+    return 2 <= len(r['corp']) <= 30
+
+
 def method_label(t):
-    t = re.sub(r'[\s·ㆍ.]', '', t or '')
-    if '동시' in t:
+    k = re.sub(r'[\s·ㆍ‧.]', '', t or '')
+    if '동시' in k:
         return '공·사립 동시지원'
-    if '복수' in t:
+    if '복수' in k:
         return '사립 복수지원'
-    return t or None
+    return clean(t) or None
 
 
 def main(raw):
@@ -165,13 +191,14 @@ def main(raw):
             posts = json.load(open(pj))
         # 같은 학년도에 위탁 전용 공고가 있으면 그것만, 없으면 시행계획·사전예고 안의 사립 표
         docs = [m for m in manifest if m['type'] in ('private', 'plan', 'prelim')]
-        found = {}
-        for m in sorted(docs, key=lambda m: (m['type'] != 'private', m['type'] != 'plan')):
+        found = {}  # (학년도, 공고 학교급) → 가장 좋은 문서 하나 (위탁 전용 공고 > 시행계획 > 사전예고, 같으면 줄 많은 쪽)
+        for m in docs:
             path = os.path.join(raw, m['path'])
             if not os.path.exists(path):
                 continue
-            key = m['year']
-            if key in found and found[key]['rank'] < (m['type'] != 'private', m['type'] != 'plan'):
+            rank = (m['type'] != 'private', m['type'] != 'plan')
+            key = (m['year'], m['level'])
+            if key in found and found[key]['rank'] < rank:
                 continue
             try:
                 ext = path.rsplit('.', 1)[-1].lower()
@@ -179,19 +206,26 @@ def main(raw):
             except Exception as e:  # noqa: BLE001
                 print('실패', m['path'], type(e).__name__, e)
                 continue
-            recs = [r for r in recs if r['corp'] and r['school'] and r['count']]
+            for r in recs:
+                r['subject'] = norm_subject(r['subject'] or '')
+                r['school'] = clean(r['school'])
+                r['corp'] = re.sub(r'\s*\([^)]*\)$', '', clean(r['corp']))  # '천성원 (대전원명학교)' → '천성원'
+            recs = [r for r in recs if valid(r)]
             if not recs:
                 continue
-            rank = (m['type'] != 'private', m['type'] != 'plan')
-            if key in found and found[key]['rank'] == rank and found[key]['level'] != m['level']:
-                # 초등·중등이 따로 올라온 경우 합침
-                found[key]['rows'] += recs
-                found[key]['sources'].append({'title': m['title'], 'url': m.get('post_url')})
+            if key in found and found[key]['rank'] == rank and len(found[key]['rows']) >= len(recs):
                 continue
-            found[key] = {'rank': rank, 'level': m['level'], 'rows': recs,
-                          'sources': [{'title': m['title'], 'url': m.get('post_url')}],
+            found[key] = {'rank': rank, 'rows': recs, 'sources': [{'title': m['title'], 'url': m.get('post_url')}],
                           'posted_at': (posts.get(m.get('post_url')) or {}).get('posted_at')}
             print(f"OK {region} {m['year']} {m['type']} {m['path'].split('/')[-1]} 줄={len(recs)} 인원={sum(r['count'] for r in recs)}")
+        merged = {}
+        for (year, _), v in sorted(found.items(), key=lambda kv: kv[1]['rank']):
+            cur = merged.setdefault(year, {'rank': v['rank'], 'rows': [], 'sources': [], 'posted_at': v['posted_at']})
+            if not cur['rank'][0] and v['rank'][0]:
+                continue  # 위탁 전용 공고가 있으면 시행계획 표는 쓰지 않음
+            cur['rows'] += v['rows']
+            cur['sources'] += [x for x in v['sources'] if x not in cur['sources']]
+        found = merged
         for year, v in found.items():
             seen = set()
             rows = []
@@ -218,6 +252,9 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:  # 파일 하나 시험: parse_private.py test <파일>
         p = sys.argv[2]
         recs = records_pdf(p) if p.endswith('.pdf') else records_rows(p)
+        for r in recs:
+            r['subject'] = norm_subject(r['subject'] or '')
+        recs = [r for r in recs if valid(r)]
         for r in recs:
             print(r)
         print(len(recs), sum(r['count'] or 0 for r in recs))
