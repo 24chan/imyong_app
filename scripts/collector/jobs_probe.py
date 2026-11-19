@@ -9,12 +9,10 @@ def req(url, data=None):
         return r.read().decode(r.headers.get_content_charset() or 'utf-8', 'ignore')
     except Exception as e: return 'ERR ' + str(e)
 clean = lambda s: re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', s)).strip()
-g = req('https://www.goe.go.kr/recruit/ad/func/pb/hnfpPbancList.do', {'mi': '10500', 'currPage': '1', 'srchOcptNm': '기간제/사립교원', 'srchOcptCd': 'A', 'adminAt': 'N', 'sysId': 'recruit', 'srchEcptDl': 'Y', 'cmmnCode': 'GOE_AREA_CODE'})
-i = g.find('pbancSn'); print('GOE', len(g)); 
-for m in list(re.finditer(r'fnView|goView|pbancSn\W', g))[:3]: print('CTX', g[max(0,m.start()-1500):m.start()+300].replace('\n',' ')[:1800]); print('----')
-for kw in ['정교사','신규','사립']:
-    j = g.find(kw); print(kw, clean(g[max(0,j-300):j+300]) if j>0 else None)
-for u in ['https://work.sen.go.kr/work/search/recInfo/BD_selectSrchRecInfo.do', 'https://work.sen.go.kr/work/main/main.do', 'https://job.pusan.ac.kr/', 'https://www.pen.go.kr/', 'https://www.sen.go.kr/user/bbs/BD_selectBbsList.do?q_bbsSn=1151']:
-    h = req(u); print('\n####', u, len(h), clean(h)[:300])
-    for t in re.findall(r'<a[^>]+href="([^"]+)"[^>]*>([^<]{2,40})</a>', h):
-        if re.search('채용|구인|교원', t[1]): print('  ', t[1].strip(), t[0][:120])
+g = req('https://www.goe.go.kr/recruit/ad/func/pb/hnfpPbancList.do?mi=10500')
+i = g.find('사립학교 교원정규채용'); print('GOE OPT', g[i-1200:i+300])
+s = req('https://work.sen.go.kr/work/search/recInfo/BD_selectSrchRecInfo.do')
+i = s.find('<form'); print('\nSEN FORMS', [ (m.group(0)[:200]) for m in re.finditer(r'<form[^>]*>', s)])
+print('SEN INPUTS', re.findall(r'<(?:input|select)[^>]*name="([^"]+)"', s)[:60])
+j = s.find('사립'); print('SEN 사립', s[max(0,j-1500):j+500] if j>0 else None)
+k = s.find('<tbody'); print('SEN TBODY', s[k:k+2500] if k>0 else s[s.find('BD_selectRecDetail')-1500:s.find('BD_selectRecDetail')+800])
