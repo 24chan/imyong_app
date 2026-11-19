@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { ViewModeBanner } from '../../components/ModeToggle';
-import { Chip, Screen, Segmented, Txt } from '../../components/ui';
+import { Chip, Screen, Txt } from '../../components/ui';
 import { ago } from '../../data/community';
 import { regionByCode } from '../../data/regions';
 import {
@@ -68,15 +68,28 @@ export default function StudyScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Screen>
         <ViewModeBanner />
-        <Segmented<Tab>
-          value={tab}
-          onChange={setTab}
-          options={[
-            { value: 'study', label: '스터디 모집' },
-            { value: 'material', label: '공부 자료' },
-            { value: 'mock', label: '모의고사' },
-          ]}
-        />
+        {/* 세 가지 메뉴: 홈 바로가기와 같은 아이콘 카드, 고른 것은 초록으로 채움 */}
+        <View style={{ flexDirection: 'row', paddingVertical: 16, paddingHorizontal: space.sm, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line }}>
+          {(
+            [
+              { value: 'study', icon: 'people-outline', label: '스터디 모집' },
+              { value: 'material', icon: 'document-text-outline', label: '공부 자료' },
+              { value: 'mock', icon: 'clipboard-outline', label: '모의고사' },
+            ] as const
+          ).map((o) => {
+            const on = tab === o.value;
+            return (
+              <Pressable key={o.value} onPress={() => setTab(o.value)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
+                <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: on ? colors.brand : colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                  <Ionicons name={o.icon} size={22} color={on ? colors.background : colors.brand} />
+                </View>
+                <Txt style={{ fontSize: 12.5, fontWeight: on ? '800' : '600' }} color={on ? 'text' : 'textSub'}>
+                  {o.label}
+                </Txt>
+              </Pressable>
+            );
+          })}
+        </View>
         {mySubject && (
           <View style={{ flexDirection: 'row', gap: space.sm }}>
             <Chip label={`${subjectByCode(mySubject)?.name ?? ''}만`} selected={onlyMySubject} onPress={() => setOnlyMySubject(true)} />
@@ -87,7 +100,7 @@ export default function StudyScreen() {
 
         {tab === 'study' && (
           <>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
               <Chip label="모집 중만" selected={openOnly} onPress={() => setOpenOnly((v) => !v)} />
               {(['first', 'second'] as const).map((s) => (
                 <Chip key={s} label={STAGE_LABEL[s]} selected={stage === s} onPress={() => setStage(stage === s ? null : s)} />
@@ -98,7 +111,7 @@ export default function StudyScreen() {
               {settings.regionCodes.map((r) => (
                 <Chip key={r} label={regionByCode(r)?.shortName ?? r} selected={region === r} onPress={() => setRegion(region === r ? null : r)} />
               ))}
-            </View>
+            </ScrollView>
             {studies === null ? (
               <ActivityIndicator color={colors.brand} />
             ) : studies.length === 0 ? (
@@ -112,19 +125,23 @@ export default function StudyScreen() {
         {tab === 'material' && (
           <>
             <Txt variant="sub">직접 정리한 요약·노트만 올라와요. 교재·강의 PDF나 파일 링크 공유는 금지예요.</Txt>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
               <Chip label="최신순" selected={sort === 'new'} onPress={() => setSort('new')} />
               <Chip label="공감순" selected={sort === 'like'} onPress={() => setSort('like')} />
               {(Object.keys(AREA_LABEL) as Material['area'][]).map((a) => (
                 <Chip key={a} label={AREA_LABEL[a]} selected={area === a} onPress={() => setArea(area === a ? null : a)} />
               ))}
-            </View>
+            </ScrollView>
             {materials === null ? (
               <ActivityIndicator color={colors.brand} />
             ) : materials.length === 0 ? (
               <Empty icon="document-text-outline" text="아직 자료가 없어요. 직접 정리한 내용을 나눠 주세요." />
             ) : (
-              materials.map((m) => <MaterialCard key={m.id} m={m} />)
+              <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
+                {materials.map((m, i) => (
+                  <MaterialCard key={m.id} m={m} first={i === 0} />
+                ))}
+              </View>
             )}
           </>
         )}
@@ -133,7 +150,7 @@ export default function StudyScreen() {
           <>
             <Pressable
               onPress={() => (uid ? router.push('/mock/scores') : needWriterAlert(null, null))}
-              style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.accent + '66', backgroundColor: colors.accent + '14' }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: 18, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.accent + '66', backgroundColor: colors.accent + '14' }}
             >
               <Ionicons name="stats-chart" size={22} color={colors.accent} />
               <View style={{ flex: 1 }}>
@@ -214,7 +231,7 @@ function StudyCard({ s }: { s: Study }) {
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/study/[id]', params: { id: String(s.id) } })}
-      style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: space.md, gap: 6, opacity: open ? 1 : 0.6 }}
+      style={{ backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: 8, opacity: open ? 1 : 0.6 }}
     >
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <Tag text={open ? '모집 중' : '마감'} tone={open ? 'accent' : 'sub'} />
@@ -242,12 +259,12 @@ function StudyCard({ s }: { s: Study }) {
   );
 }
 
-function MaterialCard({ m }: { m: Material }) {
+function MaterialCard({ m, first }: { m: Material; first: boolean }) {
   const { colors } = useTheme();
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/materials/[id]', params: { id: String(m.id) } })}
-      style={{ borderBottomWidth: 1, borderBottomColor: colors.line, paddingVertical: space.md, gap: 4 }}
+      style={{ borderTopWidth: first ? 0 : 1, borderTopColor: colors.line, padding: space.md, gap: 4 }}
     >
       <View style={{ flexDirection: 'row', gap: 6 }}>
         <Tag text={AREA_LABEL[m.area]} />
@@ -280,7 +297,7 @@ function ExamCard({ e }: { e: MockExam }) {
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/mock/[id]', params: { id: String(e.id) } })}
-      style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: space.md, gap: 4 }}
+      style={{ backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: 6 }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         <Tag text={e.examDate ? (past ? '시행됨' : '예정') : '일정 미정'} tone={past ? 'sub' : 'accent'} />

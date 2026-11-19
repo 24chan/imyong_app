@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { ViewModeBanner } from '../../components/ModeToggle';
-import { Chip, PrimaryButton, Screen, Segmented, Txt } from '../../components/ui';
+import { Chip, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { AcademyEvent, Ad, Area, EVENT_KIND, LECTURE_AREA, Lecture, listAds, listEvents, listLectures, requestLecture } from '../../data/academy';
 import { subjectByCode } from '../../data/subjects';
 import { Sheet } from '../../features/community/parts';
@@ -62,14 +62,27 @@ export default function AcademyScreen() {
   return (
     <Screen>
       <ViewModeBanner />
-      <Segmented<Tab>
-        value={tab}
-        onChange={setTab}
-        options={[
-          { value: 'lectures', label: '강의 후기' },
-          { value: 'calendar', label: '개강·특강 일정' },
-        ]}
-      />
+      {/* 두 가지 메뉴: 아이콘 카드, 고른 것은 초록으로 채움 */}
+      <View style={{ flexDirection: 'row', paddingVertical: 16, paddingHorizontal: space.sm, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line }}>
+        {(
+          [
+            { value: 'lectures', icon: 'star-outline', label: '강의 후기' },
+            { value: 'calendar', icon: 'calendar-outline', label: '개강·특강 일정' },
+          ] as const
+        ).map((o) => {
+          const on = tab === o.value;
+          return (
+            <Pressable key={o.value} onPress={() => setTab(o.value)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: on ? colors.brand : colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={o.icon} size={22} color={on ? colors.background : colors.brand} />
+              </View>
+              <Txt style={{ fontSize: 12.5, fontWeight: on ? '800' : '600' }} color={on ? 'text' : 'textSub'}>
+                {o.label}
+              </Txt>
+            </Pressable>
+          );
+        })}
+      </View>
       <Txt variant="sub">
         {viewLevel === 'elementary' ? '교육학 + 초등' : `교육학 + ${subjectByCode(subject)?.name ?? '중등'} 전공`} 강의예요. 후기는 수강 인증을 받은 사람만 쓸 수 있어요.
       </Txt>
@@ -77,7 +90,7 @@ export default function AcademyScreen() {
 
       {tab === 'lectures' ? (
         <>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
             <Chip label="전체" selected={!area} onPress={() => setArea(null)} />
             {(Object.keys(LECTURE_AREA) as Area[]).map((a) => (
               <Chip key={a} label={LECTURE_AREA[a]} selected={area === a} onPress={() => setArea(a)} />
@@ -85,13 +98,17 @@ export default function AcademyScreen() {
             <View style={{ width: 1, backgroundColor: colors.line, marginHorizontal: 2 }} />
             <Chip label="평점순" selected={sort === 'rating'} onPress={() => setSort('rating')} />
             <Chip label="후기 많은 순" selected={sort === 'reviews'} onPress={() => setSort('reviews')} />
-          </View>
+          </ScrollView>
           {lectures === null ? (
             <ActivityIndicator color={colors.brand} />
           ) : sorted.length === 0 ? (
             <Txt variant="sub">아직 등록된 강의가 없어요. 아래에서 추가를 요청해 주세요.</Txt>
           ) : (
-            sorted.map((l, i) => <LectureRow key={l.id} l={l} rank={sort === 'rating' && l.reviewCount >= 3 ? i + 1 : null} />)
+            <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
+              {sorted.map((l, i) => (
+                <LectureRow key={l.id} l={l} first={i === 0} rank={sort === 'rating' && l.reviewCount >= 3 ? i + 1 : null} />
+              ))}
+            </View>
           )}
           <PrimaryButton label="찾는 강의가 없나요? 추가 요청" variant="ghost" onPress={() => (session ? setReqOpen(true) : router.push('/login'))} />
         </>
@@ -113,8 +130,9 @@ export default function AcademyScreen() {
           ) : byDate.length === 0 ? (
             <Txt variant="sub">이 달에 등록된 일정이 없어요.</Txt>
           ) : (
-            byDate.map(([date, list]) => (
-              <View key={date} style={{ flexDirection: 'row', gap: space.md, paddingVertical: space.sm, borderTopWidth: 1, borderTopColor: colors.line }}>
+            <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
+            {byDate.map(([date, list], i) => (
+              <View key={date} style={{ flexDirection: 'row', gap: space.md, padding: space.md, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: colors.line }}>
                 <View style={{ width: 52, alignItems: 'center' }}>
                   <Txt style={{ fontWeight: '800', fontSize: 20 }}>{Number(date.slice(8))}</Txt>
                   <Txt variant="sub">{['일', '월', '화', '수', '목', '금', '토'][new Date(date).getDay()]}</Txt>
@@ -136,7 +154,8 @@ export default function AcademyScreen() {
                   ))}
                 </View>
               </View>
-            ))
+            ))}
+            </View>
           )}
         </>
       )}
@@ -148,7 +167,7 @@ export default function AcademyScreen() {
             <Pressable
               key={a.id}
               onPress={() => a.url && Linking.openURL(a.url)}
-              style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, gap: 2 }}
+              style={{ backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: 2 }}
             >
               <Txt variant="sub" style={{ fontWeight: '800' }}>
                 광고{a.academyName ? ` · ${a.academyName}` : ''}
@@ -187,12 +206,12 @@ export default function AcademyScreen() {
   );
 }
 
-function LectureRow({ l, rank }: { l: Lecture; rank: number | null }) {
+function LectureRow({ l, rank, first }: { l: Lecture; rank: number | null; first: boolean }) {
   const { colors } = useTheme();
   return (
     <Pressable
       onPress={() => router.push({ pathname: '/lecture/[id]', params: { id: String(l.id) } })}
-      style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.line }}
+      style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderTopWidth: first ? 0 : 1, borderTopColor: colors.line }}
     >
       <Txt style={{ width: 24, fontWeight: '800', color: rank && rank <= 3 ? colors.accent : colors.textSub }}>{rank ?? '·'}</Txt>
       <View style={{ flex: 1, gap: 2 }}>
