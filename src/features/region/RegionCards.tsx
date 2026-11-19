@@ -40,27 +40,34 @@ export function RegionRow({ row: r, info, onPress }: CardProps) {
   );
 }
 
-/** 격자형: 한 줄에 두 지역 (정사각형에 가까운 카드) */
+/** 격자형: 한 줄에 세 지역 (홈과 같은 정사각형 칸) */
 export function RegionTile({ row: r, info, onPress }: CardProps) {
+  const { colors } = useTheme();
+  const tone = r.change == null ? colors.textSub : r.change > 0 ? colors.up : r.change < 0 ? colors.down : colors.textSub;
+  const sign = r.change == null ? '' : r.change > 0 ? '▲ ' : r.change < 0 ? '▼ ' : '– ';
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" style={{ width: '48.5%' }}>
-      <Card style={{ aspectRatio: 1, justifyContent: 'space-between', padding: space.md }}>
-        <View style={{ gap: space.xs }}>
-          <Txt variant="heading">{regionByCode(r.region)?.shortName}</Txt>
-          {info && <StatusBadge status={info.status} />}
-        </View>
-        <View style={{ gap: space.xs }}>
-          <Txt variant="number">
-            {r.selection != null ? r.selection.toLocaleString() : '—'}
-            <Txt variant="sub"> 명</Txt>
-          </Txt>
-          <ChangeBadge change={r.change} rate={r.changeRate} />
-          <Txt variant="sub" numberOfLines={1}>
-            {stageLabel(r.selectionStage)}
-            {r.ratioApplied != null ? ` · ${r.ratioApplied} : 1` : ''}
-          </Txt>
-        </View>
-      </Card>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${regionByCode(r.region)?.shortName} 선발 ${r.selection ?? '자료 없음'}명`}
+      style={{ width: '31.8%', aspectRatio: 1, backgroundColor: colors.surface, borderRadius: 18, padding: 12, justifyContent: 'space-between' }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Txt style={{ fontSize: 15, fontWeight: '800' }}>{regionByCode(r.region)?.shortName}</Txt>
+        <Ionicons name="chevron-forward" size={14} color={colors.textSub} />
+      </View>
+      <View style={{ gap: 2 }}>
+        <Txt style={{ fontSize: 22, fontWeight: '800', letterSpacing: -0.5 }} numberOfLines={1} adjustsFontSizeToFit>
+          {r.selection != null ? r.selection.toLocaleString() : '—'}
+          <Txt variant="sub"> 명</Txt>
+        </Txt>
+        <Txt style={{ fontSize: 12.5, fontWeight: '800', color: tone }} numberOfLines={1}>
+          {r.change == null ? '전년 자료 없음' : `${sign}${Math.abs(r.change).toLocaleString()}`}
+        </Txt>
+        <Txt variant="sub" style={{ fontSize: 11.5 }} numberOfLines={1}>
+          {info?.status === 'open' ? '● 접수 중' : `${stageLabel(r.selectionStage)}${r.ratioApplied != null ? ` · ${r.ratioApplied}:1` : ''}`}
+        </Txt>
+      </View>
     </Pressable>
   );
 }

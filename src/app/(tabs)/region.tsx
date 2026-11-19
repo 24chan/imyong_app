@@ -23,7 +23,7 @@ import { useTheme } from '../../theme/useTheme';
 const VIEW_OPTIONS: { value: RegionView; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
   { value: 'map', icon: 'map-outline', label: '지도로 보기' },
   { value: 'list', icon: 'list-outline', label: '한 줄씩 보기' },
-  { value: 'grid', icon: 'grid-outline', label: '두 칸씩 보기' },
+  { value: 'grid', icon: 'grid-outline', label: '세 칸씩 보기' },
 ];
 
 // 지역·TO: 지도 / 한 줄 / 두 칸 보기. 지도에서 지역을 누르면 바텀시트, 목록에서 누르면 지역 상세.
@@ -77,13 +77,7 @@ export default function RegionScreen() {
           <Txt variant="title">{modeTitle} 선발 인원</Txt>
         </View>
         <View
-          style={{
-            flexDirection: 'row',
-            borderWidth: 1,
-            borderColor: colors.line,
-            borderRadius: radius.md,
-            overflow: 'hidden',
-          }}
+          style={{ flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.pill, padding: 3, gap: 2 }}
         >
           {VIEW_OPTIONS.map((o) => {
             const active = view === o.value;
@@ -94,7 +88,7 @@ export default function RegionScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={o.label}
                 accessibilityState={{ selected: active }}
-                style={{ padding: 8, backgroundColor: active ? colors.brand : colors.background }}
+                style={{ width: 40, height: 36, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: active ? colors.brand : 'transparent' }}
               >
                 <Ionicons name={o.icon} size={20} color={active ? colors.background : colors.textSub} />
               </Pressable>
@@ -105,32 +99,17 @@ export default function RegionScreen() {
 
       {/* 비교 지역(최대 3개)으로 나란히 보기 / 추이 겹쳐 보기 */}
       <View style={{ gap: space.xs }}>
-        <View style={{ flexDirection: 'row', gap: space.sm }}>
+        <View style={{ flexDirection: 'row', paddingVertical: 16, paddingHorizontal: space.sm, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.background }}>
           {[
             { href: '/compare' as const, icon: 'git-compare-outline' as const, label: '지역 비교' },
-            { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이 함께 보기' },
+            { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이' },
             { href: '/univ-pass' as const, icon: 'school-outline' as const, label: '대학별 합격률' },
           ].map((b) => (
-            <Pressable
-              key={b.href}
-              onPress={() => router.push(b.href)}
-              accessibilityRole="button"
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                padding: space.md,
-                borderRadius: radius.md,
-                borderWidth: 1,
-                borderColor: colors.brand,
-              }}
-            >
-              <Ionicons name={b.icon} size={18} color={colors.brand} />
-              <Txt style={{ fontWeight: '700' }} color="brand">
-                {b.label}
-              </Txt>
+            <Pressable key={b.href} onPress={() => router.push(b.href)} accessibilityRole="button" style={{ flex: 1, alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={b.icon} size={22} color={colors.brand} />
+              </View>
+              <Txt style={{ fontSize: 12.5, fontWeight: '700' }}>{b.label}</Txt>
             </Pressable>
           ))}
         </View>
@@ -163,7 +142,7 @@ export default function RegionScreen() {
             ))}
 
           {view === 'grid' && (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: space.md }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
               {rows.data.map((r) => (
                 <RegionTile key={r.region} row={r} info={statusOf(r.region)} onPress={() => openDetail(r.region)} />
               ))}
