@@ -1,6 +1,8 @@
 name: collector-geo
 # 시군구 경계(admdongkor) → 지역별 단순화 경계 JSON → raw-files/raw/geo/<지역>.json (학교 지도 배경)
 on:
+  schedule:
+    - cron: '41 18 4 * *'   # 매달 5일 03:41 (한국 시간) — 행정구역 바뀌면 반영
   workflow_dispatch:
     inputs:
       explore:

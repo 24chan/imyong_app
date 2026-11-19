@@ -337,3 +337,16 @@ export async function getPrivateOpenings(region: string): Promise<PrivateYear[]>
     return ((await res.json()) as Raw[]).map((y) => ({ year: y.year, postedAt: y.posted_at, sources: y.sources, rows: y.rows }));
   });
 }
+
+/** 지역 시군구 경계 (raw-files/raw/geo/<지역>.json). 없으면 null */
+export type RegionGeo = { version: string; sgg: { n: string; p: [number, number][][] }[] };
+export async function getRegionGeo(region: string): Promise<RegionGeo | null> {
+  return cached(`geo:${region}`, async () => {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/${region}.json`);
+      return res.ok ? ((await res.json()) as RegionGeo) : null;
+    } catch {
+      return null;
+    }
+  });
+}
