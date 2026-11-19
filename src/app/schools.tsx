@@ -5,6 +5,7 @@ import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { regionByCode } from '../data/regions';
 import { getSchoolMeta, getSchools } from '../data/repository';
 import { useAsync } from '../data/useAsync';
+import { PrivateLink } from '../features/news/PrivateLink';
 import { FoundMark, SchoolMap, SchoolMapHandle } from '../features/region/SchoolMap';
 import type { Level } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
@@ -80,6 +81,8 @@ export default function SchoolsScreen() {
               {level === 'elementary' ? '초등학교' : '중·고등학교'} 위치예요. 사립학교 교사는 공립 임용시험과 따로 뽑아요(일부는
               교육청에 1차 시험 위탁).
             </Txt>
+
+            <PrivateLink region={params.region} />
 
             {level === 'secondary' && (
               <Segmented

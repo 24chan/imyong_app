@@ -4,6 +4,8 @@ import type {
   DataQuery,
   ExamResult,
   Notice,
+  PrivateOpening,
+  PrivateYear,
   RegionSummary,
   ScheduleEvent,
   School,
@@ -306,5 +308,32 @@ export async function getSchoolMeta(): Promise<SchoolMeta | null> {
     } catch {
       return null;
     }
+  });
+}
+
+// ───── 사립 위탁 채용 (수집기가 공고문 표에서 뽑아 raw-files 브랜치에 올린 JSON) ─────
+
+const PRIVATE_BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/private';
+
+/** 사립 위탁 채용 자료가 있는 지역 → 학년도 목록 */
+export async function getPrivateRegions(): Promise<Record<string, number[]>> {
+  return cached('private:meta', async () => {
+    try {
+      const res = await fetch(`${PRIVATE_BASE}/meta.json`);
+      if (!res.ok) return {};
+      return ((await res.json()) as { regions?: Record<string, number[]> }).regions ?? {};
+    } catch {
+      return {};
+    }
+  });
+}
+
+export async function getPrivateOpenings(region: string): Promise<PrivateYear[]> {
+  return cached(`private:${region}`, async () => {
+    const res = await fetch(`${PRIVATE_BASE}/${region}.json`);
+    if (res.status === 404) return [];
+    if (!res.ok) throw new DataError('사립 위탁 채용', `HTTP ${res.status}`);
+    type Raw = { year: number; posted_at: string | null; sources: PrivateYear['sources']; rows: PrivateOpening[] };
+    return ((await res.json()) as Raw[]).map((y) => ({ year: y.year, postedAt: y.posted_at, sources: y.sources, rows: y.rows }));
   });
 }

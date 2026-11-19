@@ -112,3 +112,20 @@ export type SchoolKind = 'e' | 'm' | 'h'; // 초·중·고
 export type SchoolFound = 'p' | 's' | 'n'; // 공립·사립·국립
 export type School = { name: string; kind: SchoolKind; found: SchoolFound; lat: number; lng: number; sigungu: string };
 export type SchoolMeta = { updated: string; source: string };
+
+/** 사립학교 위탁 채용 (교육청 공고의 법인·학교·과목·인원 표) */
+export type PrivateOpening = {
+  corp: string;
+  method: string | null; // '공·사립 동시지원' | '사립 복수지원' | 원문
+  school: string;
+  url: string | null; // 학교 누리집
+  subject: string;
+  count: number;
+  level: Level;
+};
+export type PrivateYear = {
+  year: number;
+  postedAt: string | null;
+  sources: { title: string; url: string | null }[];
+  rows: PrivateOpening[];
+};

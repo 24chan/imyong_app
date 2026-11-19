@@ -7,6 +7,7 @@ import { regionByCode } from '../data/regions';
 import { getNotices } from '../data/repository';
 import { useAsync } from '../data/useAsync';
 import { NOTICE_LABEL } from '../features/news/NoticeList';
+import { PrivateLink } from '../features/news/PrivateLink';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 import type { Level } from '../store/AppSettings';
@@ -68,6 +69,7 @@ export default function NoticeScreen() {
         <Txt variant="sub">이 공고는 바로 볼 수 있는 그림이 없어요 (한글·엑셀 첨부). 아래 원문에서 확인하세요.</Txt>
       )}
 
+      {item.docType === 'private' && <PrivateLink region={item.region} />}
       <PrimaryButton label="교육청 원문 공고 열기" onPress={() => Linking.openURL(item.url).catch(() => {})} />
       {item.files.length > 0 && (
         <View style={{ gap: space.xs }}>

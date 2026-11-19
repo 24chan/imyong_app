@@ -5,6 +5,7 @@ import { Chip, Screen, Txt } from '../components/ui';
 import { getNotices, getRegionSummaries } from '../data/repository';
 import { useAsync } from '../data/useAsync';
 import { NOTICE_LABEL, NoticeBoard, NoticeRow } from '../features/news/NoticeList';
+import { PrivateLink } from '../features/news/PrivateLink';
 import { useRegionFilters } from '../features/region/useRegionFilters';
 import { useAppSettings } from '../store/AppSettings';
 import { space } from '../theme/tokens';
@@ -53,6 +54,7 @@ export default function NewsScreen() {
           <Chip key={t} label={t === 'all' ? '전체' : NOTICE_LABEL[t]} selected={type === t} onPress={() => setType(t)} />
         ))}
       </View>
+      {type === 'private' && <PrivateLink />}
       {notices.loading && <ActivityIndicator color={colors.brand} />}
       {!notices.loading && list.length === 0 && (
         <Txt variant="sub">
