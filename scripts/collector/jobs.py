@@ -25,6 +25,7 @@ KEYWORDS = ['신규교사', '신규 교사', '신규교원', '교원 신규', '�
 TEACH = re.compile(r'교사|교원')
 INCLUDE = re.compile(r'신규|정규|정교사|공개\s*(채용|전형)|선정\s*경쟁|임용\s*후보자')
 EXCLUDE = re.compile(r'기간제|시간\s*강사|계약제|계약직|대체|방과후|공무직|실무사|보안관|유치원|돌봄|늘봄|조리|사무|직원|조교|연구|전담|병원|미화|청사|시설|강사|코치|원어민|합격자|결과|겸임|기간\s*교사|협력|사감|관리\s*교사|생활관|지도\s*교사|계학제|담임\s*교사|면접\s*(시험|대상|안내)')
+HARD = re.compile(r'유치원|교장|교감|원어민|방과후|초빙|강사|사감|돌봄|늘봄')  # 어느 출처든 무조건 제외
 SCHOOL = re.compile(r'초등학교|중학교|고등학교|학교법인|학원|중·고|교육청')
 REGION = [
     ('서울', 'seoul'), ('부산', 'busan'), ('대구', 'daegu'), ('인천', 'incheon'), ('광주광역시', 'gwangju'), ('대전', 'daejeon'),
@@ -78,6 +79,8 @@ def level_of(org, title):
 def is_teacher_job(r):
     """학교(초·중·고) 신규·정규 교사 공고만. 대학 본부·병원 등은 제외"""
     t, org = r['title'], r['org']
+    if HARD.search(t + ' ' + org):
+        return False
     if not (TEACH.search(t) and INCLUDE.search(t)) or EXCLUDE.search(t):
         return False
     if not SCHOOL.search(org + ' ' + t):
@@ -193,10 +196,11 @@ def main(out_dir):
     # 경기·서울 전용 게시판 (교원 정규채용 칸이라 제목 거르기를 덜 엄격하게)
     extra = {**collect_goe(), **collect_sen(40 if not old else 12)}
     for k, v in extra.items():
-        if EXCLUDE.search(v['title']) and not v.get('field', '').startswith('정규교원'):
+        if HARD.search(v['title'] + ' ' + v['org']) or (EXCLUDE.search(v['title']) and not v.get('field', '').startswith('정규교원')):
             continue
         found[k] = v
-    jobs = {k: v for k, v in old.items() if is_teacher_job(v) or k.startswith(('goe-', 'sen-'))}
+    jobs = {k: v for k, v in old.items()
+            if not HARD.search(v['title'] + ' ' + v['org']) and (is_teacher_job(v) or k.startswith(('goe-', 'sen-')))}
     for i, r in found.items():
         jobs[i] = {'url': VIEW + i, 'source': '나라일터(정책브리핑)', **r,
                    'region': region_of(r['org'], r['title']), 'level': level_of(r['org'], r['title'])}
