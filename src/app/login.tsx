@@ -83,7 +83,7 @@ export default function LoginScreen() {
           <Txt variant="sub">
             {step === 'email'
               ? '처음이면 자동으로 가입돼요. 비밀번호는 없어요. 로그인하지 않아도 자료는 모두 볼 수 있고, 글쓰기·댓글은 로그인과 인증 후에 할 수 있어요.'
-              : `${email.trim()} 로 보낸 6자리 숫자를 넣어 주세요. 메일이 안 보이면 스팸함도 확인해 주세요.`}
+              : `${email.trim()} 로 보낸 6자리 숫자를 넣어 주세요. 코드는 1시간 동안 쓸 수 있어요. 메일이 안 보이면 스팸함도 확인해 주세요.`}
           </Txt>
 
           <Card>
@@ -140,7 +140,7 @@ export default function LoginScreen() {
             <View style={{ gap: space.xs }}>
               <PrimaryButton label="확인" onPress={() => verify()} disabled={code.length < 6} />
               <PrimaryButton
-                label={wait > 0 ? `코드 다시 받기 (${wait}초)` : '코드 다시 받기'}
+                label={wait > 0 ? `새 코드는 ${wait}초 뒤에 받을 수 있어요` : '새 코드 받기'}
                 variant="ghost"
                 disabled={wait > 0}
                 onPress={send}

@@ -112,6 +112,7 @@ export default function SchoolsScreen() {
 
             <SchoolMap
               ref={mapRef}
+              region={params.region}
               schools={shown}
               frameFrom={levelSchools}
               selected={selected}
@@ -133,11 +134,7 @@ export default function SchoolsScreen() {
                 ))}
             </View>
 
-            {selected ? (
-              <SchoolRow school={selected} highlight onPress={() => setSelected(null)} />
-            ) : (
-              <Txt variant="sub">점을 누르면 학교 이름이 보여요. + 로 확대한 뒤 끌어서 움직일 수 있어요.</Txt>
-            )}
+            {selected && <SchoolRow school={selected} highlight onPress={() => setSelected(null)} />}
 
             <Card style={{ gap: 0, paddingVertical: space.sm }}>
               <Txt variant="heading" style={{ paddingVertical: space.sm }}>
