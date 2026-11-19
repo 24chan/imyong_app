@@ -117,6 +117,13 @@ def secondary_rows(raw):
     groups = {}
     for r in recs:
         groups.setdefault((r['region'], r['year']), []).append(r)
+    # 사용자가 보내준 정리표(원문과 대조함): 원문에 없는 칸만 채움
+    manual = {}
+    mf = os.path.join(MANUAL_DIR, 'secondary_compiled.json')
+    if os.path.exists(mf):
+        for m in json.load(open(mf))['records']:
+            manual.setdefault((m['region'], m['year']), []).append(m)
+            groups.setdefault((m['region'], m['year']), [])
     rows = []
     NONSUBJ = {'special', 'health', 'nutrition', 'librarian', 'counsel'}
     for (region, year), rs in sorted(groups.items()):
@@ -139,6 +146,18 @@ def secondary_rows(raw):
             if bad:
                 continue
             keep += [{k: v for k, v in x.items() if k not in ('agree', 'conflict')} for x in srs if not x.get('conflict')]
+        used_manual = False
+        for m in manual.get((region, year), []):
+            vals = {k: v for k, v in m.items() if k not in ('region', 'year', 'subject')}
+            x = next((x for x in keep if x['subject'] == m['subject'] and x['category'] in ('general', 'all')), None)
+            if x:
+                add = {k: v for k, v in vals.items() if x.get(k) is None}
+                x.update(add)
+                used_manual = used_manual or bool(add)
+            else:
+                keep.append({'region': region, 'year': year, 'level': 'secondary', 'subject': m['subject'], 'category': 'general',
+                             'sources': [], **vals})
+                used_manual = True
         if not keep:
             continue
         n_subj = len({x['subject'] for x in keep})
@@ -148,11 +167,11 @@ def secondary_rows(raw):
         srcs = sorted({sv for x in keep for sv in x['sources']})
         rows.append({
             'region': region, 'level': 'secondary', 'doc_type': 'exam_results',
-            'title': f'{year}학년도 {region} 중등 과목별 ({n_subj}과목, 공고 {len(srcs)}건)',
+            'title': f'{year}학년도 {region} 중등 과목별 ({n_subj}과목, 공고 {len(srcs)}건)' if srcs else f'{year}학년도 중등 과목별 합격 현황 (교육청 합격자 발표 기준)',
             'source_url': f'parsed:{region}:{year}:secondary',
             'file_url': f'parsed:exam_results:secondary:{year}:{region}',
             'parsed': {'year': year, 'records': keep, 'sources': srcs},
-            'status': 'pending', 'note': '검증 통과' if n_subj >= 5 else note.replace('검증 통과', '확인 필요(과목 적음)'),
+            'status': 'pending', 'note': '검증 통과' if n_subj >= 5 or used_manual else note.replace('검증 통과', '확인 필요(과목 적음)'),
             '_detail': note,
         })
     print(f'중등 묶음 {len(rows)}개: ' + ', '.join(f"{r['region']}{r['parsed']['year']}={len({x['subject'] for x in r['parsed']['records']})}" for r in rows))
