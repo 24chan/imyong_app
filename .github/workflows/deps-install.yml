@@ -1,0 +1,33 @@
+name: deps-install
+# 작업 환경에서 npm 설치가 막혀 있어, 패키지 설치는 여기서 하고 package.json·lock 을 커밋
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: '설치할 패키지 (공백 구분)'
+        required: true
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: expo install
+        env:
+          PKGS: ${{ github.event.inputs.packages }}
+        run: npx expo install $PKGS
+      - name: 커밋
+        env:
+          PKGS: ${{ github.event.inputs.packages }}
+        run: |
+          git config user.name "imyong-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "패키지 설치: $PKGS" || exit 0
+          git push
