@@ -52,6 +52,7 @@ function RootStack() {
         <Stack.Screen name="materials/write" options={{ title: '자료 올리기', presentation: 'modal' }} />
         <Stack.Screen name="mock/[id]" options={{ title: '모의고사', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="mock/scores" options={{ title: '점수 비교', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="lecture/[id]" options={{ title: '강의', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="verify" options={{ title: '학교·교사 인증', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="admin" options={{ title: '운영자', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="login" options={{ title: '로그인 · 가입', presentation: 'modal' }} />

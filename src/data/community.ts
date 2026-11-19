@@ -127,7 +127,7 @@ export const deleteComment = (id: number) => rpc<void>('delete_comment', { p_id:
 export const togglePostLike = (id: number) => rpc<number>('toggle_post_like', { p_id: id }, '공감');
 export const toggleCommentLike = (id: number) => rpc<number>('toggle_comment_like', { p_id: id }, '공감');
 export const toggleScrap = (id: number) => rpc<boolean>('toggle_scrap', { p_id: id }, '스크랩');
-export type ReportTarget = 'post' | 'comment' | 'message' | 'study' | 'material' | 'mock_review';
+export type ReportTarget = 'post' | 'comment' | 'message' | 'study' | 'material' | 'mock_review' | 'lecture_review';
 export const reportContent = (type: ReportTarget, id: number, reason: string, detail?: string) =>
   rpc<number>('report_content', { p_type: type, p_id: id, p_reason: reason, p_detail: detail ?? null }, '신고');
 export const blockAuthor = (type: ReportTarget | 'conversation', id: number | string) =>

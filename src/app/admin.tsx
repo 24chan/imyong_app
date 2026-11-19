@@ -9,6 +9,7 @@ import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, si
 import { useAuth } from '../store/Auth';
 import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
+import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, LECTURE_AREA, PendingEnrollment } from '../data/academy';
 import type { Level } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
@@ -20,7 +21,7 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock'>('verify');
+  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy'>('verify');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -48,7 +49,8 @@ export default function AdminScreen() {
             { value: 'verify', label: `인증 ${(list.data ?? []).length}` },
             { value: 'reports', label: `신고 ${(reports.data ?? []).length}` },
             { value: 'appeals', label: `이의 ${(appeals.data ?? []).length}` },
-            { value: 'mock', label: '모의고사' },
+            { value: 'mock', label: '모의' },
+            { value: 'academy', label: '강의' },
           ]}
         />
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
@@ -74,6 +76,7 @@ export default function AdminScreen() {
           </>
         )}
         {tab === 'mock' && <MockAdmin />}
+        {tab === 'academy' && <AcademyAdmin />}
         {tab === 'appeals' && (
           <>
             {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
@@ -186,7 +189,7 @@ function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: strin
   );
 }
 
-const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지', study: '스터디', material: '자료', mock_review: '모의고사 후기' } as const;
+const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지', study: '스터디', material: '자료', mock_review: '모의고사 후기', lecture_review: '강의 후기' } as const;
 
 function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
   const { colors } = useTheme();
@@ -290,6 +293,130 @@ function MockAdmin() {
           </Pressable>
         </View>
       ))}
+    </>
+  );
+}
+
+function EnrollCard({ e, onDone }: { e: PendingEnrollment; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [urls, setUrls] = useState<string[] | null>(null);
+  useEffect(() => {
+    enrollDocUrls(e.docPaths).then(setUrls).catch(() => setUrls([]));
+  }, [e.docPaths]);
+  const act = (ok: boolean) => adminReviewEnrollment(e, ok, ok ? undefined : '강의 이름 확인이 어려워요').then(onDone).catch((x) => Alert.alert('처리하지 못했어요', (x as Error).message));
+  return (
+    <Card style={{ borderWidth: 1, borderColor: colors.line }}>
+      <Txt variant="heading">수강 인증 · {e.academyName}</Txt>
+      <Txt>
+        {e.instructor} · {e.lectureTitle}
+      </Txt>
+      {(urls ?? []).map((u) => (
+        <Pressable key={u} onPress={() => Linking.openURL(u)}>
+          <Image source={{ uri: u }} style={{ width: '100%', aspectRatio: 1, borderRadius: radius.md, backgroundColor: colors.line }} resizeMode="contain" />
+        </Pressable>
+      ))}
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        <View style={{ flex: 1 }}>
+          <PrimaryButton label="승인" onPress={() => act(true)} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <PrimaryButton label="거절" variant="ghost" onPress={() => act(false)} />
+        </View>
+      </View>
+    </Card>
+  );
+}
+
+function AcademyAdmin() {
+  const { colors } = useTheme();
+  const [reload, setReload] = useState(0);
+  const enrolls = useAsync(() => adminEnrollments(), [reload]);
+  const reqs = useAsync(() => adminLectureRequests(), [reload]);
+  const [level, setLevel] = useState<Level>('elementary');
+  const [area, setArea] = useState<Area>('pedagogy');
+  const [subject, setSubject] = useState<string | null>(null);
+  const [academy, setAcademy] = useState('');
+  const [instructor, setInstructor] = useState('');
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('');
+  const [kind, setKind] = useState<keyof typeof EVENT_KIND>('open');
+  const [evTitle, setEvTitle] = useState('');
+  const [starts, setStarts] = useState('');
+  const input = { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text, backgroundColor: colors.background } as const;
+  const done = () => setReload((n) => n + 1);
+  return (
+    <>
+      <Txt variant="heading">수강 인증 {(enrolls.data ?? []).length}</Txt>
+      {(enrolls.data ?? []).map((e) => (
+        <EnrollCard key={e.id} e={e} onDone={done} />
+      ))}
+      {(reqs.data ?? []).length > 0 && (
+        <Card>
+          <Txt variant="heading">강의 추가 요청</Txt>
+          {(reqs.data ?? []).map((r) => (
+            <View key={r.id} style={{ flexDirection: 'row', gap: space.sm, alignItems: 'center' }}>
+              <Txt style={{ flex: 1 }}>{r.text}</Txt>
+              <Pressable onPress={() => adminDelete('lecture_requests', r.id).then(done)}>
+                <Txt variant="sub">처리함</Txt>
+              </Pressable>
+            </View>
+          ))}
+        </Card>
+      )}
+      <Card>
+        <Txt variant="heading">강의 등록 · 일정 등록 공통</Txt>
+        <Segmented<Level> value={level} onChange={setLevel} options={[{ value: 'elementary', label: '초등' }, { value: 'secondary', label: '중등' }]} />
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          {(Object.keys(LECTURE_AREA) as Area[]).map((a) => (
+            <Chip key={a} label={LECTURE_AREA[a]} selected={area === a} onPress={() => setArea(a)} />
+          ))}
+        </View>
+        {level === 'secondary' && area === 'major' && <SubjectPicker value={subject} onChange={setSubject} />}
+        <TextInput value={academy} onChangeText={setAcademy} placeholder="학원·인강 이름" placeholderTextColor={colors.textSub} style={input} />
+      </Card>
+      <Card>
+        <Txt variant="heading">강의 등록</Txt>
+        <TextInput value={instructor} onChangeText={setInstructor} placeholder="강사" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={title} onChangeText={setTitle} placeholder="강의명" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={url} onChangeText={setUrl} placeholder="안내 주소 (선택)" placeholderTextColor={colors.textSub} autoCapitalize="none" style={input} />
+        <PrimaryButton
+          label="강의 등록"
+          disabled={!academy.trim() || !instructor.trim() || !title.trim()}
+          onPress={() =>
+            adminAddLecture({ academy, instructor, title, level, area, subject: level === 'secondary' && area === 'major' ? subject : null, url })
+              .then(() => {
+                setInstructor('');
+                setTitle('');
+                setUrl('');
+                done();
+                Alert.alert('등록했어요');
+              })
+              .catch((e) => Alert.alert('등록하지 못했어요', (e as Error).message))
+          }
+        />
+      </Card>
+      <Card>
+        <Txt variant="heading">개강·특강·모의고사 일정</Txt>
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          {(Object.keys(EVENT_KIND) as (keyof typeof EVENT_KIND)[]).map((k) => (
+            <Chip key={k} label={EVENT_KIND[k]} selected={kind === k} onPress={() => setKind(k)} />
+          ))}
+        </View>
+        <TextInput value={evTitle} onChangeText={setEvTitle} placeholder="제목 (예: 교육학 기본반 개강)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={starts} onChangeText={setStarts} placeholder="날짜 2026-12-01" placeholderTextColor={colors.textSub} style={input} />
+        <PrimaryButton
+          label="일정 등록"
+          disabled={!evTitle.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(starts)}
+          onPress={() =>
+            adminAddEvent({ academy, kind, title: evTitle, starts, ends: null, level, area, subject: level === 'secondary' && area === 'major' ? subject : null, url: '' })
+              .then(() => {
+                setEvTitle('');
+                Alert.alert('등록했어요');
+              })
+              .catch((e) => Alert.alert('등록하지 못했어요', (e as Error).message))
+          }
+        />
+      </Card>
     </>
   );
 }
