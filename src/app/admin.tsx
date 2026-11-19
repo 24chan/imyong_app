@@ -7,6 +7,9 @@ import { subjectByCode } from '../data/subjects';
 import { useAsync } from '../data/useAsync';
 import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
 import { useAuth } from '../store/Auth';
+import { SubjectPicker } from '../components/pickers';
+import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
+import type { Level } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -17,7 +20,7 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals'>('verify');
+  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock'>('verify');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -45,6 +48,7 @@ export default function AdminScreen() {
             { value: 'verify', label: `인증 ${(list.data ?? []).length}` },
             { value: 'reports', label: `신고 ${(reports.data ?? []).length}` },
             { value: 'appeals', label: `이의 ${(appeals.data ?? []).length}` },
+            { value: 'mock', label: '모의고사' },
           ]}
         />
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
@@ -69,6 +73,7 @@ export default function AdminScreen() {
             ))}
           </>
         )}
+        {tab === 'mock' && <MockAdmin />}
         {tab === 'appeals' && (
           <>
             {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
@@ -181,7 +186,7 @@ function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: strin
   );
 }
 
-const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지' } as const;
+const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지', study: '스터디', material: '자료', mock_review: '모의고사 후기' } as const;
 
 function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
   const { colors } = useTheme();
@@ -222,5 +227,69 @@ function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
         </View>
       )}
     </Card>
+  );
+}
+
+function MockAdmin() {
+  const { colors } = useTheme();
+  const [level, setLevel] = useState<Level>('elementary');
+  const [subject, setSubject] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [provider, setProvider] = useState('');
+  const [date, setDate] = useState('');
+  const [url, setUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [reload, setReload] = useState(0);
+  const list = useAsync(() => listMockExams(level), [level, reload]);
+  const input = { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text, backgroundColor: colors.background } as const;
+  const add = async () => {
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return Alert.alert('날짜는 2026-12-05 형식으로 넣어 주세요');
+    try {
+      await adminAddMockExam({ name, provider, level, subject: level === 'secondary' ? subject : null, date: date || null, url, note });
+      setName('');
+      setDate('');
+      setUrl('');
+      setNote('');
+      setReload((n) => n + 1);
+    } catch (e) {
+      Alert.alert('등록하지 못했어요', (e as Error).message);
+    }
+  };
+  return (
+    <>
+      <Card>
+        <Txt variant="heading">모의고사 일정 등록</Txt>
+        <Segmented<Level> value={level} onChange={setLevel} options={[{ value: 'elementary', label: '초등' }, { value: 'secondary', label: '중등' }]} />
+        {level === 'secondary' && (
+          <>
+            <Txt variant="sub">과목 (안 고르면 중등 전체)</Txt>
+            <SubjectPicker value={subject} onChange={(c) => setSubject(subject === c ? null : c)} />
+          </>
+        )}
+        <TextInput value={name} onChangeText={setName} placeholder="이름 (예: 전국 모의고사 3회)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={provider} onChangeText={setProvider} placeholder="주관 (학원·기관)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={date} onChangeText={setDate} placeholder="날짜 2026-12-05 (모르면 비움)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={url} onChangeText={setUrl} placeholder="안내 주소 (선택)" placeholderTextColor={colors.textSub} autoCapitalize="none" style={input} />
+        <TextInput value={note} onChangeText={setNote} placeholder="메모 (선택: 응시료·방식 등, 광고 문구 금지)" placeholderTextColor={colors.textSub} style={input} />
+        <PrimaryButton label="등록" onPress={add} disabled={!name.trim() || !provider.trim()} />
+      </Card>
+      {(list.data ?? []).map((e) => (
+        <View key={e.id} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line }}>
+          <Txt style={{ flex: 1 }}>
+            {e.examDate ?? '미정'} · {e.name} ({e.provider})
+          </Txt>
+          <Pressable
+            onPress={() =>
+              Alert.alert('삭제할까요?', '후기도 함께 지워져요.', [
+                { text: '취소', style: 'cancel' },
+                { text: '삭제', style: 'destructive', onPress: () => adminDeleteMockExam(e.id).then(() => setReload((n) => n + 1)) },
+              ])
+            }
+          >
+            <Txt color="down">삭제</Txt>
+          </Pressable>
+        </View>
+      ))}
+    </>
   );
 }

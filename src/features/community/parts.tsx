@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
-import { ago, appealSanction, blockAuthor, Post, REPORT_REASONS, reportContent, Sanction, SANCTION_LABEL } from '../../data/community';
+import { ago, appealSanction, blockAuthor, Post, REPORT_REASONS, reportContent, ReportTarget, Sanction, SANCTION_LABEL } from '../../data/community';
 import { getMyVerifications, Verification } from '../../data/verify';
 import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
@@ -109,7 +109,7 @@ export function ReportSheet({
   onClose,
   onBlocked,
 }: {
-  target: { type: 'post' | 'comment' | 'message'; id: number } | null;
+  target: { type: ReportTarget; id: number } | null;
   onClose: () => void;
   onBlocked?: () => void;
 }) {

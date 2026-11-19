@@ -46,6 +46,12 @@ function RootStack() {
         <Stack.Screen name="messages/[id]" options={{ title: '쪽지', headerBackTitle: '쪽지함' }} />
         <Stack.Screen name="rules" options={{ title: '이용 규칙', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="scraps" options={{ title: '내 스크랩', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="study/[id]" options={{ title: '스터디', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="study/new" options={{ title: '스터디 모집', presentation: 'modal' }} />
+        <Stack.Screen name="materials/[id]" options={{ title: '공부 자료', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="materials/write" options={{ title: '자료 올리기', presentation: 'modal' }} />
+        <Stack.Screen name="mock/[id]" options={{ title: '모의고사', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="mock/scores" options={{ title: '점수 비교', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="verify" options={{ title: '학교·교사 인증', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="admin" options={{ title: '운영자', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="login" options={{ title: '로그인 · 가입', presentation: 'modal' }} />

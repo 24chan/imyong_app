@@ -127,9 +127,10 @@ export const deleteComment = (id: number) => rpc<void>('delete_comment', { p_id:
 export const togglePostLike = (id: number) => rpc<number>('toggle_post_like', { p_id: id }, '공감');
 export const toggleCommentLike = (id: number) => rpc<number>('toggle_comment_like', { p_id: id }, '공감');
 export const toggleScrap = (id: number) => rpc<boolean>('toggle_scrap', { p_id: id }, '스크랩');
-export const reportContent = (type: 'post' | 'comment' | 'message', id: number, reason: string, detail?: string) =>
+export type ReportTarget = 'post' | 'comment' | 'message' | 'study' | 'material' | 'mock_review';
+export const reportContent = (type: ReportTarget, id: number, reason: string, detail?: string) =>
   rpc<number>('report_content', { p_type: type, p_id: id, p_reason: reason, p_detail: detail ?? null }, '신고');
-export const blockAuthor = (type: 'post' | 'comment' | 'message' | 'conversation', id: number | string) =>
+export const blockAuthor = (type: ReportTarget | 'conversation', id: number | string) =>
   rpc<void>('block_author', { p_type: type, p_id: String(id) }, '차단');
 export const clearBlocks = () => rpc<number>('clear_blocks', {}, '차단 해제');
 
@@ -156,7 +157,7 @@ export async function listConversations(): Promise<Conversation[]> {
     }),
   );
 }
-export const startConversation = (type: 'post' | 'comment', id: number, verificationId?: string | null) =>
+export const startConversation = (type: 'post' | 'comment' | 'study' | 'material', id: number, verificationId?: string | null) =>
   rpc<string>('start_conversation', { p_type: type, p_id: id, p_verification: verificationId ?? null }, '쪽지');
 export async function getMessages(convId: string, before?: number): Promise<Message[]> {
   const rows = await rpc<{ id: number; body: string | null; image_path: string | null; created_at: string; is_mine: boolean; read_at: string | null }[]>(
@@ -219,7 +220,7 @@ export async function unreadCount(): Promise<number> {
 }
 
 // ───── 운영자 ─────
-export type ReportGroup = { targetType: 'post' | 'comment' | 'message'; targetId: number; reports: number; firstAt: string; reasons: string; content: string | null; contentStatus: string; authorSanctions: number };
+export type ReportGroup = { targetType: ReportTarget; targetId: number; reports: number; firstAt: string; reasons: string; content: string | null; contentStatus: string; authorSanctions: number };
 export async function adminReports(): Promise<ReportGroup[]> {
   const { data, error } = await supabase.from('admin_reports_v').select('*').order('reports', { ascending: false });
   if (error) throw err(error, '신고 목록');
