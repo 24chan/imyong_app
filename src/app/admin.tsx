@@ -11,6 +11,7 @@ import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
 import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, LECTURE_AREA, PendingEnrollment } from '../data/academy';
 import type { Level } from '../store/AppSettings';
+import { adminAddPassStat, adminPassCerts, adminReviewPassCert, passDocUrls, PendingCert } from '../data/univPass';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -21,7 +22,7 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy'>('verify');
+  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'pass'>('verify');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -51,6 +52,7 @@ export default function AdminScreen() {
             { value: 'appeals', label: `이의 ${(appeals.data ?? []).length}` },
             { value: 'mock', label: '모의' },
             { value: 'academy', label: '강의' },
+            { value: 'pass', label: '합격' },
           ]}
         />
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
@@ -77,6 +79,7 @@ export default function AdminScreen() {
         )}
         {tab === 'mock' && <MockAdmin />}
         {tab === 'academy' && <AcademyAdmin />}
+        {tab === 'pass' && <PassAdmin />}
         {tab === 'appeals' && (
           <>
             {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
@@ -416,6 +419,86 @@ function AcademyAdmin() {
               .catch((e) => Alert.alert('등록하지 못했어요', (e as Error).message))
           }
         />
+      </Card>
+    </>
+  );
+}
+
+function CertCard({ c, onDone }: { c: PendingCert; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [urls, setUrls] = useState<string[] | null>(null);
+  useEffect(() => {
+    passDocUrls(c.docPaths).then(setUrls).catch(() => setUrls([]));
+  }, [c.docPaths]);
+  const act = (ok: boolean) => adminReviewPassCert(c, ok).then(onDone).catch((e) => Alert.alert('처리하지 못했어요', (e as Error).message));
+  return (
+    <Card style={{ borderWidth: 1, borderColor: colors.line }}>
+      <Txt variant="heading">
+        합격 인증 · {c.year}학년도 {c.level === 'elementary' ? '초등' : '중등'} · {c.univLabel ?? '학교 미상'}
+      </Txt>
+      {(urls ?? []).map((u) => (
+        <Pressable key={u} onPress={() => Linking.openURL(u)}>
+          <Image source={{ uri: u }} style={{ width: '100%', aspectRatio: 0.75, borderRadius: radius.md, backgroundColor: colors.line }} resizeMode="contain" />
+        </Pressable>
+      ))}
+      <View style={{ flexDirection: 'row', gap: space.sm }}>
+        <View style={{ flex: 1 }}>
+          <PrimaryButton label="승인" onPress={() => act(true)} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <PrimaryButton label="거절" variant="ghost" onPress={() => act(false)} />
+        </View>
+      </View>
+    </Card>
+  );
+}
+
+function PassAdmin() {
+  const { colors } = useTheme();
+  const [reload, setReload] = useState(0);
+  const certs = useAsync(() => adminPassCerts(), [reload]);
+  const univs = useAsync(() => getUnivs(), []);
+  const [level, setLevel] = useState<Level>('elementary');
+  const [univ, setUniv] = useState<string | null>(null);
+  const [subject, setSubject] = useState<string | null>(null);
+  const [f, setF] = useState({ year: String(new Date().getFullYear()), graduates: '', passed: '', basis: '졸업자 대비', title: '', url: '', date: '' });
+  const input = { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text, backgroundColor: colors.background } as const;
+  const list = (univs.data ?? []).filter((u) => (level === 'elementary' ? u.kind !== 'sabeom' : u.kind === 'sabeom'));
+  const add = () => {
+    if (!univ || !/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return Alert.alert('학교와 기준일(2026-11-01 형식)을 넣어 주세요');
+    adminAddPassStat({
+      univ, year: Number(f.year), level, subject: level === 'secondary' ? subject : null, graduates: f.graduates ? Number(f.graduates) : null, applicants: null,
+      passed: Number(f.passed), basis: f.basis, sourceTitle: f.title, sourceUrl: f.url, sourceDate: f.date,
+    })
+      .then(() => {
+        setF({ ...f, graduates: '', passed: '' });
+        Alert.alert('등록했어요');
+      })
+      .catch((e) => Alert.alert('등록하지 못했어요', (e as Error).message));
+  };
+  return (
+    <>
+      <Txt variant="heading">합격 인증 {(certs.data ?? []).length}</Txt>
+      {(certs.data ?? []).map((c) => (
+        <CertCard key={c.id} c={c} onDone={() => setReload((n) => n + 1)} />
+      ))}
+      <Card>
+        <Txt variant="heading">공식 자료 입력 (정보공개청구 회신 등)</Txt>
+        <Segmented<Level> value={level} onChange={setLevel} options={[{ value: 'elementary', label: '초등' }, { value: 'secondary', label: '중등' }]} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+          {list.map((u) => (
+            <Chip key={u.code} label={u.label} selected={univ === u.code} onPress={() => setUniv(u.code)} />
+          ))}
+        </View>
+        {level === 'secondary' && <SubjectPicker value={subject} onChange={(c) => setSubject(subject === c ? null : c)} />}
+        <TextInput value={f.year} onChangeText={(v) => setF({ ...f, year: v })} placeholder="학년도" keyboardType="number-pad" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.graduates} onChangeText={(v) => setF({ ...f, graduates: v })} placeholder="졸업(예정)자 수" keyboardType="number-pad" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.passed} onChangeText={(v) => setF({ ...f, passed: v })} placeholder="최종 합격자 수" keyboardType="number-pad" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.basis} onChangeText={(v) => setF({ ...f, basis: v })} placeholder="합격률 기준 (예: 졸업자 대비)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.title} onChangeText={(v) => setF({ ...f, title: v })} placeholder="출처 (예: ○○교육청 정보공개청구 회신)" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.url} onChangeText={(v) => setF({ ...f, url: v })} placeholder="출처 주소 (선택)" autoCapitalize="none" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={f.date} onChangeText={(v) => setF({ ...f, date: v })} placeholder="기준일 2026-11-01" placeholderTextColor={colors.textSub} style={input} />
+        <PrimaryButton label="등록" onPress={add} disabled={!f.passed || !f.title.trim()} />
       </Card>
     </>
   );

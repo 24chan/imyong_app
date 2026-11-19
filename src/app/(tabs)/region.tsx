@@ -109,6 +109,7 @@ export default function RegionScreen() {
           {[
             { href: '/compare' as const, icon: 'git-compare-outline' as const, label: '지역 비교' },
             { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이 함께 보기' },
+            { href: '/univ-pass' as const, icon: 'school-outline' as const, label: '대학별 합격률' },
           ].map((b) => (
             <Pressable
               key={b.href}
