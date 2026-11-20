@@ -1,7 +1,18 @@
 {
-"updated": "2026-11-19",
+"updated": "2026-11-20",
 "source": "나라일터(정책브리핑), 경기도교육청 구인구직, 서울교육일자리포털",
 "jobs": [
+{
+"url": "https://www.goe.go.kr/recruit/ad/func/pb/hnfpPbancInfoView.do?pbancSn=66618&mi=10500",
+"source": "경기도교육청 구인구직",
+"id": "goe-66618",
+"title": "2027학년도 학교법인 연암학원 안양예술고등학교 교원 신규채용 시행계획 공고",
+"org": "경기도교육청 안양예술고등학교",
+"posted": "2026-11-20",
+"deadline": "2026-12-21",
+"region": "gyeonggi",
+"level": "secondary"
+},
 {
 "url": "https://work.sen.go.kr/work/search/recInfo/BD_selectRecDetail.do?q_rcrtSn=114561",
 "source": "서울교육일자리포털",
