@@ -22,6 +22,7 @@ import {
 } from '../../data/community';
 import { LabelBadge, LabelChooser, needWriterAlert, ReportSheet, Sheet, useWriterLabels } from '../../features/community/parts';
 import { radius, space } from '../../theme/tokens';
+import type { CatKey } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
 // 글 보기: 본문, 공감·스크랩, 댓글(익명 번호·글쓴이 표시), 신고·차단·쪽지
@@ -186,6 +187,9 @@ export default function PostScreen() {
       />
       <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.md, maxWidth: 820, width: '100%', alignSelf: 'center' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: colors.cat.gray.bg, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="person" size={18} color={colors.cat.gray.fg} />
+          </View>
           <Txt style={{ fontWeight: '800' }}>{post.isMine ? '나' : '익명'}</Txt>
           <LabelBadge label={post.label} />
           <Txt variant="sub">{ago(post.createdAt)}</Txt>
@@ -207,8 +211,8 @@ export default function PostScreen() {
           <Stat icon={post.scrapped ? 'bookmark' : 'bookmark-outline'} color={colors.accent} n={post.scrapCount} />
         </View>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
-          <ActionBtn icon={post.liked ? 'heart' : 'heart-outline'} label="공감" onPress={like} active={post.liked} disabled={post.isMine} />
-          <ActionBtn icon={post.scrapped ? 'bookmark' : 'bookmark-outline'} label="스크랩" onPress={scrap} active={post.scrapped} />
+          <ActionBtn icon={post.liked ? 'heart' : 'heart-outline'} label="공감" onPress={like} active={post.liked} disabled={post.isMine} cat="coral" />
+          <ActionBtn icon={post.scrapped ? 'bookmark' : 'bookmark-outline'} label="스크랩" onPress={scrap} active={post.scrapped} cat="amber" />
           {!post.isMine && <ActionBtn icon="mail-outline" label="쪽지" onPress={() => dm('post', post.id)} />}
         </View>
 
@@ -320,8 +324,9 @@ function Stat({ icon, color, n }: { icon: keyof typeof Ionicons.glyphMap; color:
   );
 }
 
-function ActionBtn({ icon, label, onPress, active, disabled }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; active?: boolean; disabled?: boolean }) {
+function ActionBtn({ icon, label, onPress, active, disabled, cat = 'gray' }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; active?: boolean; disabled?: boolean; cat?: CatKey }) {
   const { colors } = useTheme();
+  const c = colors.cat[cat];
   return (
     <Pressable
       onPress={onPress}
@@ -335,13 +340,13 @@ function ActionBtn({ icon, label, onPress, active, disabled }: { icon: keyof typ
         paddingVertical: 7,
         borderRadius: radius.md,
         borderWidth: 1,
-        borderColor: active ? colors.text : colors.line,
-        backgroundColor: colors.surface,
+        borderColor: active ? c.fg : colors.line,
+        backgroundColor: active ? c.bg : colors.background,
         opacity: disabled ? 0.4 : 1,
       }}
     >
-      <Ionicons name={icon} size={16} color={colors.text} />
-      <Txt variant="sub" color="text" style={{ fontWeight: '700' }}>
+      <Ionicons name={icon} size={16} color={active ? c.fg : colors.text} />
+      <Txt variant="sub" style={{ fontWeight: '700', color: active ? c.fg : colors.text }}>
         {label}
       </Txt>
     </Pressable>

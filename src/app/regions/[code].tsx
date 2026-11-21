@@ -12,7 +12,7 @@ import { useAsync } from '../../data/useAsync';
 import { CompareButton } from '../../features/region/CompareButton';
 import { SchoolMapLink } from '../../features/region/SchoolMapLink';
 import { Level, useToday } from '../../store/AppSettings';
-import { space } from '../../theme/tokens';
+import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
 // 지역 상세: 접수 상태 + 연도 요약 + 선발 인원·경쟁률 추이 그래프
@@ -117,16 +117,26 @@ export default function RegionDetailScreen() {
             </View>
             <ChangeBadge change={cur.change} rate={cur.changeRate} />
             {breakdown(cur) && <Txt variant="sub">{breakdown(cur)}</Txt>}
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.xs }}>
+              {(
+                [
+                  { label: '경쟁률 (접수)', value: cur.ratioApplied != null ? `${cur.ratioApplied} : 1` : '—', cat: 'blue' },
+                  { label: '1차 합격선', value: cur.firstCutoff != null ? `${cur.firstCutoff}점` : '—', cat: 'coral' },
+                  { label: '최종 합격선', value: cur.finalCutoff != null ? `${cur.finalCutoff}점` : '—', cat: 'purple' },
+                  { label: '합격률 (응시)', value: cur.passRateActual != null ? `${cur.passRateActual}%` : '—', cat: 'green' },
+                ] as const
+              ).map((t) => (
+                <View key={t.label} style={{ width: '48.5%', padding: space.md, borderRadius: radius.lg, backgroundColor: colors.cat[t.cat].bg, gap: 2 }}>
+                  <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat[t.cat].fg }}>{t.label}</Txt>
+                  <Txt style={{ fontSize: 20, fontWeight: '800' }}>{t.value}</Txt>
+                </View>
+              ))}
+            </View>
             <View style={{ gap: 2, marginTop: space.xs }}>
               <Row label="접수 / 응시 인원" value={`${cur.applicants?.toLocaleString() ?? '—'} / ${cur.takers?.toLocaleString() ?? '—'}명`} />
-              <Row label="경쟁률 (접수 기준)" value={cur.ratioApplied != null ? `${cur.ratioApplied} : 1` : '—'} />
               <Row label="경쟁률 (응시 기준)" value={cur.ratioActual != null ? `${cur.ratioActual} : 1` : '—'} />
-              <Row label="1차 합격 인원 / 합격선" value={`${cur.firstPassed ?? '—'}명 / ${cur.firstCutoff != null ? `${cur.firstCutoff}점` : '—'}`} />
-              <Row label="최종 합격 인원 / 합격선" value={`${cur.finalPassed ?? '—'}명 / ${cur.finalCutoff != null ? `${cur.finalCutoff}점` : '—'}`} />
-              <Row
-                label="합격률 (접수 / 응시 기준)"
-                value={`${cur.passRateApplied ?? '—'}% / ${cur.passRateActual ?? '—'}%`}
-              />
+              <Row label="1차 / 최종 합격 인원" value={`${cur.firstPassed ?? '—'}명 / ${cur.finalPassed ?? '—'}명`} />
+              <Row label="합격률 (접수 기준)" value={`${cur.passRateApplied ?? '—'}%`} />
             </View>
             {cur.year === latestYear && cur.takers == null && (
               <Txt variant="sub">올해는 시험 전이라 접수 현황까지만 있어요.</Txt>
