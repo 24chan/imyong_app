@@ -1,0 +1,9 @@
+{
+  "_설명": "충청남도교육청 공고 제2025-192호 (2026학년도 초등 1차 합격자 공고) 원문 표에서 옮겨 적음",
+  "source_title": "충청남도교육청 공고 제2025-192호 (1차 합격자)",
+  "source_url": "https://att.pmg.co.kr/EtcData/board/284/2026%ED%95%99%EB%85%84%EB%8F%84+%EC%A0%9C1%EC%B0%A8+%EC%8B%9C%ED%97%98+%ED%95%A9%EA%B2%A9%EC%9E%90+%EB%B0%8F+%EC%A0%9C2%EC%B0%A8+%EC%8B%9C%ED%97%98+%EC%8B%9C%ED%96%89%EA%B3%84%ED%9A%8D+%EA%B3%B5%EA%B3%A0.pdf",
+  "cols": ["selected", "first_passed", "first_cutoff"],
+  "entries": [
+    { "region": "chungnam", "year": 2026, "general": [218, 327, 80.0], "regional": [25, 39, 78.83], "disabled": [20, 5, 71.0] }
+  ]
+}

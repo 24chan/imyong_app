@@ -1,0 +1,16 @@
+{
+  "_설명": "교육청 발표를 인용한 언론 보도에서 옮겨 적음 (사용자 결정 A, 2026-11-21). 원문(교육청 공고)을 찾으면 원문으로 바꿈.",
+  "source_title": "부산광역시교육청 발표(언론 보도)",
+  "source_url": "https://www.segye.com/newsView/20261008511462",
+  "unverified": true,
+  "cols": ["selected", "applicants"],
+  "entries": [
+    {
+      "region": "busan",
+      "year": 2027,
+      "_메모": "일반 선발 161명은 사립 1명 포함",
+      "general": [161, 531],
+      "disabled": [13, 14]
+    }
+  ]
+}

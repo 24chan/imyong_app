@@ -1,0 +1,10 @@
+{
+  "_설명": "부산광역시교육청 2026학년도 초등 1차 합격 발표를 인용한 보도 (합격선은 기사에 없음)",
+  "source_title": "부산광역시교육청 발표(언론 보도)",
+  "source_url": "https://www.busan.com/view/busan/view.php?code=2025121010511086347",
+  "unverified": true,
+  "cols": ["selected", "first_passed"],
+  "entries": [
+    { "region": "busan", "year": 2026, "general": [255, 386], "disabled": [21, 9] }
+  ]
+}
