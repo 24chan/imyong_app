@@ -28,8 +28,9 @@ export default function TabsLayout() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
-        headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold' },
-        tabBarLabelStyle: { fontFamily: 'Pretendard-SemiBold', fontSize: 11 },
+        headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold', fontSize: 21 },
+        headerTitleAlign: 'left',
+        tabBarLabelStyle: { fontFamily: 'Pretendard-SemiBold', fontSize: 11.5 },
         headerShadowVisible: false,
         headerRight: () => (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>

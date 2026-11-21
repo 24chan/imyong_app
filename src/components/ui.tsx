@@ -23,9 +23,9 @@ export function Txt({ variant = 'body', color, style, ...rest }: TxtProps) {
 
 const textStyles = StyleSheet.create({
   title: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
-  heading: { fontSize: 17, fontWeight: '800', letterSpacing: -0.2 },
-  body: { fontSize: 15, lineHeight: 22 },
-  sub: { fontSize: 13, lineHeight: 19 },
+  heading: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
+  body: { fontSize: 15.5, lineHeight: 23 },
+  sub: { fontSize: 13.5, lineHeight: 20 },
   number: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
 });
 
@@ -49,7 +49,8 @@ export function Card({ children, style }: { children: ReactNode; style?: ViewSty
   return (
     <View
       style={[
-        { backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: space.sm },
+        // 흰 카드 + 얇은 테두리 (2026-11-21 디자인 개편: 가시성)
+        { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: radius.xl, padding: 18, gap: space.sm },
         style,
       ]}
     >
