@@ -1,0 +1,28 @@
+{
+  "_설명": "사용자가 보낸 정리표(C, 2026-11-21 '최근 3년간 임용시험 현황 - 초등' 2024·2026·2027)에서 빈칸이던 지역만 옮겨 적음. 원문이 있으면 원문 우선(ingest가 빈칸만 채움). 화면 출처는 학원 이름 없이 표시.",
+  "source_title": "교육청 합격자 발표 기준",
+  "source_url": "",
+  "cols": ["selected", "applicants", "first_passed", "first_cutoff", "final_passed", "final_cutoff"],
+  "entries": [
+    { "region": "gwangju", "year": 2024, "general": [5, 46, 9, 97, 5, 184.83], "disabled": [1, 3, 2, null, 1, null] },
+    { "region": "gyeongbuk", "year": 2024, "general": [253, 527, 381, 80, 253, 161.5], "disabled": [21, 7, 3, 71.83, 3, 128.96] },
+    { "region": "daejeon", "year": 2024, "general": [9, 57, 14, 95.67, 9, 171.99], "disabled": [1, 3, 1, null, 1, null] },
+    { "region": "ulsan", "year": 2024, "general": [88, 187, 133, 84, 88, 165.3], "disabled": [8, 2, 1, null, 1, null] },
+    { "region": "jeonbuk", "year": 2024, "general": [38, 85, 58, 88, 38, 165.8], "disabled": [3, 4, 1, null, 1, null] },
+
+    { "region": "busan", "year": 2026, "general": [255, 583, 386, 83, null, null], "disabled": [21, 21, 9, 70.67, null, null] },
+    { "region": "incheon", "year": 2026, "general": [175, 431, 265, 81.83, 175, 163.4], "disabled": [15, 13, 5, 69, 5, 141.24] },
+    { "region": "gwangju", "year": 2026, "general": [28, 144, 42, 89.17, 28, 166.9], "disabled": [2, 5, 1, null, 1, null] },
+    { "region": "sejong", "year": 2026, "general": [6, 47, 9, 91.67, 6, 165.93], "disabled": [1, 2, 1, null, 1, null] },
+    { "region": "daejeon", "year": 2026, "general": [31, 136, 48, 91.5, 31, 167.77], "disabled": [3, 2, null, null, null, null] },
+    { "region": "daegu", "year": 2026, "general": [72, 182, 109, 83, 72, 157.9], "disabled": [6, 10, 3, 71.5, 3, 128.03] },
+    { "region": "chungnam", "year": 2026, "general": [218, 513, 327, 80, 218, 158.67], "disabled": [20, 11, 5, 71, 5, 136.26], "regional": [25, 74, 39, 78.83, 25, 157.03] },
+    { "region": "jeonnam", "year": 2026, "general": [106, 266, 160, 82, 107, 158], "disabled": [10, 5, 1, null, 1, null], "regional": [15, 37, 21, 78.5, 14, 154.53] },
+    { "region": "jeju", "year": 2026, "general": [55, 118, 83, 79.5, 55, 162.41], "disabled": [5, 5, 2, null, null, null] },
+
+    { "region": "busan", "year": 2027, "general": [160, 526, null, null, null, null], "disabled": [13, 14, null, null, null, null] },
+    { "region": "gwangju", "year": 2027, "general": [2, 28, null, null, null, null], "disabled": [1, 7, null, null, null, null] },
+    { "region": "sejong", "year": 2027, "general": [3, 26, null, null, null, null], "disabled": [1, 1, null, null, null, null] },
+    { "region": "jeonbuk", "year": 2027, "general": [47, 119, null, null, null, null], "disabled": [5, 3, null, null, null, null] }
+  ]
+}
