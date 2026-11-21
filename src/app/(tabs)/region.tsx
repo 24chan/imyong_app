@@ -154,13 +154,6 @@ export default function RegionScreen() {
         </>
       )}
 
-      {/* 대학별 합격률: 메인 메뉴에서 빼고 여기서 찾아볼 수 있게 (2026-11-21 사용자 요청) */}
-      <Pressable onPress={() => router.push('/univ-pass')} accessibilityRole="link" hitSlop={8} style={{ alignSelf: 'flex-start', paddingVertical: space.sm }}>
-        <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
-          {f.isSecondary ? '사범대별' : '교대별'} 합격률 보기 ›
-        </Txt>
-      </Pressable>
-
       <RegionSheet
         row={sheetRow}
         info={sheetRegion ? statusOf(sheetRegion) : null}
