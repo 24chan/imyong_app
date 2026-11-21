@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect } from 'expo-router';
+import { Redirect, router } from 'expo-router';
+import { Pressable, View } from 'react-native';
 import { Tabs } from 'expo-router/js-tabs';
 import { ModeToggle } from '../../components/ModeToggle';
 import { useAppSettings } from '../../store/AppSettings';
@@ -30,7 +31,20 @@ export default function TabsLayout() {
         headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold' },
         tabBarLabelStyle: { fontFamily: 'Pretendard-SemiBold', fontSize: 11 },
         headerShadowVisible: false,
-        headerRight: () => <ModeToggle />,
+        headerRight: () => (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Pressable
+              onPress={() => router.push('/search')}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="통합 검색"
+              style={{ paddingHorizontal: 10 }}
+            >
+              <Ionicons name="search" size={22} color={colors.text} />
+            </Pressable>
+            <ModeToggle />
+          </View>
+        ),
         tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.textSub,
         tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.line },

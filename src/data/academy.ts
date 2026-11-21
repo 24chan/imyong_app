@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { safeTerm } from './community';
 import type { Level } from '../store/AppSettings';
 
 // 학원·인강: 강의 목록 · 수강 인증 · 후기(수강 인증자만) · 일정 · 광고(따로 표시)
@@ -134,3 +135,17 @@ export const adminAddLecture = (l: { academy: string; instructor: string; title:
 export const adminAddEvent = (e: { academy: string; kind: AcademyEvent['kind']; title: string; starts: string; ends: string | null; level: Level; area: Area | null; subject: string | null; url: string }) =>
   rpc<number>('admin_add_event', { p_academy: e.academy, p_kind: e.kind, p_title: e.title, p_starts: e.starts, p_ends: e.ends, p_level: e.level, p_area: e.area ?? '', p_subject: e.subject ?? '', p_url: e.url }, '일정 등록');
 export const adminDelete = (table: 'lectures' | 'academy_events' | 'ads' | 'lecture_requests', id: number) => rpc<void>('admin_delete', { p_table: table, p_id: id }, '삭제');
+
+/** 통합 검색: 강의 이름·강사·학원에 검색어가 있는 강의 (모드 기준) */
+export async function searchLectures(level: Level, q: string, limit = 30): Promise<Lecture[]> {
+  const t = safeTerm(q);
+  if (t.length < 2) return [];
+  const { data, error } = await supabase
+    .from('lectures_v')
+    .select('*')
+    .eq('level', level)
+    .or(`title.ilike.*${t}*,instructor.ilike.*${t}*,academy_name.ilike.*${t}*`)
+    .limit(limit);
+  if (error) throw err(error, '강의 검색');
+  return (data as LecRow[]).map(toLec);
+}

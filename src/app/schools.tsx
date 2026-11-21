@@ -1,5 +1,5 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
@@ -24,7 +24,7 @@ type FoundFilter = 'all' | SchoolFound;
 // 지역 학교 지도: 공립·사립·국립 학교 위치를 색과 모양으로 구분
 export default function SchoolsScreen() {
   const { colors } = useTheme();
-  const params = useLocalSearchParams<{ region: string; level: Level }>();
+  const params = useLocalSearchParams<{ region: string; level: Level; q?: string }>();
   const level: Level = params.level === 'secondary' ? 'secondary' : 'elementary';
   const region = regionByCode(params.region);
   const data = useAsync(() => getSchools(params.region), [params.region]);
@@ -34,7 +34,7 @@ export default function SchoolsScreen() {
   const [found, setFound] = useState<FoundFilter>('all');
   const [selected, setSelected] = useState<School | null>(null);
   const [listN, setListN] = useState(LIST_STEP);
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(params.q ?? '');
   const mapRef = useRef<SchoolMapHandle>(null);
 
   // 모드에 맞는 학교급 (초등 모드 → 초등학교, 중등 모드 → 중·고)
@@ -72,6 +72,18 @@ export default function SchoolsScreen() {
     setSelected(s);
     mapRef.current?.focus(s);
   };
+
+  // 통합 검색에서 학교를 눌러 들어오면 그 학교를 바로 골라 지도에서 보여 주기
+  const autoPicked = useRef(false);
+  useEffect(() => {
+    if (autoPicked.current || !params.q || !data.data) return;
+    const hit = data.data.find((s) => s.name === params.q);
+    if (!hit) return;
+    autoPicked.current = true;
+    if (hit.kind !== 'e') setSec(hit.kind === 'm' ? 'm' : 'h');
+    const t = setTimeout(() => pick(hit), 400);
+    return () => clearTimeout(t);
+  }, [data.data, params.q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>

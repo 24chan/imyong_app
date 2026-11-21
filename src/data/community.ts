@@ -260,3 +260,22 @@ export function ago(iso: string): string {
   return `${same ? '' : `${t.getFullYear()}.`}${t.getMonth() + 1}.${t.getDate()}`;
 }
 export const anonName = (n: number) => (n === 0 ? '글쓴이' : `익명${n}`);
+
+/** 검색어를 서버 필터에 안전하게: 필터 문법에 쓰이는 글자 빼기 */
+// 띄어쓰기는 * 로 바꿔서 '합격 수기'로 '합격수기'도 찾게
+export const safeTerm = (q: string) => q.replace(/[,()%*\\"'.:]/g, ' ').trim().replace(/\s+/g, '*');
+
+/** 통합 검색: 제목·본문에 검색어가 있는 글 (최신순) */
+export async function searchPosts(q: string, limit = 30): Promise<Post[]> {
+  const t = safeTerm(q);
+  if (t.length < 2) return [];
+  const { data, error } = await supabase
+    .from('posts_v')
+    .select(POST_COLS)
+    .eq('status', 'visible')
+    .or(`title.ilike.*${t}*,body.ilike.*${t}*`)
+    .order('id', { ascending: false })
+    .limit(limit);
+  if (error) throw err(error, '글 검색');
+  return (data as PostRow[]).map(toPost);
+}
