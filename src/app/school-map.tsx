@@ -13,7 +13,7 @@ export default function NationalSchoolMapScreen() {
       <Stack.Screen options={{ title: elem ? '전국 초등학교 지도' : '전국 중·고등학교 지도' }} />
       <ViewModeBanner />
       <Txt variant="sub">
-        지도나 아래 지역을 누르면 그 지역 학교 지도가 열려요. 확대해서 학교 이름과 위치를 볼 수 있어요.
+        두 손가락으로 확대하고, 학교를 누르면 이름과 위치가 보여요. 아래 지역을 누르면 그 지역 학교 지도가 열려요.
       </Txt>
       <Card>
         <NationalSchoolMap level={viewLevel} maxHeight={520} showChips />

@@ -1,63 +1,265 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { ActivityIndicator, GestureResponderEvent, Pressable, View } from 'react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, GestureResponderEvent, PanResponder, Pressable, View } from 'react-native';
+import Svg, { Circle, G, Path, Text as SvgText } from 'react-native-svg';
 import { Chip, Txt } from '../../components/ui';
 import { regionByCode, REGIONS } from '../../data/regions';
-import { getAllSchools, SchoolWithRegion } from '../../data/repository';
+import { getAllSchools, getSidoGeo, SchoolWithRegion } from '../../data/repository';
 import { useAsync } from '../../data/useAsync';
 import type { Level } from '../../store/AppSettings';
-import { space } from '../../theme/tokens';
+import type { CatKey } from '../../theme/tokens';
+import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { SchoolFound } from '../../types/data';
 import { FoundMark, useFoundColor } from './SchoolMap';
 
 // 지도 좌표: 경도 그대로, 위도는 메르카토르 (SchoolMap과 같은 방식)
 const merc = (lat: number) => (Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) * 180) / Math.PI;
+const X = (lng: number) => lng;
+const Y = (lat: number) => -merc(lat);
 const FOUND_LABEL: Record<SchoolFound, string> = { p: '공립', s: '사립', n: '국립' };
+const KIND_LABEL = { e: '초등학교', m: '중학교', h: '고등학교' } as const;
+const MAX_ZOOM = 14;
+
+// 이웃한 지역끼리 다른 색 (지역 칠하기)
+const REGION_CAT: Record<string, CatKey> = {
+  gyeonggi: 'teal', seoul: 'amber', incheon: 'blue', gangwon: 'purple', chungbuk: 'blue', chungnam: 'purple', sejong: 'amber',
+  daejeon: 'teal', jeonbuk: 'amber', gyeongbuk: 'teal', daegu: 'amber', gyeongnam: 'purple', jeonnam: 'blue', gwangju: 'amber',
+  busan: 'teal', ulsan: 'blue', jeju: 'purple',
+};
+const METRO = new Set(['seoul', 'busan', 'daegu', 'incheon', 'gwangju', 'daejeon', 'ulsan', 'sejong']);
+// 이름표 자리 손보기 (경기 이름이 서울과 겹쳐서)
+const LABEL_AT: Record<string, [number, number]> = { gyeonggi: [127.27, 37.93], incheon: [126.55, 37.47], chungnam: [126.8, 36.45] };
 
 export const schoolsForLevel = (all: SchoolWithRegion[], level: Level) =>
   // 울릉도·독도(경도 130.5 넘음)는 전국 지도에서 빼고 경북 지역 지도에서 봐요
   all.filter((s) => (level === 'elementary' ? s.kind === 'e' : s.kind !== 'e') && s.lng < 130.5 && s.lat > 33);
 
-export function openRegionSchools(region: string, level: Level) {
-  router.push({ pathname: '/schools', params: { region, level } });
+export function openRegionSchools(region: string, level: Level, school?: string) {
+  router.push({ pathname: '/schools', params: { region, level, ...(school ? { q: school } : {}) } });
 }
+
+type View4 = { x: number; y: number; w: number; h: number };
+type Touch = { locationX: number; locationY: number };
+const dist = (a: Touch, b: Touch) => Math.hypot(a.locationX - b.locationX, a.locationY - b.locationY);
 
 /**
  * 전국 학교 지도: 초등 모드 = 전국 초등학교, 중등 모드 = 전국 중·고등학교.
- * 학교 수천 곳을 설립별로 하나의 선(Path)으로 묶어 그려서 가벼움. 누른 곳에서 가장 가까운 학교의 지역 지도가 열려요.
+ * 시도 경계 + 지역 색 + 이름표 위에 학교 점. 두 손가락으로 확대·축소, 확대한 뒤엔 끌어서 이동.
+ * 학교 수천 곳을 설립별로 Path 하나에 묶어 그려서 가벼움. 학교를 누르면 아래 카드.
  */
 export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }: { level: Level; maxHeight?: number; showChips?: boolean }) {
   const { colors } = useTheme();
   const colorOf = useFoundColor();
   const data = useAsync(() => getAllSchools(), []);
-  const [w, setW] = useState(0);
-  const [tapped, setTapped] = useState<{ x: number; y: number } | null>(null);
+  const geo = useAsync(() => getSidoGeo(), []);
+  const [cw, setCw] = useState(0);
+  const [picked, setPicked] = useState<SchoolWithRegion | null>(null);
+  useEffect(() => setPicked(null), [level]);
 
   const schools = useMemo(() => schoolsForLevel(data.data ?? [], level), [data.data, level]);
+  const sido = useMemo(() => geo.data?.sido ?? [], [geo.data]);
 
-  const geom = useMemo(() => {
-    if (!schools.length || !w) return null;
-    const xs = schools.map((s) => s.lng);
-    const ys = schools.map((s) => -merc(s.lat));
+  // 처음 화면: 육지 경계(없으면 학교) 범위
+  const initial = useMemo<View4 | null>(() => {
+    const xs: number[] = [];
+    const ys: number[] = [];
+    sido.forEach((s) => s.p.forEach((r) => r.forEach(([lng, lat]) => lng < 130.5 && (xs.push(X(lng)), ys.push(Y(lat))))));
+    if (!xs.length) schools.forEach((s) => (xs.push(X(s.lng)), ys.push(Y(s.lat))));
+    if (!xs.length) return null;
     const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-    const pad = 10;
-    const k = Math.min((w - pad * 2) / (x1 - x0), (maxHeight - pad * 2) / (y1 - y0));
-    const h = (y1 - y0) * k + pad * 2;
-    const ox = (w - (x1 - x0) * k) / 2;
-    const pts = schools.map((s, i) => ({ s, x: ox + (xs[i] - x0) * k, y: pad + (ys[i] - y0) * k }));
-    // 공립은 작게, 사립·국립은 조금 크게 (위에 그림)
-    const rp = 1.3, rs = level === 'elementary' ? 2.1 : 1.7;
-    const f = (n: number) => n.toFixed(1);
-    const d: Record<SchoolFound, string> = { p: '', s: '', n: '' };
-    for (const { s, x, y } of pts) {
-      if (s.found === 'p') d.p += `M${f(x - rp)} ${f(y)}a${rp} ${rp} 0 1 0 ${rp * 2} 0a${rp} ${rp} 0 1 0 ${-rp * 2} 0`;
-      else if (s.found === 's') d.s += `M${f(x - rs)} ${f(y - rs)}h${rs * 2}v${rs * 2}h${-rs * 2}z`;
-      else d.n += `M${f(x)} ${f(y - rs * 1.3)}l${rs * 1.3} ${rs * 1.3}l${-rs * 1.3} ${rs * 1.3}l${-rs * 1.3} ${-rs * 1.3}z`;
+    const pad = (x1 - x0) * 0.03;
+    return { x: x0 - pad, y: y0 - pad, w: x1 - x0 + pad * 2, h: y1 - y0 + pad * 2 };
+  }, [sido, schools]);
+
+  const W = Math.max(1, Math.floor(cw));
+  const H = initial ? Math.max(1, Math.round(Math.min(maxHeight, (W * initial.h) / initial.w))) : 1;
+
+  const fit = (v: View4): View4 => {
+    if (!initial) return v;
+    const cx = v.x + v.w / 2;
+    const cy = v.y + v.h / 2;
+    const base = Math.max(initial.w, initial.h * (W / H)); // 전체가 다 보이는 폭
+    const w = Math.min(base, Math.max(base / MAX_ZOOM, Math.max(v.w, v.h * (W / H))));
+    const h = w * (H / W);
+    const bx0 = initial.x + initial.w / 2 - base / 2;
+    const by0 = initial.y + initial.h / 2 - (base * (H / W)) / 2;
+    const x = Math.min(Math.max(cx - w / 2, bx0), bx0 + base - w);
+    const y = Math.min(Math.max(cy - h / 2, by0), by0 + base * (H / W) - h);
+    return { x, y, w, h };
+  };
+
+  const [view, setView] = useState<View4>({ x: 0, y: 0, w: 1, h: 1 });
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  useEffect(() => {
+    if (initial && W > 1) setView(fit(initial));
+  }, [initial, W, H]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const k = W / view.w; // 지도 1단위 = k px
+  const zoom = initial ? Math.max(initial.w, initial.h * (W / H)) / view.w : 1;
+  const zoomed = zoom > 1.05;
+
+  // 손가락으로 움직이는 동안만 화면 변형 → 떼면 그 배율로 다시 그림
+  const live = useRef({ s: 1, tx: 0, ty: 0 });
+  const aS = useRef(new Animated.Value(1)).current;
+  const aX = useRef(new Animated.Value(0)).current;
+  const aY = useRef(new Animated.Value(0)).current;
+  const setLive = (s: number, tx: number, ty: number) => {
+    live.current = { s, tx, ty };
+    aS.setValue(s);
+    aX.setValue(tx);
+    aY.setValue(ty);
+  };
+  useLayoutEffect(() => setLive(1, 0, 0), [view]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const commit = () => {
+    const { s, tx, ty } = live.current;
+    if (s === 1 && tx === 0 && ty === 0) return;
+    const v = viewRef.current;
+    const kk = W / v.w;
+    const x = v.x + (W / 2 + (0 - W / 2 - tx) / s) / kk;
+    const y = v.y + (H / 2 + (0 - H / 2 - ty) / s) / kk;
+    setView(fit({ x, y, w: v.w / s, h: v.h / s }));
+  };
+  const zoomBy = (f: number) => {
+    const v = viewRef.current;
+    setView(fit({ x: v.x + (v.w - v.w / f) / 2, y: v.y + (v.h - v.h / f) / 2, w: v.w / f, h: v.h / f }));
+  };
+
+  const pickAt = (sx: number, sy: number) => {
+    const v = viewRef.current;
+    const kk = W / v.w;
+    const mx = v.x + sx / kk;
+    const my = v.y + sy / kk;
+    const lim = 22 / kk;
+    let best: SchoolWithRegion | null = null;
+    let bd = lim * lim;
+    for (const s of fns.current.schools) {
+      const d = (X(s.lng) - mx) ** 2 + (Y(s.lat) - my) ** 2;
+      if (d < bd) (bd = d), (best = s);
     }
-    return { pts, h, d };
-  }, [schools, w, maxHeight, level]);
+    setPicked(best);
+  };
+
+  const fns = useRef({ commit, pickAt, schools, W, H, zoomed });
+  fns.current = { commit, pickAt, schools, W, H, zoomed };
+  const g = useRef({ mode: 'none' as 'none' | 'pan' | 'pinch', s0: 1, tx0: 0, ty0: 0, d0: 1, mx0: 0, my0: 0, x0: 0, y0: 0, t0: 0, moved: false });
+
+  const responder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponderCapture: (e) => e.nativeEvent.touches.length >= 2,
+      // 확대 전 한 손가락으로 끌면 화면 스크롤에 양보
+      onPanResponderTerminationRequest: () => g.current.mode !== 'pinch' && !fns.current.zoomed,
+      onPanResponderGrant: (e) => {
+        const st = g.current;
+        st.t0 = Date.now();
+        st.moved = false;
+        st.mode = 'none';
+        st.x0 = e.nativeEvent.locationX;
+        st.y0 = e.nativeEvent.locationY;
+      },
+      onPanResponderMove: (e: GestureResponderEvent) => {
+        const { W: w, H: h, zoomed: zd } = fns.current;
+        const t = e.nativeEvent.touches;
+        const st = g.current;
+        const cur = live.current;
+        if (t.length >= 2) {
+          const mx = (t[0].locationX + t[1].locationX) / 2;
+          const my = (t[0].locationY + t[1].locationY) / 2;
+          const d = Math.max(10, dist(t[0], t[1]));
+          if (st.mode !== 'pinch') {
+            st.mode = 'pinch';
+            Object.assign(st, { s0: cur.s, tx0: cur.tx, ty0: cur.ty, d0: d, mx0: mx, my0: my });
+          }
+          const s = Math.min(8, Math.max(0.5, (st.s0 * d) / st.d0));
+          const qx = w / 2 + (st.mx0 - w / 2 - st.tx0) / st.s0;
+          const qy = h / 2 + (st.my0 - h / 2 - st.ty0) / st.s0;
+          setLive(s, mx - w / 2 - s * (qx - w / 2), my - h / 2 - s * (qy - h / 2));
+          st.moved = true;
+        } else if (t.length === 1) {
+          const x = t[0].locationX;
+          const y = t[0].locationY;
+          if (st.mode !== 'pan') {
+            if (st.mode === 'pinch') st.moved = true;
+            st.mode = 'pan';
+            st.tx0 = cur.tx;
+            st.ty0 = cur.ty;
+            st.x0 = x;
+            st.y0 = y;
+          }
+          if (Math.hypot(x - st.x0, y - st.y0) > 6) st.moved = true;
+          if (st.moved && (zd || cur.s !== 1)) setLive(cur.s, st.tx0 + (x - st.x0), st.ty0 + (y - st.y0));
+        }
+      },
+      onPanResponderRelease: (e) => {
+        const st = g.current;
+        if (!st.moved && Date.now() - st.t0 < 400) fns.current.pickAt(e.nativeEvent.locationX, e.nativeEvent.locationY);
+        st.mode = 'none';
+        fns.current.commit();
+      },
+      onPanResponderTerminate: () => {
+        g.current.mode = 'none';
+        fns.current.commit();
+      },
+    }),
+  ).current;
+
+  // 시도 경계 Path (지도 좌표)
+  const shapes = useMemo(
+    () =>
+      sido.map((s) => ({
+        r: s.r,
+        d: s.p.map((ring) => 'M' + ring.map(([lng, lat]) => `${X(lng).toFixed(3)} ${Y(lat).toFixed(3)}`).join('L') + 'Z').join(''),
+      })),
+    [sido],
+  );
+
+  // 학교 점: 화면에서 같은 크기로 보이게 배율마다 다시 만듦 (화면 밖 점은 뺌)
+  const u = 1 / k;
+  const dots = useMemo(() => {
+    const d: Record<SchoolFound, string> = { p: '', s: '', n: '' };
+    if (!schools.length || W <= 1) return d;
+    const big = zoom >= 3;
+    const rp = (big ? 2.6 : 1.15) * u;
+    const rs = (big ? 3.4 : level === 'elementary' ? 2.1 : 1.7) * u;
+    const pad = 10 * u;
+    const f = (n: number) => n.toFixed(4);
+    for (const s of schools) {
+      const x = X(s.lng);
+      const y = Y(s.lat);
+      if (x < view.x - pad || x > view.x + view.w + pad || y < view.y - pad || y > view.y + view.h + pad) continue;
+      if (s.found === 'p') d.p += `M${f(x - rp)} ${f(y)}a${f(rp)} ${f(rp)} 0 1 0 ${f(rp * 2)} 0a${f(rp)} ${f(rp)} 0 1 0 ${f(-rp * 2)} 0`;
+      else if (s.found === 's') d.s += `M${f(x - rs)} ${f(y - rs)}h${f(rs * 2)}v${f(rs * 2)}h${f(-rs * 2)}z`;
+      else d.n += `M${f(x)} ${f(y - rs * 1.3)}l${f(rs * 1.3)} ${f(rs * 1.3)}l${f(-rs * 1.3)} ${f(rs * 1.3)}l${f(-rs * 1.3)} ${f(-rs * 1.3)}z`;
+    }
+    return d;
+  }, [schools, view, W, level]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 지역 이름표 (화면 픽셀 좌표, 겹치면 작은 것 생략)
+  const labels = useMemo(() => {
+    const boxes: [number, number, number, number][] = [];
+    const out: { r: string; x: number; y: number; t: string; big: boolean }[] = [];
+    const order = [...sido].sort((a, b) => Number(METRO.has(a.r)) - Number(METRO.has(b.r)));
+    for (const s of order) {
+      const [lng, lat] = LABEL_AT[s.r] ?? s.c;
+      const x = (X(lng) - view.x) * k;
+      const y = (Y(lat) - view.y) * k;
+      if (x < 0 || x > W || y < 0 || y > H) continue;
+      const big = !METRO.has(s.r);
+      const t = regionByCode(s.r)?.shortName ?? s.r;
+      const fsz = big ? 13 : 11;
+      const hw = (t.length * fsz) / 2 + 3;
+      const box: [number, number, number, number] = [x - hw, y - fsz * 0.7, x + hw, y + fsz * 0.7];
+      if (boxes.some((o) => o[0] < box[2] && box[0] < o[2] && o[1] < box[3] && box[1] < o[3])) continue;
+      boxes.push(box);
+      out.push({ r: s.r, x, y, t, big });
+    }
+    return out;
+  }, [sido, view, k, W, H]);
 
   const counts = useMemo(() => {
     const c: Record<SchoolFound, number> = { p: 0, s: 0, n: 0 };
@@ -70,70 +272,115 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
     return m;
   }, [schools]);
 
-  const onTap = (e: GestureResponderEvent) => {
-    if (!geom) return;
-    const { locationX: x, locationY: y } = e.nativeEvent;
-    let best = geom.pts[0];
-    let bd = Infinity;
-    for (const p of geom.pts) {
-      const dd = (p.x - x) ** 2 + (p.y - y) ** 2;
-      if (dd < bd) (bd = dd), (best = p);
-    }
-    if (bd > 40 * 40) return; // 바다 등 학교에서 먼 곳
-    setTapped({ x: best.x, y: best.y });
-    setTimeout(() => setTapped(null), 600);
-    openRegionSchools(best.s.region, level);
-  };
+  const loading = (data.loading && !data.data) || (geo.loading && geo.data === undefined);
+  const ready = !!initial && W > 1 && schools.length > 0;
 
   return (
-    <View style={{ gap: space.sm }} onLayout={(e) => setW(e.nativeEvent.layout.width)}>
-      {data.loading && !data.data ? (
-        <View style={{ height: 200, alignItems: 'center', justifyContent: 'center', gap: space.sm }}>
+    <View style={{ gap: space.sm }} onLayout={(e) => setCw(e.nativeEvent.layout.width)}>
+      {loading ? (
+        <View style={{ height: 220, alignItems: 'center', justifyContent: 'center', gap: space.sm }}>
           <ActivityIndicator color={colors.brand} />
           <Txt variant="sub">전국 학교 위치를 받는 중이에요 (처음 한 번)</Txt>
         </View>
-      ) : !geom ? (
+      ) : !ready ? (
         <Txt variant="sub">{data.error ? `학교 위치를 불러오지 못했어요: ${data.error.message}` : '학교 위치 자료가 아직 없어요.'}</Txt>
       ) : (
-        <Pressable
-          onPress={onTap}
-          accessibilityRole="button"
-          accessibilityLabel="전국 학교 지도. 누른 곳의 지역 학교 지도가 열려요"
-          style={{ alignSelf: 'center' }}
-        >
-          <Svg width={w} height={geom.h}>
-            <Path d={geom.d.p} fill={colorOf('p')} fillOpacity={0.55} />
-            <Path d={geom.d.n} fill={colorOf('n')} />
-            <Path d={geom.d.s} fill={colorOf('s')} />
-            {tapped && <Circle cx={tapped.x} cy={tapped.y} r={14} fill="none" stroke={colors.text} strokeWidth={2} />}
-          </Svg>
-        </Pressable>
+        <View style={{ width: W, height: H, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
+          <View style={{ width: W, height: H }} {...responder.panHandlers} accessibilityLabel="전국 학교 지도. 두 손가락으로 확대, 학교를 누르면 정보">
+            <Animated.View pointerEvents="none" style={{ width: W, height: H, transform: [{ translateX: aX }, { translateY: aY }, { scale: aS }] }}>
+              <Svg width={W} height={H} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}>
+                {shapes.map((s) => (
+                  <Path key={s.r} d={s.d} fill={colors.cat[REGION_CAT[s.r] ?? 'gray'].bg} />
+                ))}
+                {shapes.map((s) => (
+                  <Path key={`o-${s.r}`} d={s.d} fill="none" stroke={colors.textSub} strokeOpacity={0.55} strokeWidth={1 * u} strokeLinejoin="round" />
+                ))}
+                <Path d={dots.p} fill={colorOf('p')} fillOpacity={0.72} />
+                <Path d={dots.n} fill={colorOf('n')} stroke={colors.background} strokeWidth={0.8 * u} />
+                <Path d={dots.s} fill={colorOf('s')} stroke={colors.background} strokeWidth={0.8 * u} />
+                {picked && <Circle cx={X(picked.lng)} cy={Y(picked.lat)} r={9 * u} fill="none" stroke={colors.text} strokeWidth={2.2 * u} />}
+              </Svg>
+              <Svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
+                {labels.map((l) => (
+                  <G key={l.r}>
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 4)} fontSize={l.big ? 13 : 11} fontFamily="Pretendard-Bold" textAnchor="middle" stroke={colors.background} strokeWidth={3.5} strokeLinejoin="round" fill={colors.background}>
+                      {l.t}
+                    </SvgText>
+                    <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 4)} fontSize={l.big ? 13 : 11} fontFamily="Pretendard-Bold" textAnchor="middle" fill={colors.text}>
+                      {l.t}
+                    </SvgText>
+                  </G>
+                ))}
+              </Svg>
+            </Animated.View>
+          </View>
+
+          {/* 확대·축소 버튼 */}
+          <View style={{ position: 'absolute', right: space.sm, top: space.sm, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.background, overflow: 'hidden' }}>
+            {[
+              { icon: 'add' as const, label: '확대', on: () => zoomBy(2) },
+              { icon: 'remove' as const, label: '축소', on: () => zoomBy(0.5) },
+            ].map((b, i) => (
+              <Pressable key={b.icon} onPress={b.on} accessibilityRole="button" accessibilityLabel={b.label} style={{ width: 38, height: 38, alignItems: 'center', justifyContent: 'center', borderTopWidth: i ? 1 : 0, borderTopColor: colors.line }}>
+                <Ionicons name={b.icon} size={20} color={colors.text} />
+              </Pressable>
+            ))}
+          </View>
+          {zoomed && initial && (
+            <Pressable
+              onPress={() => setView(fit(initial))}
+              accessibilityRole="button"
+              style={{ position: 'absolute', left: space.sm, top: space.sm, flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line }}
+            >
+              <Ionicons name="scan-outline" size={14} color={colors.text} />
+              <Txt variant="sub" color="text" style={{ fontWeight: '700' }}>
+                전국 보기
+              </Txt>
+            </Pressable>
+          )}
+        </View>
       )}
 
-      {geom && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
+      {/* 누른 학교 */}
+      {picked && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.cat[REGION_CAT[picked.region] ?? 'gray'].bg }}>
+          <FoundMark found={picked.found} size={12} />
+          <View style={{ flex: 1 }}>
+            <Txt style={{ fontWeight: '800' }}>{picked.name}</Txt>
+            <Txt variant="sub">
+              {regionByCode(picked.region)?.shortName} {picked.sigungu} · {FOUND_LABEL[picked.found]} {KIND_LABEL[picked.kind]}
+            </Txt>
+          </View>
+          <Pressable onPress={() => openRegionSchools(picked.region, level, picked.name)} accessibilityRole="button" hitSlop={8}>
+            <Txt color="brand" style={{ fontWeight: '800' }}>
+              지역 지도 ›
+            </Txt>
+          </Pressable>
+        </View>
+      )}
+
+      {ready && (
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.md }}>
           {(['p', 's', 'n'] as SchoolFound[])
             .filter((f) => counts[f] > 0)
             .map((f) => (
               <View key={f} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <FoundMark found={f} />
                 <Txt variant="sub" color="text">
-                  {FOUND_LABEL[f]} {counts[f].toLocaleString()}곳
+                  {FOUND_LABEL[f]} {counts[f].toLocaleString()}
                 </Txt>
               </View>
             ))}
+          <Txt variant="sub" style={{ flex: 1, textAlign: 'right' }}>
+            두 손가락으로 확대
+          </Txt>
         </View>
       )}
 
-      {geom && showChips && (
+      {ready && showChips && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
           {REGIONS.filter((r) => byRegion.has(r.code)).map((r) => (
-            <Chip
-              key={r.code}
-              label={`${regionByCode(r.code)?.shortName} ${byRegion.get(r.code)?.toLocaleString()}`}
-              selected={false}
-              onPress={() => openRegionSchools(r.code, level)}
-            />
+            <Chip key={r.code} label={`${r.shortName} ${byRegion.get(r.code)?.toLocaleString()}`} selected={false} onPress={() => openRegionSchools(r.code, level)} />
           ))}
         </View>
       )}

@@ -1,5 +1,5 @@
 name: collector-geo
-# 시군구 경계(admdongkor) → 지역별 단순화 경계 JSON → raw-files/raw/geo/<지역>.json (학교 지도 배경)
+# 시군구 경계(admdongkor) → 지역별 단순화 경계 JSON → raw-files/raw/geo/<지역>.json (학교 지도 배경) + sido.json (전국 학교 지도)
 on:
   schedule:
     - cron: '41 18 4 * *'   # 매달 5일 03:41 (한국 시간) — 행정구역 바뀌면 반영
@@ -41,7 +41,9 @@ jobs:
           PY
       - name: 경계 만들기
         if: ${{ github.event.inputs.explore != '1' }}
-        run: python -I -u app/scripts/collector/geo.py raw/geo
+        run: |
+          python -I -u app/scripts/collector/geo.py raw/geo
+          python -I -u app/scripts/collector/sido.py raw/geo
       - name: 저장
         if: ${{ github.event.inputs.explore != '1' }}
         run: |

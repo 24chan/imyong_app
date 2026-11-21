@@ -229,7 +229,7 @@ export default function HomeScreen() {
               </Txt>
             </Pressable>
           </View>
-          <Txt variant="sub">누른 곳의 지역 학교 지도가 열려요</Txt>
+          <Txt variant="sub">학교를 누르면 이름과 위치가 보여요</Txt>
           <NationalSchoolMap level={viewLevel} maxHeight={340} />
         </View>
 

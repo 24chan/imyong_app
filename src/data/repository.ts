@@ -385,3 +385,17 @@ export async function searchSchools(q: string, limit = 50): Promise<SchoolWithRe
   hits.sort((a, b) => Number(b.name.startsWith(t)) - Number(a.name.startsWith(t)) || a.name.localeCompare(b.name, 'ko'));
   return hits.slice(0, limit);
 }
+
+export type SidoGeo = { sido: { r: string; c: [number, number]; p: [number, number][][] }[] };
+
+/** 전국 시도 경계 (raw-files/raw/geo/sido.json, collector-geo가 매달 갱신). 없으면 null */
+export async function getSidoGeo(): Promise<SidoGeo | null> {
+  return cached('geo:sido', async () => {
+    try {
+      const res = await fetch('https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/sido.json');
+      return res.ok ? ((await res.json()) as SidoGeo) : null;
+    } catch {
+      return null;
+    }
+  });
+}
