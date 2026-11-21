@@ -6,6 +6,7 @@ import { TextInput } from '../../components/TextField';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Chip, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { Ad, Area, LECTURE_AREA, Lecture, listAds, listLectures, requestLecture } from '../../data/academy';
+import { PublicResources } from '../../features/study/PublicResources';
 import { MockList } from '../../features/study/StudyBoard';
 import { subjectByCode } from '../../data/subjects';
 import { Sheet } from '../../features/community/parts';
@@ -14,7 +15,8 @@ import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
-type Tab = 'lectures' | 'mock';
+type Tab = 'lectures' | 'mock' | 'public';
+const TAB_CAT = { lectures: 'pink', mock: 'coral', public: 'teal' } as const;
 
 // 공부 탭 (2026-11-21 개편): 학원·인강 강의 후기(수강 인증자만) / 모의고사(점수 기록·후기). 학원 일정은 '일정' 탭으로. 광고는 따로 표시
 export default function AcademyScreen() {
@@ -56,13 +58,14 @@ export default function AcademyScreen() {
           [
             { value: 'lectures', icon: 'star-outline', label: '학원·인강 후기' },
             { value: 'mock', icon: 'clipboard-outline', label: '모의고사' },
+            { value: 'public', icon: 'library-outline', label: '공개 자료' },
           ] as const
         ).map((o) => {
           const on = tab === o.value;
           return (
             <Pressable key={o.value} onPress={() => setTab(o.value)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: on ? colors.cat[o.value === 'mock' ? 'coral' : 'pink'].fg : colors.cat[o.value === 'mock' ? 'coral' : 'pink'].bg, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name={o.icon} size={22} color={on ? colors.background : colors.cat[o.value === 'mock' ? 'coral' : 'pink'].fg} />
+              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: on ? colors.cat[TAB_CAT[o.value]].fg : colors.cat[TAB_CAT[o.value]].bg, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={o.icon} size={22} color={on ? colors.background : colors.cat[TAB_CAT[o.value]].fg} />
               </View>
               <Txt style={{ fontSize: 12.5, fontWeight: on ? '800' : '600' }} color={on ? 'text' : 'textSub'}>
                 {o.label}
@@ -102,8 +105,10 @@ export default function AcademyScreen() {
           )}
           <PrimaryButton label="찾는 강의가 없나요? 추가 요청" variant="ghost" onPress={() => (session ? setReqOpen(true) : router.push('/login'))} />
         </>
-      ) : (
+      ) : tab === 'mock' ? (
         <MockList />
+      ) : (
+        <PublicResources />
       )}
 
       {/* 광고는 후기와 섞지 않고 맨 아래 따로 */}
