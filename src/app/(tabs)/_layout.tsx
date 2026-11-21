@@ -11,8 +11,8 @@ type IconName = keyof typeof Ionicons.glyphMap;
 const TABS: { name: string; title: string; icon: IconName; iconActive: IconName }[] = [
   { name: 'index', title: '홈', icon: 'home-outline', iconActive: 'home' },
   { name: 'region', title: '지역·TO', icon: 'map-outline', iconActive: 'map' },
-  { name: 'study', title: '스터디·자료', icon: 'book-outline', iconActive: 'book' },
-  { name: 'academy', title: '학원·인강', icon: 'school-outline', iconActive: 'school' },
+  { name: 'schedule', title: '일정', icon: 'calendar-outline', iconActive: 'calendar' },
+  { name: 'academy', title: '공부', icon: 'school-outline', iconActive: 'school' },
   { name: 'community', title: '커뮤니티', icon: 'chatbubbles-outline', iconActive: 'chatbubbles' },
 ];
 

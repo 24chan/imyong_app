@@ -85,8 +85,8 @@ export default function HomeScreen() {
     { icon: 'git-compare-outline', label: '지역 비교', cat: 'purple', go: () => router.push('/compare') },
     { icon: 'trending-up-outline', label: '추이', cat: 'coral', go: () => router.push('/trend') },
     { icon: 'briefcase-outline', label: '사립 채용', cat: 'amber', go: () => router.push({ pathname: '/news', params: { type: 'jobs' } }), badge: openJobs },
-    { icon: 'videocam-outline', label: '학원·인강', cat: 'pink', go: () => router.navigate('/academy') },
-    { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate('/study') },
+    { icon: 'calendar-outline', label: '일정', cat: 'pink', go: () => router.navigate('/schedule') },
+    { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate({ pathname: '/community', params: { board: 'study' } }) },
     { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news') },
   ];
   const SectionHead = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (

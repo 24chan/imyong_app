@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { ViewModeBanner } from '../../components/ModeToggle';
@@ -8,6 +8,7 @@ import { Board, getBoards, listPosts, mySanctions, Post, Sanction, unreadCount }
 import { useAppSettings } from '../../store/AppSettings';
 import { useAuth } from '../../store/Auth';
 import { PostRow, SanctionBanner, needWriterAlert, useWriterLabels } from '../../features/community/parts';
+import { StudyBoard } from '../../features/study/StudyBoard';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
@@ -30,6 +31,12 @@ export default function CommunityScreen() {
   const [sanction, setSanction] = useState<Sanction | null>(null);
 
   useEffect(() => setBoard(defaultBoard), [defaultBoard]);
+  // 홈 메뉴 '스터디'에서 들어오면 스터디 모집 칸
+  const params = useLocalSearchParams<{ board?: string }>();
+  useEffect(() => {
+    if (params.board) setBoard(params.board);
+  }, [params.board]);
+  const isStudy = board === 'study';
   useEffect(() => {
     getBoards()
       .then(setBoards)
@@ -38,6 +45,11 @@ export default function CommunityScreen() {
 
   const load = useCallback(
     async (reset: boolean) => {
+      if (board === 'study') {
+        setPosts([]);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       setError(null);
       try {
@@ -70,16 +82,17 @@ export default function CommunityScreen() {
 
   const byId = useMemo(() => Object.fromEntries(boards.map((b) => [b.id, b])), [boards]);
   const quick = useMemo(() => {
-    const ids = ['hot', defaultBoard, 'free', 'review'];
+    const ids = ['hot', defaultBoard, 'study', 'free', 'review'];
     if (viewLevel === 'secondary' && defaultBoard !== 'sec') ids.push('sec');
     // 관심 지역은 첫 번째 하나만 (나머지는 '다른 게시판'에서)
     if (settings.regionCodes[0]) ids.push(`reg_${settings.regionCodes[0]}`);
     return [...new Set(ids)];
   }, [defaultBoard, viewLevel, settings.regionCodes]);
-  const nameOf = (id: string) => (id === 'hot' ? 'HOT' : byId[id]?.name ?? (id === 'elem' ? '초등' : id));
+  const nameOf = (id: string) => (id === 'hot' ? 'HOT' : id === 'study' ? '스터디 모집' : byId[id]?.name ?? (id === 'elem' ? '초등' : id));
 
   const write = () => {
     if (needWriterAlert(uid, labels)) return;
+    if (isStudy) return router.push('/study/new');
     router.push({ pathname: '/community/write', params: { board: board === 'hot' ? defaultBoard : board } });
   };
 
@@ -104,6 +117,7 @@ export default function CommunityScreen() {
         }}
       >
         {id === 'hot' && <Ionicons name="flame" size={14} color={on ? colors.background : colors.down} />}
+        {id === 'study' && <Ionicons name="people" size={14} color={on ? colors.background : colors.cat.green.fg} />}
         <Txt style={{ fontWeight: '700', fontSize: 14 }} color={on ? 'background' : 'text'}>
           {nameOf(id)}
         </Txt>
@@ -124,6 +138,7 @@ export default function CommunityScreen() {
         <IconBtn icon="mail-outline" label="쪽지함" badge={unread} onPress={() => (session ? router.push('/messages') : needWriterAlert(null, null))} />
       </View>
       {board === 'hot' && <Txt variant="sub">공감 10개 이상 받은 글이 모여요.</Txt>}
+      {isStudy && <Txt variant="sub">지역·과목·1차/2차·온오프라인으로 스터디원을 모아요.</Txt>}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm }}>
         {quick.map((id) => (
           <BoardChip key={id} id={id} />
@@ -169,7 +184,11 @@ export default function CommunityScreen() {
         onEndReachedThreshold={0.4}
         refreshControl={<RefreshControl refreshing={false} onRefresh={() => load(true)} tintColor={colors.brand} />}
         ListEmptyComponent={
-          loading ? (
+          isStudy ? (
+            <View style={{ paddingHorizontal: space.lg }}>
+              <StudyBoard />
+            </View>
+          ) : loading ? (
             <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />
           ) : (
             <View style={{ alignItems: 'center', padding: space.xl, gap: space.sm }}>
@@ -209,9 +228,9 @@ export default function CommunityScreen() {
           elevation: 4,
         }}
       >
-        <Ionicons name="create-outline" size={18} color={colors.background} />
+        <Ionicons name={isStudy ? 'people' : 'create-outline'} size={18} color={colors.background} />
         <Txt style={{ fontWeight: '800' }} color="background">
-          글쓰기
+          {isStudy ? '스터디 모집' : '글쓰기'}
         </Txt>
       </Pressable>
     </View>

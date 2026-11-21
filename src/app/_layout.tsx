@@ -78,8 +78,6 @@ function RootStack() {
         <Stack.Screen name="scraps" options={{ title: '내 스크랩', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="study/[id]" options={{ title: '스터디', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="study/new" options={{ title: '스터디 모집', presentation: 'modal' }} />
-        <Stack.Screen name="materials/[id]" options={{ title: '공부 자료', headerBackTitle: '뒤로' }} />
-        <Stack.Screen name="materials/write" options={{ title: '자료 올리기', presentation: 'modal' }} />
         <Stack.Screen name="mock/[id]" options={{ title: '모의고사', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="mock/scores" options={{ title: '점수 비교', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="lecture/[id]" options={{ title: '강의', headerBackTitle: '뒤로' }} />
