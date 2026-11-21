@@ -1,0 +1,18 @@
+name: storage-cleanup
+# 계정·대화가 지워진 뒤 남은 사진 파일(쪽지·인증)을 매일 정리 (개인정보처리방침 '탈퇴 시 삭제')
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 18 * * *'   # 매일 03:43 (한국 시간)
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
+        run: python -I -u scripts/storage_cleanup.py
