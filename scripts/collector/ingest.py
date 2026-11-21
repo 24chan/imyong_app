@@ -172,10 +172,11 @@ def secondary_rows(raw):
         srcs = sorted({sv for x in keep for sv in x['sources']})
         rows.append({
             'region': region, 'level': 'secondary', 'doc_type': 'exam_results',
-            'title': f'{year}학년도 {region} 중등 과목별 ({n_subj}과목, 공고 {len(srcs)}건)' if srcs else f'{year}학년도 중등 과목별 합격 현황 (교육청 합격자 발표 기준)',
+            'title': (f'{year}학년도 {region} 중등 과목별 ({n_subj}과목, 공고 {len(srcs)}건' + (' + 정리 자료로 빈칸 보충·원문 대조 전)' if unverified else ')')
+                      if srcs else f'{year}학년도 중등 과목별 ' + ('(수험생 정리 자료·원문 대조 전)' if unverified else '합격 현황 (교육청 합격자 발표 기준)')),
             'source_url': f'parsed:{region}:{year}:secondary',
             'file_url': f'parsed:exam_results:secondary:{year}:{region}',
-            'parsed': {'year': year, 'records': keep, 'sources': srcs},
+            'parsed': {'year': year, 'records': keep, 'sources': srcs, **({'unverified': True} if unverified else {})},
             'status': 'pending',
             'note': '확인 필요: 원문 대조 못 함(보내준 정리표)' if unverified
             else '검증 통과' if n_subj >= 5 or used_manual else note.replace('검증 통과', '확인 필요(과목 적음)'),
@@ -224,14 +225,17 @@ def main(raw):
         if any(r.get('_unverified') for r in rs):
             probs.append('원문 대조 못 함(보내준 정리표)')
         srcs = sorted({s for r in rs for s in r['sources']})
+        unv = any(r.get('_unverified') for r in rs)
         ref = next((r['source_title'] for r in rs if r.get('source_title')), None)
+        if unv:
+            ref = (ref or f'{year}학년도 {region} {level} 합격 현황') + ' (정리 자료·원문 대조 전)'
         rs = [{k: v for k, v in r.items() if k not in ('source_title', '_unverified')} for r in rs]
         rows.append({
             'region': region, 'level': level, 'doc_type': 'exam_results',
             'title': ref or f'{year}학년도 {region} {level} 선발·지원·1차·최종 합격 (공고 {len(srcs)}건)',
             'source_url': f'parsed:{region}:{year}:{level}',  # 묶음 고유 키 (실제 공고 주소는 parsed.sources)
             'file_url': f'parsed:exam_results:{level}:{year}:{region}',
-            'parsed': {'year': year, 'records': rs, 'sources': srcs},
+            'parsed': {'year': year, 'records': rs, 'sources': srcs, **({'unverified': True} if unv else {})},
             'status': 'pending',
             'note': '검증 통과' if not probs else '확인 필요: ' + ' / '.join(probs),
         })
