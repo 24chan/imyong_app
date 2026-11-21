@@ -6,6 +6,7 @@ import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { isOpen, submitJobTip, TeacherJob } from '../../data/jobs';
 import { REGIONS, regionByCode } from '../../data/regions';
 import { Level, useToday } from '../../store/AppSettings';
+import { toggleSavedJob, useSavedJobs } from '../../store/savedJobs';
 import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -22,6 +23,7 @@ const dday = (deadline: string | null, today: string) => {
 export function JobBoard({ jobs, title, footer }: { jobs: TeacherJob[]; title: string; footer?: React.ReactNode }) {
   const { colors } = useTheme();
   const today = useToday();
+  const savedUrls = new Set(useSavedJobs().map((j) => j.url));
   return (
     <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.lg, paddingBottom: space.sm }}>
@@ -65,6 +67,18 @@ export function JobBoard({ jobs, title, footer }: { jobs: TeacherJob[]; title: s
                   {dd}
                 </Txt>
               )}
+              <Pressable
+                onPress={() => toggleSavedJob(j)}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={savedUrls.has(j.url) ? '저장 취소' : '공고 저장'}
+              >
+                <Ionicons
+                  name={savedUrls.has(j.url) ? 'bookmark' : 'bookmark-outline'}
+                  size={20}
+                  color={savedUrls.has(j.url) ? colors.accent : colors.textSub}
+                />
+              </Pressable>
             </View>
             <Txt style={{ fontWeight: '700' }} numberOfLines={2}>
               {j.title}
