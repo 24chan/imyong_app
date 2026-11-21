@@ -1,0 +1,14 @@
+name: data-gaps
+# 지역·TO 탭 빈칸 보고서 (DB 읽기만)
+on: { workflow_dispatch: {} }
+jobs:
+  gaps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
+        run: python -I -u scripts/collector/gaps.py
