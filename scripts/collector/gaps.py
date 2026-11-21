@@ -79,3 +79,22 @@ for y in YEARS:
 
 if os.environ.get('GITHUB_STEP_SUMMARY'):
     open(os.environ['GITHUB_STEP_SUMMARY'], 'a').write('\n'.join(lines))
+
+# 승인 대기 자료 (approve_ingest_all 로 들어갈 것)
+q = get('ingest_queue?select=status,parsed,source_url,file_url')
+st = defaultdict(int)
+for r in q:
+    st[r.get('status')] += 1
+print('\n## 수집 대기열 상태', dict(st))
+pend = [r for r in q if r.get('status') in ('pending', 'parsed', 'new', 'review')]
+for r in pend[:60]:
+    pr = r.get('parsed') or {}
+    if isinstance(pr, str):
+        try:
+            pr = json.loads(pr)
+        except Exception:  # noqa: BLE001
+            pr = {}
+    recs = pr.get('records') if isinstance(pr, dict) else pr
+    recs = recs if isinstance(recs, list) else []
+    keys = sorted({(x.get('level'), x.get('year'), x.get('region')) for x in recs if isinstance(x, dict)})[:6]
+    print('-', r.get('status'), len(recs), '행', keys, (r.get('file_url') or r.get('source_url') or '')[-60:])
