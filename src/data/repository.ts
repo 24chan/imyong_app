@@ -399,3 +399,44 @@ export async function getSidoGeo(): Promise<SidoGeo | null> {
     }
   });
 }
+
+/** 학교알리미 공시 정보 (raw-files/raw/schoolinfo/<지역>.json, collector-schoolinfo) */
+export type SchoolInfo = {
+  st?: number; // 학생 수
+  bm?: number; // 남학생
+  gw?: number; // 여학생
+  cl?: number; // 학급 수
+  avg?: number; // 학급당 학생
+  t?: number; // 교원 수
+  tm?: number; // 남교원
+  tw?: number; // 여교원
+  coed?: string; // 남녀공학 구분
+  est?: number; // 설립연도
+  hp?: string; // 홈페이지
+};
+export type SchoolInfoFile = { year: number; s: Record<string, SchoolInfo> };
+
+export async function getSchoolInfoFile(region: string): Promise<SchoolInfoFile | null> {
+  return cached(`schoolinfo:${region}`, async () => {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/schoolinfo/${region}.json`);
+      return res.ok ? ((await res.json()) as SchoolInfoFile) : null;
+    } catch {
+      return null;
+    }
+  });
+}
+
+/** 학교 이름·급으로 찾기 (위치 자료와 학교알리미 이름이 띄어쓰기만 다른 경우도) */
+export async function getSchoolInfo(region: string, name: string, kind: 'e' | 'm' | 'h'): Promise<{ year: number; info: SchoolInfo } | null> {
+  const f = await getSchoolInfoFile(region);
+  if (!f) return null;
+  const exact = f.s[`${name}|${kind}`];
+  if (exact) return { year: f.year, info: exact };
+  const norm = (s: string) => s.replace(/\s/g, '');
+  const key = Object.keys(f.s).find((k) => {
+    const [n, k2] = k.split('|');
+    return k2 === kind && norm(n) === norm(name);
+  });
+  return key ? { year: f.year, info: f.s[key] } : null;
+}

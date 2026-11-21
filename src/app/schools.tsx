@@ -1,5 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { SchoolInfoBox } from '../features/region/SchoolInfoBox';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
@@ -156,6 +157,11 @@ export default function SchoolsScreen() {
             </View>
 
             {selected && <SchoolRow school={selected} highlight onPress={() => setSelected(null)} />}
+            {selected && (
+              <View style={{ padding: space.md, borderRadius: radius.lg, backgroundColor: colors.surface }}>
+                <SchoolInfoBox region={params.region} name={selected.name} kind={selected.kind} />
+              </View>
+            )}
 
             {/* 학교 검색 */}
             <View

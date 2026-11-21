@@ -12,6 +12,7 @@ import type { CatKey } from '../../theme/tokens';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { SchoolFound } from '../../types/data';
+import { SchoolInfoBox } from './SchoolInfoBox';
 import { FoundMark, useFoundColor } from './SchoolMap';
 
 // 지도 좌표: 경도 그대로, 위도는 메르카토르 (SchoolMap과 같은 방식)
@@ -343,17 +344,23 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
 
       {/* 누른 학교 */}
       {picked && (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.cat[REGION_CAT[picked.region] ?? 'gray'].bg }}>
-          <FoundMark found={picked.found} size={12} />
-          <View style={{ flex: 1 }}>
-            <Txt style={{ fontWeight: '800' }}>{picked.name}</Txt>
-            <Txt variant="sub">
-              {regionByCode(picked.region)?.shortName} {picked.sigungu} · {FOUND_LABEL[picked.found]} {KIND_LABEL[picked.kind]}
-            </Txt>
+        <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.cat[REGION_CAT[picked.region] ?? 'gray'].bg }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+            <FoundMark found={picked.found} size={12} />
+            <View style={{ flex: 1 }}>
+              <Txt style={{ fontWeight: '800', fontSize: 16 }}>{picked.name}</Txt>
+              <Txt variant="sub">
+                {regionByCode(picked.region)?.shortName} {picked.sigungu} · {FOUND_LABEL[picked.found]} {KIND_LABEL[picked.kind]}
+              </Txt>
+            </View>
+            <Pressable onPress={() => setPicked(null)} accessibilityRole="button" accessibilityLabel="닫기" hitSlop={10}>
+              <Ionicons name="close" size={20} color={colors.textSub} />
+            </Pressable>
           </View>
-          <Pressable onPress={() => openRegionSchools(picked.region, level, picked.name)} accessibilityRole="button" hitSlop={8}>
+          <SchoolInfoBox region={picked.region} name={picked.name} kind={picked.kind} />
+          <Pressable onPress={() => openRegionSchools(picked.region, level, picked.name)} accessibilityRole="button" hitSlop={8} style={{ alignSelf: 'flex-start' }}>
             <Txt color="brand" style={{ fontWeight: '800' }}>
-              지역 지도 ›
+              주변 학교 지도로 보기 ›
             </Txt>
           </Pressable>
         </View>

@@ -5,13 +5,32 @@
 출처: 학교알리미(schoolinfo.go.kr) 공시 정보. 키: SCHOOLINFO_KEY
 """
 import json, os, sys, time, urllib.parse, urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 KEY = os.environ.get('SCHOOLINFO_KEY', '').strip()
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'raw/schoolinfo'
 BASE = 'https://www.schoolinfo.go.kr/openApi.do'
 KIND = {'02': 'e', '03': 'm', '04': 'h'}
-# 학교알리미 시도 코드(옛 코드와 새 특별자치도 코드 모두 시도, 같은 학교는 한 번만)
-SIDO_CODES = ['11', '26', '27', '28', '29', '30', '31', '36', '41', '42', '51', '43', '44', '45', '52', '46', '47', '48', '50']
+# 강원·전북 특별자치도는 새 코드(51·52)와 옛 코드(42·45)를 둘 다 시도
+OLD_SIDO = {'51': '42', '52': '45'}
+
+
+def sgg_codes():
+    """시군구 코드(5자리) 목록: admdongkor 최신 행정구역에서"""
+    import admdongkor as adk
+    vers = adk.versions()
+    keys = sorted(str(v.get('key') if isinstance(v, dict) else v) for v in (vers if isinstance(vers, (list, tuple)) else list(vers)))
+    g = adk.get(keys[-1], 'sgg', crs='EPSG:4326')
+    cols = list(g.columns)
+    print('행정구역 열', cols)
+    code_col = next((c for c in cols if c.lower() in ('sgg', 'sggcd', 'sgg_cd', 'sggcode')), None) or next(c for c in cols if 'sgg' in c.lower() and 'nm' not in c.lower())
+    codes = sorted({str(v)[:5] for v in g[code_col] if str(v)[:5].isdigit()})
+    out = []
+    for c in codes:
+        out.append(c)
+        if c[:2] in OLD_SIDO:
+            out.append(OLD_SIDO[c[:2]] + c[2:])
+    return out
 PREFIX = [('서울', 'seoul'), ('부산', 'busan'), ('대구', 'daegu'), ('인천', 'incheon'), ('광주', 'gwangju'), ('대전', 'daejeon'), ('울산', 'ulsan'),
           ('세종', 'sejong'), ('경기', 'gyeonggi'), ('강원', 'gangwon'), ('충청북', 'chungbuk'), ('충청남', 'chungnam'), ('전북', 'jeonbuk'),
           ('전라북', 'jeonbuk'), ('전라남', 'jeonnam'), ('전남', 'jeonnam'), ('경상북', 'gyeongbuk'), ('경상남', 'gyeongnam'), ('제주', 'jeju')]
@@ -29,8 +48,8 @@ def region_of(addr):
     return None
 
 
-def call(api, sido, knd, yr):
-    q = urllib.parse.urlencode({'apiKey': KEY, 'apiType': api, 'pbanYr': yr, 'schulKndCode': knd, 'sidoCode': sido})
+def call(api, sgg, knd, yr):
+    q = urllib.parse.urlencode({'apiKey': KEY, 'apiType': api, 'pbanYr': yr, 'schulKndCode': knd, 'sidoCode': sgg[:2], 'sggCode': sgg})
     for i in range(3):
         try:
             req = urllib.request.Request(f'{BASE}?{q}', headers={'User-Agent': 'Mozilla/5.0'})
@@ -59,17 +78,29 @@ def main():
         return
     yr = os.environ.get('YEAR') or time.strftime('%Y')
     # 올해 자료가 아직 없으면(5월 공시 전) 작년
-    test, msg = call('63', '11', '02', yr)
+    test, msg = call('63', '11140', '02', yr)
     if not test:
         print(yr, '자료 없음:', msg, '→ 작년')
         yr = str(int(yr) - 1)
     print('공시 연도', yr)
+    codes = sgg_codes()
+    print('시군구 코드', len(codes))
+
+    def one(task):
+        sgg, knd = task
+        base, _ = call('0', sgg, knd, yr)
+        if not base:
+            return sgg, knd, [], {}
+        extra = {api: call(api, sgg, knd, yr)[0] for api in ('63', '62', '22')}
+        return sgg, knd, base, extra
+
     by = {}  # 학교코드 → 정보
-    for knd, kind in KIND.items():
-        for sido in SIDO_CODES:
-            base, _ = call('0', sido, knd, yr)
-            if not base:
-                continue
+    tasks = [(c, k) for k in KIND for c in codes]
+    done = 0
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        for sgg, knd, base, extra in ex.map(one, tasks):
+            done += 1
+            kind = KIND[knd]
             for r in base:
                 code = r.get('SCHUL_CODE')
                 reg = region_of(r.get('ADRCD_NM') or r.get('SCHUL_RDNMA'))
@@ -79,8 +110,7 @@ def main():
                 by[code] = {'_r': reg, '_n': r.get('SCHUL_NM', '').strip(), '_k': kind,
                             'coed': r.get('COEDU_SC_CODE') or None, 'est': int(fy) if fy.isdigit() else None,
                             'hp': (r.get('HMPG_ADRES') or '').strip() or None}
-            for api in ('63', '62', '22'):
-                rows, _ = call(api, sido, knd, yr)
+            for api, rows in extra.items():
                 for r in rows:
                     s = by.get(r.get('SCHUL_CODE'))
                     if not s or r.get('PBAN_EXCP_YN') == 'Y':
@@ -91,7 +121,9 @@ def main():
                         s.update(cl=num(r.get('COL_SUM')), avg=num(r.get('AVG_FGR_SUM')))
                     else:
                         s.update(t=num(r.get('COL_S')), tm=num(r.get('COL_SM')), tw=num(r.get('COL_SW')))
-            print(knd, sido, '누적', len(by))
+            if done % 100 == 0:
+                print('진행', done, '/', len(tasks), '학교', len(by))
+    print('학교 수', len(by), '학생 수 있음', sum(1 for s in by.values() if 'st' in s), '교원 수 있음', sum(1 for s in by.values() if 't' in s))
     out = {}
     for s in by.values():
         key = f"{s['_n']}|{s['_k']}"

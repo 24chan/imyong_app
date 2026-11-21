@@ -21,6 +21,7 @@ jobs:
           path: app
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
+      - run: pip install -q admdongkor shapely geopandas pyarrow
       - name: 학교 정보 받기
         env:
           SCHOOLINFO_KEY: ${{ secrets.SCHOOLINFO_KEY }}
