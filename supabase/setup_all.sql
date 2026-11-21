@@ -1,4 +1,4 @@
--- 임용맵 DB 처음 설정 (테이블 + 권한 + 샘플 데이터). Supabase SQL Editor에 통째로 붙여넣고 Run, 한 번만.
+-- 임용몽땅 DB 처음 설정 (테이블 + 권한 + 샘플 데이터). Supabase SQL Editor에 통째로 붙여넣고 Run, 한 번만.
 
 
 -- 구분 값
@@ -132,7 +132,7 @@ insert into subjects (code, name, grp, sort) values
 
 
 insert into sources (id, title, publisher, url)
-values ('sample', '샘플 데이터 (실제 수치 아님)', '임용맵 개발용', null)
+values ('sample', '샘플 데이터 (실제 수치 아님)', '임용몽땅 개발용', null)
 on conflict (id) do nothing;
 
 -- 같은 순서로 같은 난수를 만드는 도우미 (이 실행 동안만 존재)

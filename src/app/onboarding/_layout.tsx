@@ -13,7 +13,7 @@ export default function OnboardingLayout() {
         contentStyle: { backgroundColor: colors.background },
       }}
     >
-      <Stack.Screen name="index" options={{ title: '임용맵 시작하기' }} />
+      <Stack.Screen name="index" options={{ title: '임용몽땅 시작하기' }} />
       <Stack.Screen name="subject" options={{ title: '과목 선택' }} />
       <Stack.Screen name="regions" options={{ title: '관심 지역' }} />
     </Stack>

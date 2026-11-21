@@ -115,7 +115,7 @@ const sources = [
   {
     id: SOURCE_ID,
     title: '샘플 데이터 (실제 수치 아님)',
-    publisher: '임용맵 개발용',
+    publisher: '임용몽땅 개발용',
     url: null,
   },
 ];

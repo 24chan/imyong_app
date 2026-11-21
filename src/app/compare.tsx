@@ -119,7 +119,7 @@ export default function CompareScreen() {
           >
             <View style={{ gap: space.xs }}>
               <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
-                임용맵 · 지역 비교
+                임용몽땅 · 지역 비교
               </Txt>
               <Txt variant="title">
                 {f.year}학년도 {modeTitle}

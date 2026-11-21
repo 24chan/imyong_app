@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "임용맵",
+    "name": "임용몽땅",
     "slug": "imyongapp",
     "owner": "imyong-app",
     "scheme": "imyongapp",
@@ -25,7 +25,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.imyongmap.app"
+      "bundleIdentifier": "com.imyongmongttang.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +35,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.imyongmap.app"
+      "package": "com.imyongmongttang.app"
     },
     "plugins": [
       "expo-router",

@@ -91,7 +91,7 @@ export default function HomeScreen() {
       {/* 브랜드 머리: 모드 + D-day */}
       <View style={{ backgroundColor: colors.brand, paddingTop: insets.top + space.sm, paddingHorizontal: 22, paddingBottom: 60, gap: space.md }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Txt style={{ color: onBrand, fontSize: 15, fontWeight: '800', opacity: 0.92 }}>임용맵 · {modeLabel}</Txt>
+          <Txt style={{ color: onBrand, fontSize: 15, fontWeight: '800', opacity: 0.92 }}>임용몽땅 · {modeLabel}</Txt>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
             {(['elementary', 'secondary'] as Level[]).map((lv) => {
               const on = viewLevel === lv;

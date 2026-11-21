@@ -4,7 +4,7 @@
 -- 실제 데이터를 넣을 때는 맨 아래 '샘플 지우기'를 실행하세요.
 
 insert into sources (id, title, publisher, url)
-values ('sample', '샘플 데이터 (실제 수치 아님)', '임용맵 개발용', null)
+values ('sample', '샘플 데이터 (실제 수치 아님)', '임용몽땅 개발용', null)
 on conflict (id) do nothing;
 
 -- 같은 순서로 같은 난수를 만드는 도우미 (이 실행 동안만 존재)
