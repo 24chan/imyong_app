@@ -1,0 +1,22 @@
+name: schoolinfo-probe
+# 학교알리미 OpenAPI 살펴보기 (키 확인, apiType 번호 찾기)
+on:
+  workflow_dispatch:
+    inputs:
+      lo: { description: 'apiType 시작', default: '0' }
+      hi: { description: 'apiType 끝', default: '70' }
+      year: { description: '공시 연도', default: '2026' }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - env:
+          SCHOOLINFO_KEY: ${{ secrets.SCHOOLINFO_KEY }}
+          LO: ${{ github.event.inputs.lo }}
+          HI: ${{ github.event.inputs.hi }}
+          YEAR: ${{ github.event.inputs.year }}
+        run: python -I -u scripts/collector/schoolinfo_probe.py
