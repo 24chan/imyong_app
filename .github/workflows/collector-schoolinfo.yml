@@ -1,0 +1,35 @@
+name: collector-schoolinfo
+# 학교알리미 공시(학생·교원·학급 수 등) → raw-files/raw/schoolinfo/<지역>.json (지도 학교 카드)
+on:
+  schedule:
+    - cron: '23 19 10 6,10 *'   # 6월·10월 11일 04:23 (한국 시간) — 5월·9월 공시 뒤
+  workflow_dispatch:
+    inputs:
+      year: { description: '공시 연도 (비우면 올해)', required: false, default: '' }
+permissions:
+  contents: write
+jobs:
+  schoolinfo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: raw-files
+      - uses: actions/checkout@v4
+        with:
+          path: app
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 학교 정보 받기
+        env:
+          SCHOOLINFO_KEY: ${{ secrets.SCHOOLINFO_KEY }}
+          YEAR: ${{ github.event.inputs.year }}
+        run: python -I -u app/scripts/collector/schoolinfo.py raw/schoolinfo
+      - name: 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/schoolinfo
+          git commit -qm "학교 정보 갱신 $(date +%F)" || exit 0
+          git push -q origin HEAD:raw-files
