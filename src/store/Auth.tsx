@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import { consentRecord, hasConsented } from '../legal/info';
 import { supabase } from '../lib/supabase';
 import { useAppSettings } from './AppSettings';
 
@@ -11,8 +12,10 @@ type AuthValue = {
   session: Session | null;
   email: string | null;
   isAdmin: boolean;
-  sendCode: (email: string) => Promise<void>;
+  /** agreed: 로그인 화면에서 약관에 동의했는지 (처음 가입이면 동의 기록이 계정에 같이 남음) */
+  sendCode: (email: string, agreed: boolean) => Promise<void>;
   verifyCode: (email: string, code: string) => Promise<void>;
+  agreeTerms: () => Promise<void>;
   signOut: () => Promise<void>;
   deleteAccount: () => Promise<void>;
 };
@@ -29,6 +32,19 @@ export function authErrorText(e: unknown): string {
   if (/network|fetch/i.test(m)) return '인터넷 연결을 확인해 주세요.';
   if (/delete_my_account|function/i.test(m)) return '서버 준비가 덜 됐어요 (0009 SQL 실행 필요).';
   return m;
+}
+
+/** 본인 폴더(내 id)에 있는 사진 지우기. 실패해도 계정 삭제는 계속 */
+async function removeMyFiles(uid: string) {
+  for (const bucket of ['verify-docs', 'enroll-docs', 'pass-docs']) {
+    try {
+      const { data } = await supabase.storage.from(bucket).list(uid, { limit: 1000 });
+      const paths = (data ?? []).map((f) => `${uid}/${f.name}`);
+      if (paths.length) await supabase.storage.from(bucket).remove(paths);
+    } catch {
+      /* 사진이 없거나 버킷이 없어도 넘어감 */
+    }
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -81,14 +97,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.rpc('is_admin').then(({ data, error }) => setIsAdmin(!error && data === true));
   }, [uid]);
 
-  const sendCode = useCallback(async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true } });
+  const agreedAtLogin = useRef(false);
+
+  const sendCode = useCallback(async (email: string, agreed: boolean) => {
+    agreedAtLogin.current = agreed;
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      // data는 처음 가입할 때만 계정 정보(user_metadata)에 저장됨
+      options: { shouldCreateUser: true, data: agreed ? consentRecord() : undefined },
+    });
+    if (error) throw error;
+  }, []);
+
+  const agreeTerms = useCallback(async () => {
+    const { error } = await supabase.auth.updateUser({ data: consentRecord() });
     if (error) throw error;
   }, []);
 
   const verifyCode = useCallback(async (email: string, code: string) => {
-    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' });
+    const { data, error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' });
     if (error) throw error;
+    // 이미 가입했던 사람이 로그인 화면에서 동의했으면 기록을 지금 버전으로 갱신
+    if (agreedAtLogin.current && !hasConsented(data.user?.user_metadata)) {
+      await supabase.auth.updateUser({ data: consentRecord() }).catch(() => {});
+    }
   }, []);
 
   const signOut = useCallback(async () => {
@@ -96,14 +128,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteAccount = useCallback(async () => {
+    // 아직 검수 전인 인증 사진도 함께 지우기 (계정만 지우면 사진 파일은 남음)
+    const id = (await supabase.auth.getSession()).data.session?.user.id;
+    if (id) await removeMyFiles(id);
     const { error } = await supabase.rpc('delete_my_account');
     if (error) throw error;
     await supabase.auth.signOut({ scope: 'local' });
   }, []);
 
   const value = useMemo<AuthValue>(
-    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, sendCode, verifyCode, signOut, deleteAccount }),
-    [ready, session, isAdmin, sendCode, verifyCode, signOut, deleteAccount],
+    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, sendCode, verifyCode, agreeTerms, signOut, deleteAccount }),
+    [ready, session, isAdmin, sendCode, verifyCode, agreeTerms, signOut, deleteAccount],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

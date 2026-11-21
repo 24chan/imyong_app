@@ -7,6 +7,7 @@ import { CommunitySettings } from '../features/account/CommunitySettings';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
 import { checkServer, clearDataCache } from '../data/repository';
+import { fill, LEGAL } from '../legal/info';
 import { useAsync } from '../data/useAsync';
 import { space } from '../theme/tokens';
 
@@ -114,6 +115,18 @@ export default function SettingsScreen() {
             bumpDataVersion();
           }}
         />
+      </Card>
+
+      <Card>
+        <Txt variant="heading">약관 · 정책</Txt>
+        <View style={{ gap: space.xs }}>
+          <PrimaryButton label="이용약관" variant="ghost" onPress={() => router.push('/legal/terms')} />
+          <PrimaryButton label="개인정보처리방침" variant="ghost" onPress={() => router.push('/legal/privacy')} />
+          <PrimaryButton label="커뮤니티 이용 규칙" variant="ghost" onPress={() => router.push('/rules')} />
+        </View>
+        <Txt variant="sub">
+          문의 · 개인정보 요청: {fill(LEGAL.contactEmail, '문의 메일')}
+        </Txt>
       </Card>
 
       <Card>

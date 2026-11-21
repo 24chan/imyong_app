@@ -3,6 +3,7 @@ import { ComponentRef, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, View } from 'react-native';
 import { TextInput } from '../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../components/ui';
+import { allAgreed, ConsentBox, NO_CONSENT } from '../features/account/ConsentBox';
 import { authErrorText, useAuth } from '../store/Auth';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
@@ -20,6 +21,7 @@ export default function LoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [wait, setWait] = useState(0);
+  const [consent, setConsent] = useState(NO_CONSENT);
   const codeRef = useRef<ComponentRef<typeof TextInput>>(null);
 
   useEffect(() => {
@@ -34,6 +36,10 @@ export default function LoginScreen() {
   }, [session]);
 
   const send = async () => {
+    if (!allAgreed(consent)) {
+      setError('필수 항목에 모두 동의해 주세요.');
+      return;
+    }
     if (!EMAIL.test(email.trim())) {
       setError('이메일 주소 형식을 확인해 주세요.');
       return;
@@ -41,7 +47,7 @@ export default function LoginScreen() {
     setBusy(true);
     setError(null);
     try {
-      await sendCode(email);
+      await sendCode(email, true);
       setStep('code');
       setWait(RESEND_SEC);
       setTimeout(() => codeRef.current?.focus(), 300);
@@ -133,10 +139,16 @@ export default function LoginScreen() {
             {error && <Txt color="down">{error}</Txt>}
           </Card>
 
+          {step === 'email' && (
+            <Card>
+              <ConsentBox value={consent} onChange={setConsent} />
+            </Card>
+          )}
+
           {busy ? (
             <ActivityIndicator color={colors.brand} />
           ) : step === 'email' ? (
-            <PrimaryButton label="인증 코드 받기" onPress={send} disabled={!email.trim()} />
+            <PrimaryButton label="동의하고 인증 코드 받기" onPress={send} disabled={!email.trim() || !allAgreed(consent)} />
           ) : (
             <View style={{ gap: space.xs }}>
               <PrimaryButton label="확인" onPress={() => verify()} disabled={code.length < 6} />

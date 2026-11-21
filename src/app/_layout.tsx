@@ -1,17 +1,32 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { AppSettingsProvider, useAppSettings } from '../store/AppSettings';
-import { AuthProvider } from '../store/Auth';
+import { hasConsented } from '../legal/info';
+import { AuthProvider, useAuth } from '../store/Auth';
 import { FONT_FILES } from '../theme/fonts';
 import { useTheme } from '../theme/useTheme';
 
 // 글꼴·설정을 다 불러올 때까지 처음 화면(로고)을 유지
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+/** 로그인했는데 지금 버전 약관에 동의 기록이 없으면 동의 화면으로 (예전 가입자·약관 변경) */
+function useConsentGate(ready: boolean) {
+  const { session } = useAuth();
+  const pathname = usePathname();
+  const needs = !!session && !hasConsented(session.user.user_metadata);
+  useEffect(() => {
+    if (!ready || !needs) return;
+    // 로그인 화면이 닫히고 동의 기록이 갱신될 시간을 잠깐 기다림. 약관 보기 화면에서는 띄우지 않음
+    if (['/login', '/legal', '/onboarding'].some((p) => pathname.startsWith(p))) return;
+    const t = setTimeout(() => router.push('/legal/agree'), 800);
+    return () => clearTimeout(t);
+  }, [ready, needs, pathname]);
+}
 
 function RootStack() {
   const { hydrated } = useAppSettings();
@@ -25,6 +40,7 @@ function RootStack() {
 
   // 저장된 설정을 불러오기 전에는 빈 배경만 보여줌
   const ready = hydrated && (fontsLoaded || !!fontError);
+  useConsentGate(ready);
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
@@ -72,6 +88,8 @@ function RootStack() {
         <Stack.Screen name="admin" options={{ title: '운영자', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="login" options={{ title: '로그인 · 가입', presentation: 'modal' }} />
         <Stack.Screen name="report" options={{ title: '오류 신고', presentation: 'modal' }} />
+        <Stack.Screen name="legal/[doc]" options={{ title: '', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="legal/agree" options={{ title: '약관 동의', gestureEnabled: false, headerBackVisible: false }} />
       </Stack>
     </>
   );
