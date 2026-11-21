@@ -8,10 +8,7 @@ export type Study = {
   stage: 'first' | 'second' | 'both'; mode: 'online' | 'offline' | 'both'; capacity: number;
   title: string; body: string; status: 'open' | 'closed' | 'hidden'; createdAt: string; isMine: boolean;
 };
-export type Material = {
-  id: number; label: string; level: Level; subjectCode: string | null; area: 'pedagogy' | 'major' | 'second' | 'etc';
-  title: string; body: string; likeCount: number; status: string; createdAt: string; isMine: boolean; liked: boolean;
-};
+
 export type MockExam = {
   id: number; name: string; provider: string; level: Level; subjectCode: string | null; examDate: string | null;
   applyUrl: string | null; note: string | null; reviewCount: number; ratingAvg: number | null; difficultyAvg: number | null;
@@ -66,32 +63,6 @@ export const createStudy = (s: { level: Level; subject: string | null; regions: 
     p_title: s.title, p_body: s.body, p_verification: s.verificationId ?? null,
   }, '스터디 모집');
 export const setStudyStatus = (id: number, status: 'open' | 'closed' | 'deleted') => rpc<void>('set_study_status', { p_id: id, p_status: status }, '스터디');
-
-// ───── 공부 자료 ─────
-type MatRow = { id: number; label: string; level: Level; subject_code: string | null; area: Material['area']; title: string; body: string; like_count: number; status: string; created_at: string; is_mine: boolean | null; liked: boolean | null };
-const toMat = (r: MatRow): Material => ({
-  id: r.id, label: r.label, level: r.level, subjectCode: r.subject_code, area: r.area, title: r.title, body: r.body, likeCount: r.like_count,
-  status: r.status, createdAt: r.created_at, isMine: !!r.is_mine, liked: !!r.liked,
-});
-export async function listMaterials(f: { level: Level; subject?: string | null; area?: Material['area'] | null; sort: 'new' | 'like' }): Promise<Material[]> {
-  let q = supabase.from('materials_v').select('*').eq('level', f.level).limit(60);
-  if (f.subject) q = q.or(`subject_code.eq.${f.subject},area.eq.pedagogy,area.eq.second`);
-  if (f.area) q = q.eq('area', f.area);
-  q = f.sort === 'like' ? q.order('like_count', { ascending: false }).order('id', { ascending: false }) : q.order('id', { ascending: false });
-  const { data, error } = await q;
-  if (error) throw err(error, '공부 자료');
-  return (data as MatRow[]).map(toMat);
-}
-export async function getMaterial(id: number): Promise<Material | null> {
-  const { data, error } = await supabase.from('materials_v').select('*').eq('id', id).maybeSingle();
-  if (error) throw err(error, '공부 자료');
-  return data ? toMat(data as MatRow) : null;
-}
-export const createMaterial = (m: { level: Level; subject: string | null; area: Material['area']; title: string; body: string; verificationId?: string | null }) =>
-  rpc<number>('create_material', { p_level: m.level, p_subject: m.subject ?? '', p_area: m.area, p_title: m.title, p_body: m.body, p_verification: m.verificationId ?? null }, '자료 올리기');
-export const updateMaterial = (id: number, title: string, body: string) => rpc<void>('update_material', { p_id: id, p_title: title, p_body: body }, '자료 수정');
-export const deleteMaterial = (id: number) => rpc<void>('delete_material', { p_id: id }, '자료 삭제');
-export const toggleMaterialLike = (id: number) => rpc<number>('toggle_material_like', { p_id: id }, '공감');
 
 // ───── 모의고사 ─────
 type ExamRow = { id: number; name: string; provider: string; level: Level; subject_code: string | null; exam_date: string | null; apply_url: string | null; note: string | null; review_count: number; rating_avg: string | null; difficulty_avg: string | null };
