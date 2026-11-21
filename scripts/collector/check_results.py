@@ -29,9 +29,12 @@ def check(recs):
             problems.append(f'{key} 선발 합 {sel} ≠ 교육부 {exp}')
         else:
             ok += 1
+        # 장애 전형 미달 인원은 일반 전형으로 넘어감 → 일반 최종합격이 선발보다 그만큼 많을 수 있음
+        dis = next((x for x in rs if x['category'] == 'disabled'), {})
+        moved = max(0, (dis.get('selected') or 0) - (dis.get('final_passed') or dis.get('selected') or 0))
         for r in rs:
             fp, sl, fn = r.get('first_passed'), r.get('selected'), r.get('final_passed')
-            if fn is not None and sl is not None and fn > sl:
+            if fn is not None and sl is not None and fn > sl + (moved if r['category'] == 'general' else 0):
                 problems.append(f"{key} {r['category']} 최종합격 {fn} > 선발 {sl}")
             if r['category'] == 'general' and fp is not None and sl and not (sl <= fp <= sl * 2):
                 problems.append(f"{key} 일반 1차합격 {fp} 이 선발 {sl} 의 1~2배 밖")
