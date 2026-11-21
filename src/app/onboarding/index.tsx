@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { PrimaryButton, Screen, SelectCard, Txt } from '../../components/ui';
+import { PrimaryButton, Screen, SelectCard } from '../../components/ui';
+import { StepHeader } from '../../features/onboarding/StepHeader';
 import { Level } from '../../store/AppSettings';
 import { space } from '../../theme/tokens';
 
@@ -16,10 +17,12 @@ export default function OnboardingLevel() {
 
   return (
     <Screen>
-      <View style={{ gap: space.xs, marginBottom: space.sm }}>
-        <Txt variant="title">어떤 임용을 준비하나요?</Txt>
-        <Txt variant="sub">홈과 모든 탭이 선택한 시험에 맞춰 보여요. 나중에 설정에서 바꿀 수 있어요.</Txt>
-      </View>
+      <StepHeader
+        step={1}
+        total={level === 'elementary' ? 2 : 3}
+        title="어떤 임용을 준비하나요?"
+        desc="홈과 모든 탭이 선택한 시험에 맞춰 보여요. 나중에 설정에서 바꿀 수 있어요."
+      />
       <SelectCard
         title="초등 임용"
         desc="교대·초등교육과 · 지역 단위로 선발 인원·경쟁률 비교"
