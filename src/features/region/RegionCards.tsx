@@ -50,7 +50,7 @@ export function RegionTile({ row: r, info, onPress }: CardProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${regionByCode(r.region)?.shortName} 선발 ${r.selection ?? '자료 없음'}명`}
-      style={{ width: '31.8%', aspectRatio: 1, backgroundColor: colors.surface, borderRadius: 18, padding: 12, justifyContent: 'space-between' }}
+      style={({ pressed }) => ({ width: '31.8%', aspectRatio: 1, backgroundColor: pressed ? colors.surface : colors.background, borderWidth: 1, borderColor: info?.status === 'open' ? colors.cat.green.fg : colors.line, borderRadius: 18, padding: 12, justifyContent: 'space-between' })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Txt style={{ fontSize: 15, fontWeight: '800' }}>{regionByCode(r.region)?.shortName}</Txt>
@@ -65,7 +65,7 @@ export function RegionTile({ row: r, info, onPress }: CardProps) {
           {r.change == null ? '전년 자료 없음' : `${sign}${Math.abs(r.change).toLocaleString()}`}
         </Txt>
         <Txt variant="sub" style={{ fontSize: 11.5 }} numberOfLines={1}>
-          {info?.status === 'open' ? '● 접수 중' : `${stageLabel(r.selectionStage)}${r.ratioApplied != null ? ` · ${r.ratioApplied}:1` : ''}`}
+          {info?.status === 'open' ? <Txt variant="sub" style={{ fontSize: 11.5, fontWeight: '800', color: colors.cat.green.fg }}>● 접수 중</Txt> : `${stageLabel(r.selectionStage)}${r.ratioApplied != null ? ` · ${r.ratioApplied}:1` : ''}`}
         </Txt>
       </View>
     </Pressable>

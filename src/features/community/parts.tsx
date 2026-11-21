@@ -41,14 +41,21 @@ export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }
       })}
     >
       {showBoard && (
-        <Txt variant="sub" style={{ fontSize: 12 }}>
-          {post.boardName}
-        </Txt>
+        <View style={{ alignSelf: 'flex-start', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, backgroundColor: colors.cat.blue.bg }}>
+          <Txt style={{ fontSize: 11.5, fontWeight: '700', color: colors.cat.blue.fg }}>{post.boardName}</Txt>
+        </View>
       )}
-      <Txt style={{ fontWeight: '800', fontSize: 16 }} numberOfLines={1}>
-        {post.status === 'hidden' ? '🔒 ' : ''}
-        {post.title}
-      </Txt>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        {hot && !showBoard && (
+          <View style={{ paddingHorizontal: 5, paddingVertical: 1, borderRadius: 5, backgroundColor: colors.cat.coral.bg }}>
+            <Txt style={{ fontSize: 11, fontWeight: '800', color: colors.cat.coral.fg }}>HOT</Txt>
+          </View>
+        )}
+        <Txt style={{ fontWeight: '800', fontSize: 16, flex: 1 }} numberOfLines={1}>
+          {post.status === 'hidden' ? '🔒 ' : ''}
+          {post.title}
+        </Txt>
+      </View>
       {!!post.body && (
         <Txt variant="sub" color="text" numberOfLines={2} style={{ opacity: 0.8 }}>
           {post.body}

@@ -101,13 +101,13 @@ export default function RegionScreen() {
       <View style={{ gap: space.xs }}>
         <View style={{ flexDirection: 'row', paddingVertical: 16, paddingHorizontal: space.sm, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.background }}>
           {[
-            { href: '/compare' as const, icon: 'git-compare-outline' as const, label: '지역 비교' },
-            { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이' },
-            { href: '/school-map' as const, icon: 'location-outline' as const, label: '학교 지도' },
+            { href: '/compare' as const, icon: 'git-compare-outline' as const, label: '지역 비교', cat: 'purple' as const },
+            { href: '/trend' as const, icon: 'trending-up-outline' as const, label: '추이', cat: 'coral' as const },
+            { href: '/school-map' as const, icon: 'location-outline' as const, label: '학교 지도', cat: 'teal' as const },
           ].map((b) => (
             <Pressable key={b.href} onPress={() => router.push(b.href)} accessibilityRole="button" style={{ flex: 1, alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name={b.icon} size={22} color={colors.brand} />
+              <View style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.cat[b.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={b.icon} size={22} color={colors.cat[b.cat].fg} />
               </View>
               <Txt style={{ fontSize: 12.5, fontWeight: '700' }}>{b.label}</Txt>
             </Pressable>
