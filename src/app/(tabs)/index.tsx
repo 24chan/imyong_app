@@ -17,7 +17,7 @@ import { NoticeBoard, NoticeRow } from '../../features/news/NoticeList';
 import { useRegionFilters } from '../../features/region/useRegionFilters';
 import { Level, useAppSettings, useToday } from '../../store/AppSettings';
 import { getTeacherJobs, isOpen, jobsFor } from '../../data/jobs';
-import { radius, space } from '../../theme/tokens';
+import { CatKey, radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { ScheduleEventType } from '../../types/data';
 
@@ -78,75 +78,107 @@ export default function HomeScreen() {
   const nextAfter = nextKey ? upcoming.find((e) => e !== nextKey && KEY_EVENTS.includes(e.event)) : undefined;
   const receipt = getReceiptInfo(regionEvents, today);
   const card = { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: 20, overflow: 'hidden' as const };
-  const quick = [
-    { icon: 'map-outline' as const, label: '전국 지도', go: () => router.navigate('/region') },
-    { icon: 'git-compare-outline' as const, label: '지역 비교', go: () => router.push('/compare') },
-    { icon: 'trending-up-outline' as const, label: '추이', go: () => router.push('/trend') },
-    { icon: 'location-outline' as const, label: '학교 지도', go: () => router.push('/school-map') },
+  // 색 아이콘 메뉴 (에브리타임 참고, 2026-11-21 시안 승인)
+  const menu: { icon: keyof typeof Ionicons.glyphMap; label: string; cat: CatKey; go: () => void; badge?: number }[] = [
+    { icon: 'school-outline', label: '학교 지도', cat: 'teal', go: () => router.push('/school-map') },
+    { icon: 'map-outline', label: '선발 지도', cat: 'blue', go: () => router.navigate('/region') },
+    { icon: 'git-compare-outline', label: '지역 비교', cat: 'purple', go: () => router.push('/compare') },
+    { icon: 'trending-up-outline', label: '추이', cat: 'coral', go: () => router.push('/trend') },
+    { icon: 'briefcase-outline', label: '사립 채용', cat: 'amber', go: () => router.push({ pathname: '/news', params: { type: 'jobs' } }), badge: openJobs },
+    { icon: 'videocam-outline', label: '학원·인강', cat: 'pink', go: () => router.navigate('/academy') },
+    { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate('/study') },
+    { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news') },
   ];
+  const SectionHead = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 }}>
+      <Txt style={{ fontSize: 18, fontWeight: '800' }}>{title}</Txt>
+      {action && (
+        <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
+          <Txt variant="sub" style={{ fontWeight: '700' }}>
+            {action} ›
+          </Txt>
+        </Pressable>
+      )}
+    </View>
+  );
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ paddingBottom: space.xl * 2 }}>
-      {focused && <StatusBar style={scheme === 'dark' ? 'dark' : 'light'} />}
+      {focused && <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />}
 
-      {/* 브랜드 머리: 모드 + D-day */}
-      <View style={{ backgroundColor: colors.brand, paddingTop: insets.top + space.sm, paddingHorizontal: 22, paddingBottom: 60, gap: space.md }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Txt style={{ color: onBrand, fontSize: 15, fontWeight: '800', opacity: 0.92 }}>임용몽땅 · {modeLabel}</Txt>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-            {(['elementary', 'secondary'] as Level[]).map((lv) => {
-              const on = viewLevel === lv;
-              return (
-                <Pressable
-                  key={lv}
-                  onPress={() => setViewLevel(lv)}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: on }}
-                  style={{ paddingHorizontal: 12, height: 32, justifyContent: 'center', borderRadius: radius.pill, backgroundColor: on ? onBrand : 'transparent', borderWidth: 1, borderColor: onBrand }}
-                >
-                  <Txt style={{ fontSize: 13, fontWeight: '800', color: on ? colors.brand : onBrand }}>{lv === 'elementary' ? '초등' : '중등'}</Txt>
-                </Pressable>
-              );
-            })}
-            <Pressable onPress={() => router.push('/settings')} accessibilityLabel="설정" hitSlop={8} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="settings-outline" size={22} color={onBrand} />
-            </Pressable>
-          </View>
+      {/* 머리: 앱 이름 + 초등/중등 + 검색·설정 */}
+      <View style={{ paddingTop: insets.top + space.sm, paddingHorizontal: space.lg, paddingBottom: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <View style={{ width: 30, height: 30, borderRadius: 9, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="book" size={17} color={onBrand} />
         </View>
-
-        {nextKey ? (
-          <View style={{ gap: 4 }}>
-            <Txt style={{ color: onBrand, fontSize: 14, opacity: 0.85 }}>
-              {regionByCode(scheduleRegion)?.shortName} · {EVENT_LABEL[nextKey.event]}까지
-            </Txt>
-            <Txt style={{ color: onBrand, fontSize: 54, fontWeight: '800', letterSpacing: -1.5, lineHeight: 60 }}>{dDayLabel(nextKey.date, today)}</Txt>
-            <Txt style={{ color: onBrand, fontSize: 14, opacity: 0.85 }}>
-              {shortDate(nextKey.date)}
-              {nextAfter ? ` · 다음은 ${EVENT_LABEL[nextAfter.event]} ${shortDate(nextAfter.date)}` : ''}
-            </Txt>
-          </View>
-        ) : (
-          <Txt style={{ color: onBrand, fontSize: 20, fontWeight: '800' }}>올해 일정이 모두 끝났어요. 다음 시행계획을 기다려요.</Txt>
-        )}
-        {receipt && (
-          <View style={{ alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill, borderWidth: 1, borderColor: onBrand }}>
-            <Txt style={{ color: onBrand, fontSize: 12.5, fontWeight: '700' }}>{receipt.detail}</Txt>
-          </View>
-        )}
-        {interest.length === 0 && (
-          <Txt style={{ color: onBrand, fontSize: 12.5, opacity: 0.8 }}>서울 일정 예시예요. 관심 지역을 고르면 그 지역 일정으로 바뀌어요.</Txt>
-        )}
+        <Txt style={{ fontSize: 21, fontWeight: '800', letterSpacing: -0.5 }}>임용몽땅</Txt>
+        <View style={{ flexDirection: 'row', marginLeft: 4, padding: 2, borderRadius: radius.pill, backgroundColor: colors.surface }}>
+          {(['elementary', 'secondary'] as Level[]).map((lv) => {
+            const on = viewLevel === lv;
+            return (
+              <Pressable
+                key={lv}
+                onPress={() => setViewLevel(lv)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: on }}
+                style={{ paddingHorizontal: 11, height: 28, justifyContent: 'center', borderRadius: radius.pill, backgroundColor: on ? colors.cat.teal.bg : 'transparent' }}
+              >
+                <Txt style={{ fontSize: 13, fontWeight: '800', color: on ? colors.cat.teal.fg : colors.textSub }}>{lv === 'elementary' ? '초등' : '중등'}</Txt>
+              </Pressable>
+            );
+          })}
+        </View>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={() => router.push('/search')} accessibilityLabel="통합 검색" hitSlop={6} style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="search" size={24} color={colors.text} />
+        </Pressable>
+        <Pressable onPress={() => router.push('/settings')} accessibilityLabel="설정" hitSlop={6} style={{ width: 40, height: 40, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="settings-outline" size={23} color={colors.text} />
+        </Pressable>
       </View>
 
-      <View style={{ marginTop: -36, paddingHorizontal: space.lg, gap: space.lg }}>
-        {/* 바로가기 */}
-        <View style={[card, { flexDirection: 'row', paddingVertical: 18, paddingHorizontal: space.sm }]}>
-          {quick.map((b) => (
-            <Pressable key={b.label} onPress={b.go} accessibilityRole="button" style={{ flex: 1, alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 52, height: 52, borderRadius: 18, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name={b.icon} size={24} color={colors.brand} />
+      <View style={{ paddingHorizontal: space.lg, gap: 22, paddingTop: space.sm }}>
+        {/* D-day 카드 */}
+        <View style={{ backgroundColor: colors.brand, borderRadius: 22, padding: 20, gap: 6 }}>
+          {nextKey ? (
+            <>
+              <Txt style={{ color: onBrand, fontSize: 14, opacity: 0.85 }}>
+                {regionByCode(scheduleRegion)?.shortName} · {EVENT_LABEL[nextKey.event]}까지
+              </Txt>
+              <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
+                <Txt style={{ color: onBrand, fontSize: 46, fontWeight: '800', letterSpacing: -1.5, lineHeight: 52 }}>{dDayLabel(nextKey.date, today)}</Txt>
+                <Txt style={{ color: onBrand, fontSize: 15, opacity: 0.85 }}>{shortDate(nextKey.date)}</Txt>
               </View>
-              <Txt style={{ fontSize: 12.5, fontWeight: '700' }}>{b.label}</Txt>
+              {nextAfter && (
+                <Txt style={{ color: onBrand, fontSize: 13.5, opacity: 0.85 }}>
+                  다음은 {EVENT_LABEL[nextAfter.event]} {shortDate(nextAfter.date)}
+                </Txt>
+              )}
+            </>
+          ) : (
+            <Txt style={{ color: onBrand, fontSize: 19, fontWeight: '800' }}>올해 일정이 모두 끝났어요. 다음 시행계획을 기다려요.</Txt>
+          )}
+          {receipt && (
+            <View style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 11, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: onBrand + '26' }}>
+              <Txt style={{ color: onBrand, fontSize: 12.5, fontWeight: '800' }}>{receipt.detail}</Txt>
+            </View>
+          )}
+          {interest.length === 0 && <Txt style={{ color: onBrand, fontSize: 12.5, opacity: 0.8 }}>서울 일정 예시예요. 관심 지역을 고르면 그 지역 일정으로 바뀌어요.</Txt>}
+        </View>
+
+        {/* 색 아이콘 메뉴 */}
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 16 }}>
+          {menu.map((b) => (
+            <Pressable key={b.label} onPress={b.go} accessibilityRole="button" accessibilityLabel={b.label} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
+              <View style={{ width: 54, height: 54, borderRadius: 18, backgroundColor: colors.cat[b.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={b.icon} size={26} color={colors.cat[b.cat].fg} />
+                {!!b.badge && (
+                  <View style={{ position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, backgroundColor: colors.down, alignItems: 'center', justifyContent: 'center' }}>
+                    <Txt style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800' }}>{b.badge > 99 ? '99+' : b.badge}</Txt>
+                  </View>
+                )}
+              </View>
+              <Txt style={{ fontSize: 13, fontWeight: '600' }}>{b.label}</Txt>
             </Pressable>
           ))}
         </View>
@@ -156,16 +188,7 @@ export default function HomeScreen() {
 
         {/* 관심 지역: 정사각형 칸 */}
         <View style={{ gap: space.sm + 2 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4 }}>
-            <Txt style={{ fontSize: 17, fontWeight: '800' }}>
-              관심 지역 {f.isSecondary ? `× ${subjectByCode(f.subject)?.name ?? ''} ` : ''}선발 인원
-            </Txt>
-            <Pressable onPress={() => router.push('/settings')} hitSlop={8} accessibilityRole="button">
-              <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
-                편집
-              </Txt>
-            </Pressable>
-          </View>
+          <SectionHead title={`관심 지역 ${f.isSecondary ? `× ${subjectByCode(f.subject)?.name ?? ''} ` : ''}선발 인원`} action="편집" onAction={() => router.push('/settings')} />
           {subjectNote && (
             <Txt variant="sub" color="accent">
               {subjectNote}
@@ -190,18 +213,18 @@ export default function HomeScreen() {
                     onPress={() => openDetail(r.region)}
                     accessibilityRole="button"
                     accessibilityLabel={`${regionByCode(r.region)?.shortName} 선발 ${r.selection ?? '자료 없음'}명`}
-                    style={{ width: '31.8%', aspectRatio: 1, backgroundColor: colors.surface, borderRadius: 18, padding: 12, justifyContent: 'space-between' }}
+                    style={{ width: '48.5%', minHeight: 112, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: 18, padding: 14, justifyContent: 'space-between' }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                       <Txt style={{ fontSize: 15, fontWeight: '800' }}>{regionByCode(r.region)?.shortName}</Txt>
                       <Ionicons name="chevron-forward" size={14} color={colors.textSub} />
                     </View>
                     <View style={{ gap: 2 }}>
-                      <Txt style={{ fontSize: 22, fontWeight: '800', letterSpacing: -0.5 }} numberOfLines={1} adjustsFontSizeToFit>
+                      <Txt style={{ fontSize: 26, fontWeight: '800', letterSpacing: -0.5 }} numberOfLines={1} adjustsFontSizeToFit>
                         {r.selection?.toLocaleString() ?? '—'}
                         <Txt variant="sub"> 명</Txt>
                       </Txt>
-                      <Txt style={{ fontSize: 12.5, fontWeight: '800', color: tone }} numberOfLines={1}>
+                      <Txt style={{ fontSize: 13.5, fontWeight: '800', color: tone }} numberOfLines={1}>
                         {r.change == null ? '전년 자료 없음' : `${sign}${Math.abs(r.change).toLocaleString()}`}
                       </Txt>
                       {info?.status === 'open' && (
@@ -218,19 +241,11 @@ export default function HomeScreen() {
         </View>
 
         {/* 전국 학교 지도: 초등 = 초등학교, 중등 = 중·고등학교 */}
-        <View style={[card, { padding: space.lg, gap: space.sm }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Txt style={{ fontSize: 17, fontWeight: '800' }}>
-              전국 {viewLevel === 'elementary' ? '초등학교' : '중·고등학교'} 지도
-            </Txt>
-            <Pressable onPress={() => router.push('/school-map')} hitSlop={8} accessibilityRole="button">
-              <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
-                크게 보기
-              </Txt>
-            </Pressable>
+        <View style={{ gap: space.sm + 2 }}>
+          <SectionHead title={`전국 ${viewLevel === 'elementary' ? '초등학교' : '중·고등학교'} 지도`} action="크게 보기" onAction={() => router.push('/school-map')} />
+          <View style={[card, { padding: space.md, gap: space.sm }]}>
+            <NationalSchoolMap level={viewLevel} maxHeight={420} />
           </View>
-          <Txt variant="sub">학교를 누르면 이름과 위치가 보여요</Txt>
-          <NationalSchoolMap level={viewLevel} maxHeight={340} />
         </View>
 
         {/* 임용 소식 */}
@@ -255,25 +270,10 @@ export default function HomeScreen() {
           )}
         </NoticeBoard>
 
-        {/* 학교별(사립·법인) 정교사 채용 바로가기 */}
-        {openJobs > 0 && (
-          <Pressable
-            onPress={() => router.push({ pathname: '/news', params: { type: 'jobs' } })}
-            accessibilityRole="button"
-            style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: 18, borderRadius: radius.xl, backgroundColor: colors.accent + '1A' }}
-          >
-            <Ionicons name="briefcase-outline" size={22} color={colors.accent} />
-            <View style={{ flex: 1 }}>
-              <Txt style={{ fontWeight: '800' }}>사립·법인 정교사 채용 {openJobs}건 모집 중</Txt>
-              <Txt variant="sub">학교별 공고를 매일 모아요</Txt>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.textSub} />
-          </Pressable>
-        )}
-
         {/* 커뮤니티 인기글 */}
         <HomeHotPosts />
       </View>
     </ScrollView>
   );
 }
+
