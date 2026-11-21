@@ -10,6 +10,7 @@ import { daysUntil, dDayLabel, EVENT_LABEL, getReceiptInfo, shortDate } from '..
 import { regionByCode } from '../../data/regions';
 import { getNotices, getRegionSummaries, getSchedules } from '../../data/repository';
 import { subjectByCode } from '../../data/subjects';
+import { NationalSchoolMap } from '../../features/region/NationalSchoolMap';
 import { useAsync } from '../../data/useAsync';
 import { HomeHotPosts } from '../../features/community/HomeHotPosts';
 import { NoticeBoard, NoticeRow } from '../../features/news/NoticeList';
@@ -81,7 +82,7 @@ export default function HomeScreen() {
     { icon: 'map-outline' as const, label: '전국 지도', go: () => router.navigate('/region') },
     { icon: 'git-compare-outline' as const, label: '지역 비교', go: () => router.push('/compare') },
     { icon: 'trending-up-outline' as const, label: '추이', go: () => router.push('/trend') },
-    { icon: 'school-outline' as const, label: '합격률', go: () => router.push('/univ-pass') },
+    { icon: 'location-outline' as const, label: '학교 지도', go: () => router.push('/school-map') },
   ];
 
   return (
@@ -214,6 +215,22 @@ export default function HomeScreen() {
               })}
             </View>
           )}
+        </View>
+
+        {/* 전국 학교 지도: 초등 = 초등학교, 중등 = 중·고등학교 */}
+        <View style={[card, { padding: space.lg, gap: space.sm }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Txt style={{ fontSize: 17, fontWeight: '800' }}>
+              전국 {viewLevel === 'elementary' ? '초등학교' : '중·고등학교'} 지도
+            </Txt>
+            <Pressable onPress={() => router.push('/school-map')} hitSlop={8} accessibilityRole="button">
+              <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
+                크게 보기
+              </Txt>
+            </Pressable>
+          </View>
+          <Txt variant="sub">누른 곳의 지역 학교 지도가 열려요</Txt>
+          <NationalSchoolMap level={viewLevel} maxHeight={340} />
         </View>
 
         {/* 임용 소식 */}

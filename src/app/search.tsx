@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
@@ -35,7 +35,8 @@ export default function SearchScreen() {
   const today = useToday();
   const [input, setInput] = useState('');
   const [q, setQ] = useState('');
-  const [cat, setCat] = useState<Cat>('all');
+  const params = useLocalSearchParams<{ cat?: string }>();
+  const [cat, setCat] = useState<Cat>(CATS.some((c) => c.value === params.cat) ? (params.cat as Cat) : 'all');
 
   // 다 칠 때까지 잠깐 기다렸다가 찾기
   useEffect(() => {

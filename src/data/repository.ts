@@ -362,18 +362,25 @@ export async function getRegionGeo(region: string): Promise<RegionGeo | null> {
   });
 }
 
-/** 통합 검색: 전국 학교 이름·시군구 (17개 지역 파일을 처음 한 번 받아 기억) */
-export async function searchSchools(q: string, limit = 50): Promise<(School & { region: string })[]> {
-  const t = q.replace(/\s/g, '');
-  if (t.length < 2) return [];
+export type SchoolWithRegion = School & { region: string };
+
+/** 전국 학교 (17개 지역 파일을 처음 한 번 받아 기억). 못 받은 지역은 빠짐 */
+export async function getAllSchools(): Promise<SchoolWithRegion[]> {
   const all = await Promise.all(
     REGIONS.map((r) =>
       getSchools(r.code)
         .then((list) => list.map((s) => ({ ...s, region: r.code })))
-        .catch(() => [] as (School & { region: string })[]),
+        .catch(() => [] as SchoolWithRegion[]),
     ),
   );
-  const hits = all.flat().filter((s) => s.name.replace(/\s/g, '').includes(t) || s.sigungu.replace(/\s/g, '') === t);
+  return all.flat();
+}
+
+/** 통합 검색: 전국 학교 이름·시군구 */
+export async function searchSchools(q: string, limit = 50): Promise<SchoolWithRegion[]> {
+  const t = q.replace(/\s/g, '');
+  if (t.length < 2) return [];
+  const hits = (await getAllSchools()).filter((s) => s.name.replace(/\s/g, '').includes(t) || s.sigungu.replace(/\s/g, '') === t);
   // 이름이 검색어로 시작하는 학교를 먼저
   hits.sort((a, b) => Number(b.name.startsWith(t)) - Number(a.name.startsWith(t)) || a.name.localeCompare(b.name, 'ko'));
   return hits.slice(0, limit);
