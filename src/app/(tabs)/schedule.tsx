@@ -91,6 +91,7 @@ export default function ScheduleScreen() {
         onPress={() => i.url && Linking.openURL(i.url)}
         style={{ flexDirection: 'row', gap: space.md, padding: space.md, borderTopWidth: first ? 0 : 1, borderTopColor: colors.line, opacity: past ? 0.5 : 1 }}
       >
+        <View style={{ width: 4, borderRadius: 2, backgroundColor: colors.cat[KIND_CAT[i.kind]].fg }} />
         <View style={{ width: 46, alignItems: 'center' }}>
           <Txt style={{ fontWeight: '800', fontSize: 19 }}>{Number(i.date.slice(8))}</Txt>
           <Txt variant="sub" style={{ fontSize: 12 }}>
@@ -129,6 +130,7 @@ export default function ScheduleScreen() {
   const upcoming = items.filter((i) => (i.endsOn ?? i.date) >= today);
   const past = items.filter((i) => (i.endsOn ?? i.date) < today).reverse();
   const [showPast, setShowPast] = useState(false);
+  const nextOfficial = (official ?? []).filter((i) => i.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
 
   // 달력 칸
   const first = new Date(month.getFullYear(), month.getMonth(), 1);
@@ -149,6 +151,20 @@ export default function ScheduleScreen() {
           <Chip key={code} label={regionByCode(code)?.shortName ?? code} selected={r === code} onPress={() => setRegion(code)} />
         ))}
       </ScrollView>
+      {nextOfficial && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.xl, backgroundColor: colors.cat.teal.bg }}>
+          <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="flag-outline" size={20} color={colors.cat.teal.fg} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Txt style={{ fontSize: 13, fontWeight: '700', color: colors.cat.teal.fg }}>다음 임용 일정 · {nextOfficial.sub}</Txt>
+            <Txt style={{ fontSize: 16, fontWeight: '800' }}>
+              {nextOfficial.title} {Number(nextOfficial.date.slice(5, 7))}.{Number(nextOfficial.date.slice(8))}
+            </Txt>
+          </View>
+          <Txt style={{ fontSize: 22, fontWeight: '800', color: colors.cat.teal.fg }}>{dDayLabel(nextOfficial.date, today)}</Txt>
+        </View>
+      )}
       {!settings.regionCodes.length && <Txt variant="sub">관심 지역을 고르면 그 지역 일정이 보여요. 지금은 서울 예시예요.</Txt>}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {(Object.keys(KIND_LABEL) as Kind[]).map((k) => {
