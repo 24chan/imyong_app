@@ -6,6 +6,8 @@ import { EVENT_LABEL } from '../../data/receiptStatus';
 import { regionByCode } from '../../data/regions';
 import { getSchedules } from '../../data/repository';
 import type { Level } from '../../store/AppSettings';
+import Constants from 'expo-constants';
+import { supabase } from '../../lib/supabase';
 
 // 알림 1단계 (2026-11-22 승인): 기기 안에서만 예약하는 알림. 서버에 아무것도 보내지 않음.
 // - 저장한 채용 공고 마감 3일 전·1일 전
@@ -149,4 +151,51 @@ export async function rescheduleAlerts(o: { level: Level; regions: string[]; job
     });
   }
   return plans.length;
+}
+
+// ───── 알림 2단계: 새 공고 푸시 (익명 구독: 토큰 + 시험 구분 + 관심 지역만, 계정과 연결 안 함) ─────
+const TOKEN_KEY = 'alerts.pushToken.v1';
+let lastSync = '';
+
+/** 켜져 있으면 등록(또는 지역 갱신), 꺼져 있으면 서버 목록에서 지움. 안드로이드 Expo Go 에서는 조용히 건너뜀 */
+export async function syncPush(level: Level, regions: string[]) {
+  const n = notif();
+  if (!n) return;
+  await load();
+  const want = prefs.enabled && prefs.news && regions.length > 0;
+  const saved = await AsyncStorage.getItem(TOKEN_KEY).catch(() => null);
+  if (!want) {
+    if (saved) {
+      await supabase.rpc('delete_push_sub', { p_token: saved });
+      await AsyncStorage.removeItem(TOKEN_KEY).catch(() => {});
+    }
+    lastSync = '';
+    return;
+  }
+  const st = await n.getPermissionsAsync();
+  if (!st.granted) return;
+  const key = `${level}|${[...regions].sort().join(',')}`;
+  if (key === lastSync && saved) return;
+  try {
+    const projectId = (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)?.eas?.projectId;
+    const { data: token } = await n.getExpoPushTokenAsync({ projectId });
+    const { error } = await supabase.rpc('upsert_push_sub', { p_token: token, p_level: level, p_regions: regions });
+    if (error) return;
+    if (saved && saved !== token) await supabase.rpc('delete_push_sub', { p_token: saved });
+    await AsyncStorage.setItem(TOKEN_KEY, token).catch(() => {});
+    lastSync = key;
+  } catch {
+    // Expo Go(안드로이드)·에뮬레이터 등 푸시를 못 받는 환경
+  }
+}
+
+/** 알림을 누르면 해당 화면으로 (data.url) */
+export function onAlertTap(go: (url: string) => void) {
+  const n = notif();
+  if (!n) return () => {};
+  const sub = n.addNotificationResponseReceivedListener((r) => {
+    const url = r.notification.request.content.data?.url;
+    if (typeof url === 'string' && url.startsWith('/')) go(url);
+  });
+  return () => sub.remove();
 }

@@ -5,7 +5,8 @@ import { useAppSettings } from '../../store/AppSettings';
 import { useSavedJobs } from '../../store/savedJobs';
 import { space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
-import { alertsAvailable, enableAlerts, rescheduleAlerts, setAlertPrefs, useAlertPrefs, useSavedSchedule } from './alerts';
+import { router } from 'expo-router';
+import { alertsAvailable, enableAlerts, onAlertTap, rescheduleAlerts, syncPush, setAlertPrefs, useAlertPrefs, useSavedSchedule } from './alerts';
 
 /** 앱 맨 위에 한 번: 설정·저장 공고·관심 지역이 바뀌면 기기 알림을 다시 예약 */
 export function useAlertSync() {
@@ -20,6 +21,10 @@ export function useAlertSync() {
     }, 800);
     return () => clearTimeout(t);
   }, [prefs, jobs, saved, level, settings.regionCodes]);
+  useEffect(() => {
+    syncPush(level, settings.regionCodes).catch(() => {});
+  }, [prefs, level, settings.regionCodes]);
+  useEffect(() => onAlertTap((url) => router.push(url as never)), []);
 }
 
 export function AlertSettingsCard() {
@@ -54,9 +59,10 @@ export function AlertSettingsCard() {
         <Txt variant="sub">이 설치 파일에는 알림 기능이 없어요. 새 버전을 설치하면 쓸 수 있어요.</Txt>
       ) : (
         <View style={{ gap: space.md }}>
-          <Row label="알림 받기" sub="오전 9시에만 보내요. 알림 내용은 이 기기 안에서만 정해져요." value={prefs.enabled} onChange={toggleMain} />
+          <Row label="알림 받기" sub="밤 10시~아침 8시에는 보내지 않아요. 새 공고 알림만 이 기기의 알림 주소와 관심 지역을 서버에 저장해요(계정과 연결 안 함)." value={prefs.enabled} onChange={toggleMain} />
           <Row label="저장한 채용 공고 마감" sub="마감 3일 전·1일 전" value={prefs.jobs} onChange={(v) => setAlertPrefs({ jobs: v })} disabled={!prefs.enabled} />
           <Row label="관심 지역 원서 접수" sub="접수 시작일, 마감 3일 전" value={prefs.receipt} onChange={(v) => setAlertPrefs({ receipt: v })} disabled={!prefs.enabled} />
+          <Row label="관심 지역 새 공고" sub="사전예고·시행계획·합격 발표가 올라오면 (오전 9시·오후 6시)" value={prefs.news} onChange={(v) => setAlertPrefs({ news: v })} disabled={!prefs.enabled} />
           <Row label="일정 탭에서 고른 일정" sub="하루 전 (일정 옆 종 버튼)" value={prefs.schedule} onChange={(v) => setAlertPrefs({ schedule: v })} disabled={!prefs.enabled} />
           <Pressable onPress={() => Linking.openSettings()}>
             <Txt variant="sub" color="brand" style={{ textDecorationLine: 'underline' }}>

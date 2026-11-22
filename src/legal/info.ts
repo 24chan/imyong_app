@@ -15,7 +15,7 @@ export const LEGAL = {
    * 약관·처리방침 버전. 내용을 크게 바꾸면 1 올리기 →
    * 로그인한 사람에게 다시 동의 화면이 떠요.
    */
-  version: 1,
+  version: 2, // 2026-11-22 닉네임·알림 추가로 다시 동의
 };
 
 export function fill(value: string, what: string): string {
