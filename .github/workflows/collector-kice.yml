@@ -1,0 +1,28 @@
+name: collector-kice
+# 평가원 임용 기출 '목록' (파일은 복사 안 함). 매주 월요일 + 11·12월은 매일
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 22 * * 0'      # 월 07:23 KST
+    - cron: '23 22 * 11,12 *'  # 11·12월 매일
+permissions:
+  contents: write
+jobs:
+  kice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python -I -u app/scripts/collector/kice.py raw/resources
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/resources
+          git commit -qm "평가원 기출 목록 $(date +%F)" || exit 0
+          git push -q origin HEAD:raw-files
