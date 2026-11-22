@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { markNewsSeen, unseenOf, useSeenNews } from '../../store/seenNews';
 import { SampleBadge } from '../../components/DataBits';
 import { useModeLabel, ViewModeBanner } from '../../components/ModeToggle';
 import { Txt } from '../../components/ui';
@@ -51,6 +53,13 @@ export default function HomeScreen() {
   const allNotices = notices.data ?? [];
   const mineNotices = allNotices.filter((x) => interest.includes(x.region));
   const homeNotices = (mineNotices.length >= 2 ? mineNotices : allNotices).slice(0, 4);
+  // B-8 새 소식: 관심 지역(없으면 전체) 공고 중 안 본 것
+  const seen = useSeenNews();
+  const newsPool = (interest.length ? mineNotices : allNotices).map((x) => x.url);
+  const unseen = unseenOf(seen, newsPool);
+  useEffect(() => {
+    if (seen.ready && !seen.init && notices.data) markNewsSeen((notices.data ?? []).map((x) => x.url));
+  }, [seen.ready, seen.init, notices.data]);
   const summaryOf = (year: number, region: string) =>
     year === f.latestYear ? (rows.data ?? []).find((r) => r.region === region) : undefined;
 
@@ -87,7 +96,7 @@ export default function HomeScreen() {
     { icon: 'briefcase-outline', label: '사립 채용', cat: 'amber', go: () => router.push({ pathname: '/news', params: { type: 'jobs' } }), badge: openJobs },
     { icon: 'calendar-outline', label: '일정', cat: 'pink', go: () => router.navigate('/schedule') },
     { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate({ pathname: '/community', params: { board: 'study' } }) },
-    { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news') },
+    { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news'), badge: unseen.length },
   ];
   const SectionHead = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 }}>
@@ -265,7 +274,7 @@ export default function HomeScreen() {
             </Txt>
           ) : (
             homeNotices.map((x, i) => (
-              <NoticeRow key={x.url} item={x} summary={summaryOf(x.year, x.region)} highlight={interest.includes(x.region)} last={i === homeNotices.length - 1} />
+              <NoticeRow key={x.url} unread={unseen.includes(x.url)} item={x} summary={summaryOf(x.year, x.region)} highlight={interest.includes(x.region)} last={i === homeNotices.length - 1} />
             ))
           )}
         </NoticeBoard>

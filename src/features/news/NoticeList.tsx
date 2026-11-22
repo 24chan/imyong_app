@@ -52,11 +52,14 @@ export function NoticeRow({
   summary,
   highlight,
   last,
+  unread,
 }: {
   item: Notice;
   summary?: RegionSummary;
   highlight?: boolean;
   last?: boolean;
+  /** 아직 안 본 공고 (B-8, 기기에만 기억) */
+  unread?: boolean;
 }) {
   const { colors } = useTheme();
   const today = useToday();
@@ -78,6 +81,7 @@ export function NoticeRow({
       })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        {unread && <View accessibilityLabel="안 본 공고" style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: colors.down }} />}
         <View style={{ flexShrink: 0, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, backgroundColor: tint(tone) }}>
           <Txt variant="sub" style={{ color: tone, fontWeight: '800', fontSize: 12 }}>
             {NOTICE_LABEL[item.docType]}

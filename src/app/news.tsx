@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { markNewsSeen, useSeenNews } from '../store/seenNews';
 import { ActivityIndicator, View } from 'react-native';
 import { ViewModeBanner } from '../components/ModeToggle';
 import { Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
@@ -34,6 +35,15 @@ export default function NewsScreen() {
   const [onlySaved, setOnlySaved] = useState(false);
 
   const notices = useAsync(() => getNotices(f.viewLevel, 300), [f.viewLevel]);
+  // B-8: 들어올 때 안 본 공고를 기억해 점으로 보여 주고, 모두 '본 것'으로 표시
+  const seen = useSeenNews();
+  const unreadAtOpen = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    if (!seen.ready || !notices.data || unreadAtOpen.current) return;
+    const urls = notices.data.map((x) => x.url);
+    unreadAtOpen.current = new Set(seen.init ? urls.filter((u) => !seen.urls.has(u)) : []);
+    markNewsSeen(urls);
+  }, [seen, notices.data]);
   const years = useMemo(() => [...new Set((notices.data ?? []).map((x) => x.year))].slice(0, 4), [notices.data]);
   const sums = useAsync(
     () =>
@@ -123,6 +133,7 @@ export default function NewsScreen() {
               item={x}
               summary={byKey.get(`${x.year}:${x.region}`)}
               highlight={mine.includes(x.region)}
+              unread={!!unreadAtOpen.current?.has(x.url)}
               last={i === list.length - 1}
             />
           ))}
