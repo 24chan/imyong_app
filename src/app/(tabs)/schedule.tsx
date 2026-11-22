@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../../lib/openLink';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Chip, Screen, Segmented, Txt } from '../../components/ui';
 import { AcademyEvent, EVENT_KIND, listEvents } from '../../data/academy';
@@ -92,7 +93,7 @@ export default function ScheduleScreen() {
     return (
       <Pressable
         disabled={!i.url}
-        onPress={() => i.url && Linking.openURL(i.url)}
+        onPress={() => openLink(i.url, i.title)}
         style={{ flexDirection: 'row', gap: space.md, padding: space.md, borderTopWidth: first ? 0 : 1, borderTopColor: colors.line, opacity: past ? 0.5 : 1 }}
       >
         <View style={{ width: 4, borderRadius: 2, backgroundColor: colors.cat[KIND_CAT[i.kind]].fg }} />

@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../lib/openLink';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
 import { Chip, Screen, Txt } from '../components/ui';
 import { searchLectures } from '../data/academy';
@@ -201,7 +202,7 @@ export default function SearchScreen() {
 
             <Section c="notice" title="공고" icon="megaphone-outline" n={counts.notice}>
               {notices.slice(0, limit(counts.notice)).map((n) => (
-                <Row key={n.key} link onPress={() => Linking.openURL(n.url)}>
+                <Row key={n.key} link onPress={() => openLink(n.url, '공고')}>
                   <Txt variant="sub" style={{ fontWeight: '700' }}>
                     {n.badge}
                     {n.region ? ` · ${regionByCode(n.region)?.shortName ?? ''}` : ''}

@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../lib/openLink';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { ViewModeBanner } from '../components/ModeToggle';
 import { Card, Chip, Screen, Segmented, Txt } from '../components/ui';
 import { regionByCode, REGIONS } from '../data/regions';
@@ -172,7 +173,7 @@ export default function PrivateScreen() {
                   <View key={name} style={{ gap: 4, paddingTop: space.xs, borderTopWidth: 1, borderTopColor: colors.line }}>
                     <Pressable
                       disabled={!s.url}
-                      onPress={() => s.url && Linking.openURL(s.url)}
+                      onPress={() => openLink(s.url, '사립 위탁 공고')}
                       accessibilityRole={s.url ? 'link' : undefined}
                       style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                     >
@@ -211,7 +212,7 @@ export default function PrivateScreen() {
             <View style={{ gap: 4 }}>
               <Txt variant="sub">출처 (교육청 공고{cur.postedAt ? ` · ${cur.postedAt}` : ''})</Txt>
               {cur.sources.map((s) => (
-                <Pressable key={s.title} disabled={!s.url} onPress={() => s.url && Linking.openURL(s.url)}>
+                <Pressable key={s.title} disabled={!s.url} onPress={() => openLink(s.url, s.title)}>
                   <Txt variant="sub" color={s.url ? 'brand' : 'textSub'} style={{ textDecorationLine: s.url ? 'underline' : 'none' }}>
                     {s.title}
                   </Txt>

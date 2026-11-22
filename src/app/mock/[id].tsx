@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../../lib/openLink';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, View } from 'react-native';
 import { TextInput } from '../../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { ago } from '../../data/community';
@@ -86,7 +87,7 @@ export default function MockDetail() {
         {exam.provider} · {exam.examDate ?? '일정 미정'}
       </Txt>
       {exam.note && <Txt>{exam.note}</Txt>}
-      {exam.applyUrl && <PrimaryButton label="주관처 안내 열기" variant="ghost" onPress={() => Linking.openURL(exam.applyUrl as string)} />}
+      {exam.applyUrl && <PrimaryButton label="주관처 안내 열기" variant="ghost" onPress={() => openLink(exam.applyUrl, exam.name)} />}
       <Txt variant="sub">학원·주관처의 광고가 아니라 수험생 후기만 모아요.</Txt>
 
       <Card>

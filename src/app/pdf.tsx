@@ -9,7 +9,6 @@ import { OFFICIAL_HOSTS, webview } from '../lib/webview';
 
 // PDF 미리보기: 공식 기관 파일 주소를 그대로 열어 앱 안에서 보여줌 (앱이 파일을 복사해 두지 않음).
 // 안드로이드는 웹뷰가 PDF를 직접 못 그려서 Google 문서 뷰어로 열고, iOS는 웹뷰가 바로 그림.
-const ALLOWED = /^https:\/\/(docs\.google\.com|drive\.google\.com|www\.kice\.re\.kr|kice\.re\.kr|accounts\.google\.com)\//;
 
 export default function PdfScreen() {
   const { colors } = useTheme();

@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../lib/openLink';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Pressable, View } from 'react-native';
@@ -70,14 +71,14 @@ export default function NoticeScreen() {
       )}
 
       {item.docType === 'private' && <PrivateLink region={item.region} />}
-      <PrimaryButton label="교육청 원문 공고 열기" onPress={() => Linking.openURL(item.url).catch(() => {})} />
+      <PrimaryButton label="교육청 원문 공고 열기" onPress={() => openLink(item.url, '교육청 원문')} />
       {item.files.length > 0 && (
         <View style={{ gap: space.xs }}>
           <Txt variant="heading">첨부 파일</Txt>
           {item.files.map((f) => (
             <Pressable
               key={f.url}
-              onPress={() => Linking.openURL(f.url).catch(() => {})}
+              onPress={() => openLink(f.url, f.name)}
               accessibilityRole="link"
               style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.line }}
             >

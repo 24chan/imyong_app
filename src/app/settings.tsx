@@ -5,7 +5,7 @@ import { RegionPicker, SubjectPicker } from '../components/pickers';
 import { AccountCard } from '../features/account/AccountCard';
 import { AlertSettingsCard } from '../features/alerts/AlertSettings';
 import { CommunitySettings } from '../features/account/CommunitySettings';
-import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
+import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
 import { checkServer, clearDataCache } from '../data/repository';
 import { fill, LEGAL } from '../legal/info';

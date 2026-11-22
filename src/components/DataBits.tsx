@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
-import { Linking, View } from 'react-native';
+import { openLink } from '../lib/openLink';
+import { View } from 'react-native';
 import { RECEIPT_STATUS_LABEL, ReceiptStatus } from '../data/receiptStatus';
 import { isSampleSource } from '../data/repository';
 import type { Source } from '../types/data';
@@ -69,7 +70,7 @@ export function SourceNote({ source, baseDate }: { source: Source | null; baseDa
     <>
     <Txt
       variant="sub"
-      onPress={url ? () => Linking.openURL(url).catch(() => {}) : undefined}
+      onPress={url ? () => openLink(url, '출처') : undefined}
       suppressHighlighting
     >
       출처: {source ? `${source.publisher} · ${source.title}` : '—'} | 기준일: {baseDate ?? '—'}

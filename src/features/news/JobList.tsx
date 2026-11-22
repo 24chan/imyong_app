@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { openLink } from '../../lib/openLink';
 import { useState } from 'react';
-import { Alert, Linking, Pressable, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 import { TextInput } from '../../components/TextField';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { isOpen, submitJobTip, TeacherJob } from '../../data/jobs';
@@ -38,7 +39,7 @@ export function JobBoard({ jobs, title, footer }: { jobs: TeacherJob[]; title: s
         return (
           <Pressable
             key={j.id}
-            onPress={() => Linking.openURL(j.url)}
+            onPress={() => openLink(j.url, j.org)}
             accessibilityRole="link"
             accessibilityHint="공고 원문이 열려요"
             style={({ pressed }) => ({
@@ -158,7 +159,7 @@ export function MoreJobLinks() {
       {MORE_LINKS.map((l) => (
         <Pressable
           key={l.url}
-          onPress={() => Linking.openURL(l.url)}
+          onPress={() => openLink(l.url, l.label)}
           accessibilityRole="link"
           style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
         >
