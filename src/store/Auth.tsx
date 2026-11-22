@@ -1,3 +1,4 @@
+import * as Linking from 'expo-linking';
 import type { Session } from '@supabase/supabase-js';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
@@ -14,6 +15,8 @@ type AuthValue = {
   isAdmin: boolean;
   /** agreed: 로그인 화면에서 약관에 동의했는지 (처음 가입이면 동의 기록이 계정에 같이 남음) */
   sendCode: (email: string, agreed: boolean) => Promise<void>;
+  /** 구글·카카오로 시작 (2026-11-22 사용자 요청). 취소하면 false */
+  signInWithProvider: (provider: 'google' | 'kakao', agreed: boolean) => Promise<boolean>;
   verifyCode: (email: string, code: string) => Promise<void>;
   agreeTerms: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -109,6 +112,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
+  // 소셜 로그인: Supabase가 만든 로그인 주소를 앱 안 브라우저로 열고, 돌아온 주소의 토큰으로 로그인
+  const signInWithProvider = useCallback(async (provider: 'google' | 'kakao', agreed: boolean) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const WebBrowser = require('expo-web-browser') as typeof import('expo-web-browser');
+    const redirectTo = Linking.createURL('auth-callback');
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true,
+        // 카카오는 비즈 앱이 아니면 이메일을 못 받음 → 닉네임·사진만 요청
+        ...(provider === 'kakao' ? { scopes: 'profile_nickname profile_image' } : {}),
+      },
+    });
+    if (error) throw error;
+    const res = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+    if (res.type !== 'success') return false;
+    const frag = res.url.split('#')[1] ?? res.url.split('?')[1] ?? '';
+    const q = new URLSearchParams(frag);
+    const err = q.get('error_description') || q.get('error');
+    if (err) throw new Error(decodeURIComponent(err));
+    const access_token = q.get('access_token');
+    const refresh_token = q.get('refresh_token');
+    if (!access_token || !refresh_token) throw new Error('로그인 정보를 받지 못했어요. 다시 시도해 주세요');
+    const { data: s2, error: e2 } = await supabase.auth.setSession({ access_token, refresh_token });
+    if (e2) throw e2;
+    if (agreed && !hasConsented(s2.user?.user_metadata)) await supabase.auth.updateUser({ data: consentRecord() }).catch(() => {});
+    return true;
+  }, []);
+
   const agreeTerms = useCallback(async () => {
     const { error } = await supabase.auth.updateUser({ data: consentRecord() });
     if (error) throw error;
@@ -137,8 +170,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthValue>(
-    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, sendCode, verifyCode, agreeTerms, signOut, deleteAccount }),
-    [ready, session, isAdmin, sendCode, verifyCode, agreeTerms, signOut, deleteAccount],
+    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount }),
+    [ready, session, isAdmin, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

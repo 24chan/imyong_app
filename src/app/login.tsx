@@ -1,6 +1,7 @@
 import { router, Stack } from 'expo-router';
 import { ComponentRef, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../components/ui';
 import { allAgreed, ConsentBox, NO_CONSENT } from '../features/account/ConsentBox';
@@ -14,7 +15,7 @@ const RESEND_SEC = 60;
 // 로그인·가입: 이메일로 받은 6자리 코드를 넣으면 끝 (처음이면 자동으로 가입)
 export default function LoginScreen() {
   const { colors } = useTheme();
-  const { sendCode, verifyCode, session } = useAuth();
+  const { sendCode, verifyCode, signInWithProvider, session } = useAuth();
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
@@ -58,6 +59,22 @@ export default function LoginScreen() {
     }
   };
 
+  const social = async (provider: 'google' | 'kakao') => {
+    if (!allAgreed(consent)) {
+      setError('필수 항목에 모두 동의해 주세요.');
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await signInWithProvider(provider, true);
+    } catch (e) {
+      setError(authErrorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const verify = async (value = code) => {
     if (value.trim().length < 6) return;
     setBusy(true);
@@ -86,12 +103,43 @@ export default function LoginScreen() {
       <Stack.Screen options={{ title: '로그인 · 가입' }} />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <Screen>
-          <Txt variant="title">{step === 'email' ? '이메일로 시작하기' : '메일함을 확인해 주세요'}</Txt>
+          <Txt variant="title">{step === 'email' ? '시작하기' : '메일함을 확인해 주세요'}</Txt>
           <Txt variant="sub">
             {step === 'email'
-              ? '처음이면 자동으로 가입돼요. 비밀번호는 없어요. 로그인하지 않아도 자료는 모두 볼 수 있고, 글쓰기·댓글은 로그인과 인증 후에 할 수 있어요.'
+              ? '약관에 동의하고 카카오·Google 계정으로 바로 시작하거나, 이메일 코드로 시작해요. 처음이면 자동으로 가입돼요. 로그인하지 않아도 자료는 모두 볼 수 있어요.'
               : `${email.trim()} 로 보낸 6자리 숫자를 넣어 주세요. 코드는 1시간 동안 쓸 수 있어요. 메일이 안 보이면 스팸함도 확인해 주세요.`}
           </Txt>
+
+          {step === 'email' && (
+            <Card>
+              <ConsentBox value={consent} onChange={setConsent} />
+            </Card>
+          )}
+
+          {step === 'email' && (
+            <View style={{ gap: space.sm }}>
+              {(
+                [
+                  { p: 'kakao' as const, label: '카카오로 시작하기', icon: 'chatbubble' as const },
+                  { p: 'google' as const, label: 'Google로 시작하기', icon: 'logo-google' as const },
+                ]
+              ).map((b) => (
+                <Pressable
+                  key={b.p}
+                  onPress={() => social(b.p)}
+                  disabled={busy}
+                  accessibilityRole="button"
+                  style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, paddingVertical: 15, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: pressed ? colors.surface : colors.background, opacity: allAgreed(consent) ? 1 : 0.45 })}
+                >
+                  <Ionicons name={b.icon} size={19} color={colors.text} />
+                  <Txt style={{ fontWeight: '800', fontSize: 16 }}>{b.label}</Txt>
+                </Pressable>
+              ))}
+              <Txt variant="sub" style={{ textAlign: 'center', marginTop: space.sm }}>
+                또는 이메일로 시작 (학교 메일이면 로그인과 동시에 학교 인증까지 돼요)
+              </Txt>
+            </View>
+          )}
 
           <Card>
             {step === 'email' ? (
@@ -112,7 +160,7 @@ export default function LoginScreen() {
                   style={inputStyle}
                   accessibilityLabel="이메일 주소"
                 />
-                <Txt variant="sub">학교 메일이 아니어도 돼요. 학교 인증은 로그인한 뒤 따로 해요.</Txt>
+                <Txt variant="sub">학교 메일이 아니어도 돼요. 학교 메일로 시작하면 교대 인증이 바로 끝나요.</Txt>
               </>
             ) : (
               <>
@@ -139,16 +187,10 @@ export default function LoginScreen() {
             {error && <Txt color="down">{error}</Txt>}
           </Card>
 
-          {step === 'email' && (
-            <Card>
-              <ConsentBox value={consent} onChange={setConsent} />
-            </Card>
-          )}
-
           {busy ? (
             <ActivityIndicator color={colors.brand} />
           ) : step === 'email' ? (
-            <PrimaryButton label="동의하고 인증 코드 받기" onPress={send} disabled={!email.trim() || !allAgreed(consent)} />
+            <PrimaryButton label="이메일로 인증 코드 받기" variant="ghost" onPress={send} disabled={!email.trim() || !allAgreed(consent)} />
           ) : (
             <View style={{ gap: space.xs }}>
               <PrimaryButton label="확인" onPress={() => verify()} disabled={code.length < 6} />
