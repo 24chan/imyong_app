@@ -1,0 +1,30 @@
+name: legal-pages
+# 약관·처리방침·계정 삭제 안내 웹페이지 (GitHub Pages). src/legal 이 바뀌면 자동으로 다시 올림
+# 처음 한 번: 저장소 Settings → Pages → Source 를 "GitHub Actions" 로
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/legal/**', 'scripts/tools/legal_pages.ts']
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npx -y tsx scripts/tools/legal_pages.ts
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: '${{ steps.d.outputs.page_url }}' }
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4

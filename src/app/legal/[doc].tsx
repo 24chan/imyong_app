@@ -4,12 +4,30 @@ import { Card, PrimaryButton, Screen, Txt } from '../../components/ui';
 import { fill, LEGAL } from '../../legal/info';
 import { privacySections } from '../../legal/privacy';
 import { termsSections } from '../../legal/terms';
+import { CREDITS } from '../../legal/credits';
+import { openLink } from '../../lib/openLink';
 import { space } from '../../theme/tokens';
 
 // 이용약관 / 개인정보처리방침 보기
 export default function LegalDocScreen() {
   const { doc } = useLocalSearchParams<{ doc: string }>();
   const isPrivacy = doc === 'privacy';
+  if (doc === 'credits')
+    return (
+      <Screen>
+        <Stack.Screen options={{ title: '자료 출처 · 오픈소스' }} />
+        {CREDITS.map((c) => (
+          <Card key={c.name}>
+            <Txt variant="heading">{c.name}</Txt>
+            <Txt variant="sub">{c.use}</Txt>
+            <Txt variant="sub">{c.license}</Txt>
+            <Txt variant="sub" color="brand" onPress={() => openLink(c.url, c.name)}>
+              {c.url}
+            </Txt>
+          </Card>
+        ))}
+      </Screen>
+    );
   const sections = isPrivacy ? privacySections() : termsSections();
   const title = isPrivacy ? '개인정보처리방침' : '이용약관';
 

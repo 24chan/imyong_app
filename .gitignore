@@ -40,3 +40,4 @@ yarn-error.*
 /ios
 /android
 docs/.plan_upload.md
+site/

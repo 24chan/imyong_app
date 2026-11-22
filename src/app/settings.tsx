@@ -119,6 +119,7 @@ export default function SettingsScreen() {
           <PrimaryButton label="이용약관" variant="ghost" onPress={() => router.push('/legal/terms')} />
           <PrimaryButton label="개인정보처리방침" variant="ghost" onPress={() => router.push('/legal/privacy')} />
           <PrimaryButton label="커뮤니티 이용 규칙" variant="ghost" onPress={() => router.push('/rules')} />
+          <PrimaryButton label="자료 출처 · 오픈소스" variant="ghost" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'credits' } })} />
         </View>
         <Txt variant="sub">
           문의 · 개인정보 요청: {fill(LEGAL.contactEmail, '문의 메일')}
