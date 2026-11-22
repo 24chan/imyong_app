@@ -12,6 +12,7 @@ import type { CatKey } from '../../theme/tokens';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { SchoolFound } from '../../types/data';
+import { toggleScrap, useIsScrapped } from '../../store/schoolScraps';
 import { SchoolInfoBox } from './SchoolInfoBox';
 import { FoundMark, useFoundColor } from './SchoolMap';
 
@@ -406,6 +407,7 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
                 {regionByCode(picked.region)?.shortName} {picked.sigungu} · {FOUND_LABEL[picked.found]} {KIND_LABEL[picked.kind]}
               </Txt>
             </View>
+            <ScrapStar school={picked} />
             <Pressable onPress={() => setPicked(null)} accessibilityRole="button" accessibilityLabel="닫기" hitSlop={10}>
               <Ionicons name="close" size={20} color={colors.textSub} />
             </Pressable>
@@ -445,5 +447,21 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
         </View>
       )}
     </View>
+  );
+}
+
+/** 학교 카드의 ☆ 스크랩 (기기에만 저장) */
+function ScrapStar({ school }: { school: SchoolWithRegion }) {
+  const { colors } = useTheme();
+  const on = useIsScrapped(school);
+  return (
+    <Pressable
+      onPress={() => toggleScrap({ region: school.region, name: school.name, sigungu: school.sigungu, lat: school.lat, lng: school.lng, found: school.found })}
+      accessibilityRole="button"
+      accessibilityLabel={on ? '스크랩 해제' : '스크랩'}
+      hitSlop={10}
+    >
+      <Ionicons name={on ? 'star' : 'star-outline'} size={22} color={on ? colors.accent : colors.textSub} />
+    </Pressable>
   );
 }

@@ -24,7 +24,7 @@ export const isSampleSource = (sourceId: string | null | undefined) => sourceId 
 // ───── 서버에서 읽기 + 캐시 ─────
 
 const cache = new Map<string, Promise<unknown>>();
-function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+export function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
   if (!cache.has(key)) {
     const p = load().catch((e) => {
       cache.delete(key); // 실패하면 다음에 다시 시도

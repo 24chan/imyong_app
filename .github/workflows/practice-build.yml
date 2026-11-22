@@ -1,0 +1,30 @@
+name: practice-build
+# 교대 실습학교 목록 (supabase/data/practice/*_src.json + 학교 위치) → raw-files/raw/practice/<교대>.json
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['supabase/data/practice/**', 'scripts/collector/practice_build.py']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python -I -u app/scripts/collector/practice_build.py raw app/supabase/data/practice
+        env:
+          TRANSIT_KEY: ${{ secrets.TRANSIT_KEY }}
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/practice
+          git commit -qm "실습학교 목록 $(date +%F)" || exit 0
+          git push -q origin HEAD:raw-files
