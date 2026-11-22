@@ -2,7 +2,7 @@
 - 공지의 짧은 이름(인천가원초)을 학교 위치 데이터의 정식 이름(인천가원초등학교)과 연결
 - 같은 이름이 여러 곳이면 그 교대 캠퍼스에서 가장 가까운 학교
 - 캠퍼스 위치: OpenStreetMap(Nominatim)에서 찾고, 못 찾으면 src의 lat/lng
-- 직선거리(km). 대중교통 시간은 TRANSIT_KEY가 있을 때만(아직 없음) — 칸만 둠
+- 직선거리(km). 대중교통 시간은 넣지 않음(사용자 결정 2026-11-23: 카카오맵 길찾기 버튼으로 충분) — transit_min 칸은 빈 채로 둠
 사용: python practice_build.py <raw 폴더> <src 폴더>
 """
 import glob

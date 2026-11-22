@@ -19,8 +19,6 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: python -I -u app/scripts/collector/practice_build.py raw app/supabase/data/practice
-        env:
-          TRANSIT_KEY: ${{ secrets.TRANSIT_KEY }}
       - name: raw-files 브랜치에 저장
         run: |
           git config user.name "imyong-collector"
