@@ -65,7 +65,7 @@ def main(raw):
     all_dir = with_manual(lambda f: True)
     no_acad = with_manual(lambda f: not ACADEMY(f))
     out = []
-    for name, fn in [('초등', elem), ('중등', sec), ('중등(공고 1건도 인정 시)', 'relax')]:
+    for name, fn in [('초등', elem), ('중등(공고 1건도 인정 시)', 'relax')]:
         if fn == 'relax':
             os.environ['SEC_RELAX'] = '1'
             fn = sec
