@@ -24,7 +24,7 @@ export function AccountCard({ compact }: { compact?: boolean }) {
       <Card>
         <Txt variant="heading">로그인 · 가입</Txt>
         <Txt variant="sub">글쓰기·댓글은 로그인하고 학교 또는 교사 인증을 하면 할 수 있어요. 자료 보기는 로그인 없이도 돼요.</Txt>
-        <PrimaryButton label="이메일로 시작하기" onPress={() => router.push('/login')} />
+        <PrimaryButton label="로그인 · 가입 (카카오·Google·이메일)" onPress={() => router.push('/login')} />
       </Card>
     );
   }

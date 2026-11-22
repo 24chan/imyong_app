@@ -89,7 +89,7 @@ export function SourcesSummary({ rows }: { rows: { source: Source | null; baseDa
   return (
     <>
       <Txt variant="sub">
-        출처: 시도교육청 공고·보도 (지역마다 달라요 — 지역을 누르면 출처와 원문 링크가 보여요) | 최근 기준일: {latest}
+        출처: 시도교육청 공고·보도, 빈칸은 KG에듀원·희소/쌤플러스·박문각 등 정리 자료(교육청 발표 기반) (지역을 누르면 자세한 출처가 보여요) | 최근 기준일: {latest}
       </Txt>
       <ErrorHint />
     </>

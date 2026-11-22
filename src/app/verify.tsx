@@ -81,7 +81,7 @@ export default function VerifyScreen() {
         <Stack.Screen options={{ title: '인증' }} />
         <Card>
           <Txt variant="heading">로그인이 먼저 필요해요</Txt>
-          <PrimaryButton label="이메일로 시작하기" onPress={() => router.push('/login')} />
+          <PrimaryButton label="로그인 · 가입 (카카오·Google·이메일)" onPress={() => router.push('/login')} />
         </Card>
       </Screen>
     );
