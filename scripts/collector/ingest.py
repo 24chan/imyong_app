@@ -143,8 +143,8 @@ def secondary_rows(raw):
             if not main_r or main_r.get('conflict'):
                 continue
             if main_r.get('agree', 0) < 2 and group not in moe_ok_groups:
-                # (시험) SEC_RELAX=1: 합격 발표 표에서 1차·최종 합격 숫자까지 함께 읽힌 과목은 공고 1건이어도 살림
-                relax_ok = os.environ.get('SEC_RELAX') == '1' and any(x.get('first_passed') or x.get('final_passed') for x in srs)
+                # SEC_RELAX(기본 켬, 2026-11-22 사용자 결정): 합격 발표 표에서 1차·최종 합격 숫자까지 함께 읽힌 과목은 공고 1건이어도 살림
+                relax_ok = os.environ.get('SEC_RELAX', '1') == '1' and any(x.get('first_passed') or x.get('final_passed') for x in srs)
                 if not relax_ok:
                     continue
             bad = any((x.get('final_passed') or 0) > (x.get('selected') or 10 ** 6) for x in srs)
