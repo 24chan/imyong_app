@@ -1,0 +1,39 @@
+name: academy-events
+# 학원 일정 자동 수집 (2차 대비·개강·모의고사·설명회, 초등·중등) → raw-files/raw/academy/academy_events.json + Supabase academy_events
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'DB에 반영 (yes/no)'
+        default: 'yes'
+  schedule:
+    - cron: '37 21 * * *'   # 매일 06:37 KST
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: 수집
+        env:
+          SUPABASE_URL: https://wckaybzamhvmhxiacmnx.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
+        run: |
+          FLAG=""
+          if [ "${{ github.event.inputs.apply || 'yes' }}" = "yes" ]; then FLAG="--apply"; fi
+          python -I -u app/scripts/collector/academy_events.py raw/academy $FLAG
+      - name: raw-files 브랜치에 저장
+        if: always()
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/academy || exit 0
+          git commit -qm "학원 일정 $(date +%F)" || exit 0
+          for i in 1 2 3 4 5; do git pull -q --rebase origin raw-files && git push -q origin HEAD:raw-files && break; sleep $((i*5)); done
