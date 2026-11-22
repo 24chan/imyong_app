@@ -39,9 +39,14 @@ UNIVS = {
 }
 MENU = re.compile(r'공지|학사|교육실습|실습')
 # 홈에서 메뉴를 못 찾는 학교: 직접 넣은 게시판 주소 (2차 조사에서 확인한 것)
-EXTRA = {}
+EXTRA = {
+    'cje': ['https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000015',   # 교육실습지원센터 공지사항
+            'https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000031'],  # 자료실
+}
 # 바로 받아 볼 페이지 (조사에서 주소를 찾은 것)
 DIRECT = {
+    'cje': [(f'교육실습 {n}', f'https://www.cje.ac.kr/ctps/web/content.do?menu_cd={c}')
+            for n, c in (('I', '000017'), ('II', '000020'), ('III', '000023'), ('IV', '000026'))],
     'gnue': [('실습학교주소', 'https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86391170028a'),
              ('실습운영계획', 'https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86387c490287')],
 }
