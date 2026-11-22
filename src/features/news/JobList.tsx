@@ -137,3 +137,38 @@ export function JobTipButton({ level }: { level: Level }) {
     </>
   );
 }
+
+// B-7 (2026-11-22 조사): 나라일터에는 서울·경기 밖 사립 정규채용이 거의 안 올라옴(400일 동안 전국 29건).
+// 다른 지역은 ① 교육청 사립 위탁 선발(앱 '사립 위탁' 칸) ② 나이스 온라인 채용 ③ 학교 누리집에 올라와서, 바로 가는 길을 보여 줌.
+const MORE_LINKS: { label: string; desc: string; url: string }[] = [
+  { label: '나이스 온라인 교직원 채용', desc: '여러 교육청 학교가 함께 쓰는 채용 시스템 (지역 골라 보기)', url: 'https://edurecruit.go.kr/' },
+  { label: '울산 통합인력풀', desc: '울산교육청 학교 채용공고', url: 'https://use.go.kr/job/index.do' },
+  { label: '전북 시험·채용·구직', desc: '전북교육청 채용 메뉴', url: 'https://www.jbe.go.kr/index.jbe?menuCd=DOM_000000103004000000' },
+  { label: '제주 채용정보', desc: '제주교육청 채용 안내', url: 'https://www.jje.go.kr/index.jje?menuCd=DOM_000000103003010000' },
+];
+
+export function MoreJobLinks() {
+  const { colors } = useTheme();
+  return (
+    <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
+      <View style={{ padding: space.md, gap: 2 }}>
+        <Txt style={{ fontWeight: '800' }}>다른 지역 사립 채용 더 찾아보기</Txt>
+        <Txt variant="sub">서울·경기 밖 사립 학교는 교육청 위탁 선발('사립 위탁' 칸)이나 아래 채용 시스템에 주로 올려요.</Txt>
+      </View>
+      {MORE_LINKS.map((l) => (
+        <Pressable
+          key={l.url}
+          onPress={() => Linking.openURL(l.url)}
+          accessibilityRole="link"
+          style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, borderTopWidth: 1, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
+        >
+          <View style={{ flex: 1 }}>
+            <Txt style={{ fontWeight: '700' }}>{l.label}</Txt>
+            <Txt variant="sub">{l.desc}</Txt>
+          </View>
+          <Ionicons name="open-outline" size={17} color={colors.textSub} />
+        </Pressable>
+      ))}
+    </View>
+  );
+}

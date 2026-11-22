@@ -7,7 +7,7 @@ import { Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { getTeacherJobs, isOpen, jobsFor } from '../data/jobs';
 import { getNotices, getRegionSummaries } from '../data/repository';
 import { useAsync } from '../data/useAsync';
-import { JobBoard, JobTipButton } from '../features/news/JobList';
+import { JobBoard, JobTipButton, MoreJobLinks } from '../features/news/JobList';
 import { NOTICE_LABEL, NoticeBoard, NoticeRow } from '../features/news/NoticeList';
 import { PrivateLink } from '../features/news/PrivateLink';
 import { useRegionFilters } from '../features/region/useRegionFilters';
@@ -86,7 +86,7 @@ export default function NewsScreen() {
       {type === 'private' && <PrivateLink />}
       {type === 'jobs' && (
         <>
-          <Txt variant="sub">사립·법인 학교가 직접 뽑는 정교사(신규교사) 공고예요. 나라일터에 올라온 공고를 매일 모으고, 제보도 받아요. 누르면 원문이 열려요.</Txt>
+          <Txt variant="sub">사립·법인 학교가 직접 뽑는 정교사(신규교사) 공고예요. 나라일터와 서울·경기 교육청 채용 게시판을 매일 모으고, 제보도 받아요. 누르면 원문이 열려요.</Txt>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
             <Chip label="모든 공고" selected={!onlySaved} onPress={() => setOnlySaved(false)} />
             <Chip label={`저장한 공고 ${saved.length}`} selected={onlySaved} onPress={() => setOnlySaved(true)} />
@@ -117,6 +117,7 @@ export default function NewsScreen() {
             <PrimaryButton label={`마감 지난 공고 ${savedClosed}건 지우기`} variant="ghost" onPress={() => removeClosedJobs(today)} />
           )}
           {!onlySaved && <JobTipButton level={f.viewLevel} />}
+          {!onlySaved && <MoreJobLinks />}
         </>
       )}
       {type !== 'jobs' && notices.loading && <ActivityIndicator color={colors.brand} />}
