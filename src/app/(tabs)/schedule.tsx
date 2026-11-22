@@ -3,6 +3,7 @@ import { openLink } from '../../lib/openLink';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { EventTipButton } from '../../features/schedule/EventTipButton';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Chip, Screen, Segmented, Txt } from '../../components/ui';
 import { AcademyEvent, EVENT_KIND, listEvents } from '../../data/academy';
@@ -17,10 +18,11 @@ import { useTheme } from '../../theme/useTheme';
 import { alertsAvailable, enableAlerts, toggleSavedSchedule, useAlertPrefs, useSavedSchedule } from '../../features/alerts/alerts';
 
 // 일정 탭 (2026-11-21 탭 개편 안 2): 임용 공식 일정(교육청) + 학원 개강·특강·모의고사 한곳에, 목록/달력
-type Kind = 'official' | 'open' | 'special' | 'mock';
+// C-1 (2026-11-22): 설명회·인강 오픈·기타 종류, 장소 표시, 이용자 일정 제보
+type Kind = 'official' | AcademyEvent['kind'];
 type Item = { key: string; date: string; endsOn?: string | null; kind: Kind; title: string; sub?: string; url?: string | null };
-const KIND_LABEL: Record<Kind, string> = { official: '임용 일정', open: EVENT_KIND.open, special: EVENT_KIND.special, mock: EVENT_KIND.mock };
-const KIND_CAT: Record<Kind, CatKey> = { official: 'teal', open: 'blue', special: 'purple', mock: 'coral' };
+const KIND_LABEL: Record<Kind, string> = { official: '임용 일정', ...EVENT_KIND };
+const KIND_CAT: Record<Kind, CatKey> = { official: 'teal', open: 'blue', special: 'purple', mock: 'coral', briefing: 'pink', online: 'green', etc: 'gray' };
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
 const ym = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 
@@ -32,7 +34,7 @@ export default function ScheduleScreen() {
   const regions = settings.regionCodes.length ? settings.regionCodes : ['seoul'];
   const [region, setRegion] = useState(regions[0]);
   const [view, setView] = useState<'list' | 'month'>('list');
-  const [kinds, setKinds] = useState<Set<Kind>>(new Set(['official', 'open', 'special', 'mock']));
+  const [kinds, setKinds] = useState<Set<Kind>>(new Set(Object.keys(KIND_LABEL) as Kind[]));
   const [month, setMonth] = useState(() => new Date(`${today}T00:00:00`));
   const [day, setDay] = useState<string | null>(null);
   const [official, setOfficial] = useState<Item[] | null>(null);
@@ -66,10 +68,10 @@ export default function ScheduleScreen() {
       const to = new Date(month.getFullYear(), month.getMonth() + 3, 0);
       listEvents(viewLevel, `${ym(from)}-01`, `${ym(to)}-${String(to.getDate()).padStart(2, '0')}`)
         .then((list: AcademyEvent[]) =>
-          setAcademy(list.map((e) => ({ key: `a-${e.id}`, date: e.startsOn, endsOn: e.endsOn, kind: e.kind, title: e.title, sub: e.academyName ?? undefined, url: e.url }))),
+          setAcademy(list.filter((e) => !e.subjectCode || !settings.subjectCode || e.subjectCode === settings.subjectCode).map((e) => ({ key: `a-${e.id}`, date: e.startsOn, endsOn: e.endsOn, kind: e.kind, title: e.title, sub: [e.academyName, e.place].filter(Boolean).join(' · ') || undefined, url: e.url }))),
         )
         .catch(() => setAcademy([]));
-    }, [viewLevel, f.latestYear, r, month]),
+    }, [viewLevel, f.latestYear, r, month, settings.subjectCode]),
   );
 
   const items = useMemo(
@@ -277,8 +279,9 @@ export default function ScheduleScreen() {
           <List list={day ? byDate.get(day) ?? [] : items.filter((i) => i.date.startsWith(ym(month)))} />
         </>
       )}
+      <EventTipButton level={viewLevel} />
       <Txt variant="sub" style={{ fontSize: 12 }}>
-        임용 일정은 교육청 시행계획 공고 기준이에요. 학원 일정은 운영자가 확인해 올려요(광고 아님).
+        임용 일정은 교육청 시행계획 공고 기준이에요. 학원 일정은 운영자나 이용자 제보를 운영자가 확인해 올려요(광고 아님).
       </Txt>
     </Screen>
   );

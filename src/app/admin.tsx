@@ -10,7 +10,7 @@ import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, si
 import { useAuth } from '../store/Auth';
 import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
-import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, LECTURE_AREA, PendingEnrollment } from '../data/academy';
+import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, EventTip, LECTURE_AREA, listPendingEventTips, PendingEnrollment, reviewEventTip } from '../data/academy';
 import type { Level } from '../store/AppSettings';
 import { JobTip, listPendingTips, reviewJobTip } from '../data/jobs';
 import { regionByCode } from '../data/regions';
@@ -81,7 +81,14 @@ export default function AdminScreen() {
         )}
         {tab === 'mock' && <MockAdmin />}
         {tab === 'academy' && <AcademyAdmin />}
-        {tab === 'jobs' && <JobTipsAdmin />}
+        {tab === 'jobs' && (
+          <>
+            <Txt variant="heading">채용 공고 제보</Txt>
+            <JobTipsAdmin />
+            <Txt variant="heading">일정 제보</Txt>
+            <EventTipsAdmin />
+          </>
+        )}
         {tab === 'appeals' && (
           <>
             {appeals.error && <Txt color="down">{appeals.error.message}</Txt>}
@@ -347,6 +354,7 @@ function AcademyAdmin() {
   const [kind, setKind] = useState<keyof typeof EVENT_KIND>('open');
   const [evTitle, setEvTitle] = useState('');
   const [starts, setStarts] = useState('');
+  const [place, setPlace] = useState('');
   const input = { borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text, backgroundColor: colors.background } as const;
   const done = () => setReload((n) => n + 1);
   return (
@@ -401,21 +409,23 @@ function AcademyAdmin() {
         />
       </Card>
       <Card>
-        <Txt variant="heading">개강·특강·모의고사 일정</Txt>
-        <View style={{ flexDirection: 'row', gap: 6 }}>
+        <Txt variant="heading">학원 일정 (개강·특강·설명회 등)</Txt>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           {(Object.keys(EVENT_KIND) as (keyof typeof EVENT_KIND)[]).map((k) => (
             <Chip key={k} label={EVENT_KIND[k]} selected={kind === k} onPress={() => setKind(k)} />
           ))}
         </View>
         <TextInput value={evTitle} onChangeText={setEvTitle} placeholder="제목 (예: 교육학 기본반 개강)" placeholderTextColor={colors.textSub} style={input} />
         <TextInput value={starts} onChangeText={setStarts} placeholder="날짜 2026-12-01" placeholderTextColor={colors.textSub} style={input} />
+        <TextInput value={place} onChangeText={setPlace} placeholder="장소 또는 '온라인' (선택)" placeholderTextColor={colors.textSub} style={input} />
         <PrimaryButton
           label="일정 등록"
           disabled={!evTitle.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(starts)}
           onPress={() =>
-            adminAddEvent({ academy, kind, title: evTitle, starts, ends: null, level, area, subject: level === 'secondary' && area === 'major' ? subject : null, url: '' })
+            adminAddEvent({ academy, kind, title: evTitle, starts, ends: null, level, area, subject: level === 'secondary' && area === 'major' ? subject : null, url: '', place })
               .then(() => {
                 setEvTitle('');
+                setPlace('');
                 Alert.alert('등록했어요');
               })
               .catch((e) => Alert.alert('등록하지 못했어요', (e as Error).message))
@@ -452,6 +462,51 @@ function JobTipsAdmin() {
           <Txt color="brand" onPress={() => Linking.openURL(t.url)} numberOfLines={1}>
             {t.url}
           </Txt>
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            <View style={{ flex: 1 }}>
+              <PrimaryButton label="승인" onPress={() => act(t, true)} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <PrimaryButton label="거절" variant="ghost" onPress={() => act(t, false)} />
+            </View>
+          </View>
+        </Card>
+      ))}
+    </>
+  );
+}
+
+function EventTipsAdmin() {
+  const { colors } = useTheme();
+  const [reload, setReload] = useState(0);
+  const tips = useAsync(() => listPendingEventTips(), [reload]);
+  const [titles, setTitles] = useState<Record<number, string>>({});
+  const act = (t: EventTip, ok: boolean) =>
+    reviewEventTip(t.id, ok, titles[t.id])
+      .then(() => setReload((n) => n + 1))
+      .catch((e) => Alert.alert('처리하지 못했어요', (e as Error).message));
+  return (
+    <>
+      {tips.error && <Txt color="down">{tips.error.message} (0024 SQL 실행 전이면 정상)</Txt>}
+      {!tips.loading && (tips.data ?? []).length === 0 && <Txt variant="sub">검토할 일정 제보가 없어요.</Txt>}
+      {(tips.data ?? []).map((t) => (
+        <Card key={t.id} style={{ borderWidth: 1, borderColor: colors.line }}>
+          <Txt variant="sub">
+            {EVENT_KIND[t.kind]} · {t.level === 'elementary' ? '초등' : '중등'}
+            {t.subject_code ? ` · ${t.subject_code}` : ''} · {t.starts_on}
+            {t.ends_on ? ` ~ ${t.ends_on}` : ''}
+          </Txt>
+          <TextInput
+            value={titles[t.id] ?? t.title}
+            onChangeText={(v) => setTitles((m) => ({ ...m, [t.id]: v }))}
+            style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, padding: space.md, color: colors.text }}
+          />
+          {(t.academy || t.place) && <Txt variant="sub">{[t.academy, t.place].filter(Boolean).join(' · ')}</Txt>}
+          {t.url && (
+            <Txt color="brand" onPress={() => Linking.openURL(t.url!)} numberOfLines={1}>
+              {t.url}
+            </Txt>
+          )}
           <View style={{ flexDirection: 'row', gap: space.sm }}>
             <View style={{ flex: 1 }}>
               <PrimaryButton label="승인" onPress={() => act(t, true)} />

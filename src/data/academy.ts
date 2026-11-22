@@ -6,7 +6,7 @@ import type { Level } from '../store/AppSettings';
 
 export type Area = 'pedagogy' | 'major' | 'second';
 export const LECTURE_AREA: Record<Area, string> = { pedagogy: '교육학', major: '전공', second: '2차' };
-export const EVENT_KIND = { open: '개강', special: '특강', mock: '모의고사' } as const;
+export const EVENT_KIND = { open: '개강', special: '특강', mock: '모의고사', briefing: '설명회', online: '인강 오픈', etc: '기타' } as const;
 
 export type Lecture = {
   id: number; academyName: string; instructor: string; title: string; level: Level; area: Area; subjectCode: string | null; url: string | null;
@@ -14,7 +14,7 @@ export type Lecture = {
   myEnrollment: 'pending' | 'approved' | 'rejected' | null;
 };
 export type LectureReview = { id: number; lectureId: number; label: string; rating: number; delivery: number; material: number; care: number; body: string; createdAt: string; isMine: boolean };
-export type AcademyEvent = { id: number; kind: keyof typeof EVENT_KIND; title: string; startsOn: string; endsOn: string | null; level: Level; area: Area | null; subjectCode: string | null; url: string | null; academyName: string | null };
+export type AcademyEvent = { id: number; kind: keyof typeof EVENT_KIND; title: string; startsOn: string; endsOn: string | null; level: Level; area: Area | null; subjectCode: string | null; url: string | null; place: string | null; academyName: string | null };
 export type Ad = { id: number; title: string; body: string | null; url: string | null; academyName: string | null };
 
 function err(e: { message?: string } | null, what: string): Error {
@@ -98,8 +98,8 @@ export const requestLecture = (text: string) => rpc<void>('request_lecture', { p
 export async function listEvents(level: Level, from: string, to: string): Promise<AcademyEvent[]> {
   const { data, error } = await supabase.from('academy_events_v').select('*').eq('level', level).gte('starts_on', from).lte('starts_on', to).order('starts_on');
   if (error) throw err(error, '일정');
-  return (data ?? []).map((e: { id: number; kind: AcademyEvent['kind']; title: string; starts_on: string; ends_on: string | null; level: Level; area: Area | null; subject_code: string | null; url: string | null; academy_name: string | null }) => ({
-    id: e.id, kind: e.kind, title: e.title, startsOn: e.starts_on, endsOn: e.ends_on, level: e.level, area: e.area, subjectCode: e.subject_code, url: e.url, academyName: e.academy_name,
+  return (data ?? []).map((e: { id: number; kind: AcademyEvent['kind']; title: string; starts_on: string; ends_on: string | null; level: Level; area: Area | null; subject_code: string | null; url: string | null; place: string | null; academy_name: string | null }) => ({
+    id: e.id, kind: e.kind, title: e.title, startsOn: e.starts_on, endsOn: e.ends_on, level: e.level, area: e.area, subjectCode: e.subject_code, url: e.url, place: e.place ?? null, academyName: e.academy_name,
   }));
 }
 export async function listAds(level: Level): Promise<Ad[]> {
@@ -132,8 +132,8 @@ export async function adminLectureRequests(): Promise<{ id: number; text: string
 }
 export const adminAddLecture = (l: { academy: string; instructor: string; title: string; level: Level; area: Area; subject: string | null; url: string }) =>
   rpc<number>('admin_add_lecture', { p_academy: l.academy, p_instructor: l.instructor, p_title: l.title, p_level: l.level, p_area: l.area, p_subject: l.subject ?? '', p_url: l.url }, '강의 등록');
-export const adminAddEvent = (e: { academy: string; kind: AcademyEvent['kind']; title: string; starts: string; ends: string | null; level: Level; area: Area | null; subject: string | null; url: string }) =>
-  rpc<number>('admin_add_event', { p_academy: e.academy, p_kind: e.kind, p_title: e.title, p_starts: e.starts, p_ends: e.ends, p_level: e.level, p_area: e.area ?? '', p_subject: e.subject ?? '', p_url: e.url }, '일정 등록');
+export const adminAddEvent = (e: { academy: string; kind: AcademyEvent['kind']; title: string; starts: string; ends: string | null; level: Level; area: Area | null; subject: string | null; url: string; place?: string }) =>
+  rpc<number>('admin_add_event', { p_academy: e.academy, p_kind: e.kind, p_title: e.title, p_starts: e.starts, p_ends: e.ends, p_level: e.level, p_area: e.area ?? '', p_subject: e.subject ?? '', p_url: e.url, p_place: e.place ?? '' }, '일정 등록');
 export const adminDelete = (table: 'lectures' | 'academy_events' | 'ads' | 'lecture_requests', id: number) => rpc<void>('admin_delete', { p_table: table, p_id: id }, '삭제');
 
 /** 통합 검색: 강의 이름·강사·학원에 검색어가 있는 강의 (모드 기준) */
@@ -149,3 +149,14 @@ export async function searchLectures(level: Level, q: string, limit = 30): Promi
   if (error) throw err(error, '강의 검색');
   return (data as LecRow[]).map(toLec);
 }
+
+/* 이용자 일정 제보 (0024) — 로그인 필요, 운영자 승인 후 일정에 보임 */
+export type EventTip = { id: number; kind: AcademyEvent['kind']; title: string; academy: string | null; starts_on: string; ends_on: string | null; level: Level; subject_code: string | null; place: string | null; url: string | null; created_at: string };
+export const submitEventTip = (t: { kind: AcademyEvent['kind']; title: string; academy: string; starts: string; ends: string | null; level: Level; subject: string | null; place: string; url: string }) =>
+  rpc<number>('submit_event_tip', { p_kind: t.kind, p_title: t.title, p_academy: t.academy, p_starts: t.starts, p_ends: t.ends, p_level: t.level, p_subject: t.subject ?? '', p_place: t.place, p_url: t.url }, '일정 제보');
+export async function listPendingEventTips(): Promise<EventTip[]> {
+  const { data, error } = await supabase.from('admin_event_tips_v').select('*').order('starts_on');
+  if (error) throw error;
+  return (data ?? []) as EventTip[];
+}
+export const reviewEventTip = (id: number, approve: boolean, title?: string) => rpc<void>('admin_review_event_tip', { p_id: id, p_approve: approve, p_title: title ?? '' }, '제보 처리');
