@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { EventTipButton } from '../../features/schedule/EventTipButton';
+import { PracticeTipButton } from '../../features/practice/PracticeTipButton';
 import { ViewModeBanner } from '../../components/ModeToggle';
 import { Chip, Screen, Segmented, Txt } from '../../components/ui';
 import { AcademyEvent, EVENT_KIND, listEvents } from '../../data/academy';
@@ -185,6 +186,26 @@ export default function ScheduleScreen() {
         </View>
       )}
       {!settings.regionCodes.length && <Txt variant="sub">관심 지역을 고르면 그 지역 일정이 보여요. 지금은 서울 예시예요.</Txt>}
+      {/* 일정 제보 (2026-11-22): 학원 일정은 제보로 채움 — 위에서 바로 보이게 */}
+      <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.xl, backgroundColor: colors.cat.pink.bg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <Ionicons name="megaphone-outline" size={18} color={colors.cat.pink.fg} />
+          <Txt style={{ flex: 1, fontWeight: '800', color: colors.cat.pink.fg }}>
+            {academy !== null && academy.length === 0 ? '이번 달 학원 일정이 아직 없어요' : '아는 일정 있으면 알려 주세요'}
+          </Txt>
+        </View>
+        <Txt variant="sub" style={{ fontSize: 13 }}>
+          모의고사·개강·설명회·특강·인강 오픈 무엇이든요. 학원 공지 캡처·사진·PDF·주소만 보내도 돼요. 운영자가 확인하고 올려요.
+        </Txt>
+        <View style={{ flexDirection: 'row', gap: space.sm }}>
+          <View style={{ flex: 1 }}>
+            <PracticeTipButton univ="일정" year={null} topic="event" label="캡처·사진으로" variant="primary" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <EventTipButton level={viewLevel} label="직접 입력" />
+          </View>
+        </View>
+      </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {(Object.keys(KIND_LABEL) as Kind[]).map((k) => {
           const on = kinds.has(k);
@@ -279,7 +300,6 @@ export default function ScheduleScreen() {
           <List list={day ? byDate.get(day) ?? [] : items.filter((i) => i.date.startsWith(ym(month)))} />
         </>
       )}
-      <EventTipButton level={viewLevel} />
       <Txt variant="sub" style={{ fontSize: 12 }}>
         임용 일정은 교육청 시행계획 공고 기준이에요. 학원 일정은 운영자나 이용자 제보를 운영자가 확인해 올려요(광고 아님).
       </Txt>

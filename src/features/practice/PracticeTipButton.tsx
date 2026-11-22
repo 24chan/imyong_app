@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Alert, Pressable, View } from 'react-native';
 import { TextInput } from '../../components/TextField';
 import { PrimaryButton, Txt } from '../../components/ui';
-import { submitPracticeTip, TipFile } from '../../data/practiceUgc';
+import { submitPracticeTip, TipFile, TipTopic } from '../../data/practiceUgc';
 import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -21,8 +21,26 @@ try {
   docPicker = null;
 }
 
-/** 실습학교 목록 제보: 사진·캡처·PDF·주소·글 아무 형식이나 (운영자가 학교 이름만 옮기고 첨부는 바로 삭제) */
-export function PracticeTipButton({ univ, year, label = '실습학교 목록 제보하기' }: { univ: string; year: number | null; label?: string }) {
+const TEXT: Record<TipTopic, { title: string; guide: string; privacy: string; placeholder: string; done: string }> = {
+  practice: {
+    title: '실습학교 목록 제보',
+    guide: '학사공지 화면 캡처, 사진, PDF, 공지 주소, 직접 적은 글 — 어떤 형식이든 괜찮아요. 여러 개 섞어서 보내도 돼요(첨부 최대 5개).',
+    privacy: '학생 이름이 보이면 가리고 보내 주세요. 운영자는 학교 이름·학년·학기만 옮겨 적고, 첨부 파일은 처리하자마자 지워요.',
+    placeholder: '예: 2027학년도 1학기 4학년 실습 목록이에요 (선택)',
+    done: '운영자가 확인해서 실습초 목록에 올릴게요.',
+  },
+  event: {
+    title: '일정 제보 (캡처·사진·주소)',
+    guide: '학원 공지·카페 글 캡처, 포스터 사진, PDF, 안내 주소 — 어떤 형식이든 괜찮아요. 모의고사·개강·설명회·특강·인강 오픈 무엇이든요(첨부 최대 5개).',
+    privacy: '운영자가 날짜·장소·안내 주소만 옮겨 적고, 첨부 파일은 처리하자마자 지워요. 개인 연락처가 보이면 가려 주세요.',
+    placeholder: '예: 희소 교육학 설명회 12월 둘째 주래요 (선택)',
+    done: '운영자가 확인해서 일정 탭에 올릴게요.',
+  },
+};
+
+/** 사진·캡처·PDF·주소·글 아무 형식으로 제보 (실습학교 목록 / 일정). 운영자가 필요한 것만 옮겨 적고 첨부는 바로 삭제 */
+export function PracticeTipButton({ univ, year, label = '실습학교 목록 제보하기', topic = 'practice', variant = 'ghost' }: { univ: string; year: number | null; label?: string; topic?: TipTopic; variant?: 'ghost' | 'primary' }) {
+  const tx = TEXT[topic];
   const { colors } = useTheme();
   const { session } = useAuth();
   const [open, setOpen] = useState(false);
@@ -49,13 +67,11 @@ export function PracticeTipButton({ univ, year, label = '실습학교 목록 제
 
   return (
     <>
-      <PrimaryButton label={label} variant="ghost" onPress={() => (session ? setOpen(true) : router.push('/login'))} />
-      <Sheet visible={open} onClose={() => setOpen(false)} title="실습학교 목록 제보">
-        <Txt variant="sub">
-          학사공지 화면 캡처, 사진, PDF, 공지 주소, 직접 적은 글 — 어떤 형식이든 괜찮아요. 여러 개 섞어서 보내도 돼요(첨부 최대 5개).
-        </Txt>
+      <PrimaryButton label={label} variant={variant === 'ghost' ? 'ghost' : undefined} onPress={() => (session ? setOpen(true) : router.push('/login'))} />
+      <Sheet visible={open} onClose={() => setOpen(false)} title={tx.title}>
+        <Txt variant="sub">{tx.guide}</Txt>
         <Txt variant="sub" style={{ fontSize: 12 }}>
-          학생 이름이 보이면 가리고 보내 주세요. 운영자는 학교 이름·학년·학기만 옮겨 적고, 첨부 파일은 처리하자마자 지워요.
+          {tx.privacy}
         </Txt>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           <View style={{ flex: 1 }}>
@@ -80,7 +96,7 @@ export function PracticeTipButton({ univ, year, label = '실습학교 목록 제
         <TextInput
           value={note}
           onChangeText={setNote}
-          placeholder="예: 2027학년도 1학기 4학년 실습 목록이에요 (선택)"
+          placeholder={tx.placeholder}
           placeholderTextColor={colors.textSub}
           multiline
           maxLength={500}
@@ -93,13 +109,13 @@ export function PracticeTipButton({ univ, year, label = '실습학교 목록 제
           onPress={() => {
             if (!session) return;
             setBusy(true);
-            submitPracticeTip(session.user.id, { univ, year, note: note.trim(), url: url.trim(), files })
+            submitPracticeTip(session.user.id, { topic, univ, year, note: note.trim(), url: url.trim(), files })
               .then(() => {
                 setOpen(false);
                 setFiles([]);
                 setNote('');
                 setUrl('');
-                Alert.alert('고마워요!', '운영자가 확인해서 실습초 목록에 올릴게요.');
+                Alert.alert('고마워요!', tx.done);
               })
               .catch((e) => Alert.alert('보내지 못했어요', (e as Error).message))
               .finally(() => setBusy(false));

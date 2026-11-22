@@ -87,7 +87,7 @@ export default function AdminScreen() {
             <JobTipsAdmin />
             <Txt variant="heading">일정 제보</Txt>
             <EventTipsAdmin />
-            <Txt variant="heading">실습학교 목록 제보</Txt>
+            <Txt variant="heading">사진·PDF 제보 (실습학교·일정)</Txt>
             <PracticeTipsAdmin />
           </>
         )}

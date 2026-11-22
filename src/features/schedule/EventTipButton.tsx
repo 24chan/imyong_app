@@ -15,7 +15,7 @@ type K = AcademyEvent['kind'];
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** 일정 제보 (C-1, 0024): 설명회·개강·인강 오픈 등을 알려 주면 운영자 확인 후 일정 탭에 보여요 */
-export function EventTipButton({ level }: { level: Level }) {
+export function EventTipButton({ level, label = '놓친 일정 제보하기' }: { level: Level; label?: string }) {
   const { colors } = useTheme();
   const { session } = useAuth();
   const { settings } = useAppSettings();
@@ -47,7 +47,7 @@ export function EventTipButton({ level }: { level: Level }) {
 
   return (
     <>
-      <PrimaryButton label="놓친 일정 제보하기" variant="ghost" onPress={() => (session ? setOpen(true) : router.push('/login'))} />
+      <PrimaryButton label={label} variant="ghost" onPress={() => (session ? setOpen(true) : router.push('/login'))} />
       <Sheet visible={open} onClose={() => setOpen(false)} title="일정 제보">
         <Txt variant="sub">학원 설명회·개강·특강·모의고사·인강 오픈 일정을 알려 주세요. 운영자가 확인한 뒤 모두에게 보여요. 홍보 문구는 빼고 사실만 적어 주세요.</Txt>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>

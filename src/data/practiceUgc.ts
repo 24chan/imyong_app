@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 const BUCKET = 'practice-tips';
 const friendly = (e: { message: string }, what: string) => {
   const m = e.message ?? '';
-  if (/practice_|bucket|does not exist|schema cache/i.test(m)) return new Error(`${what}: 0026 SQL을 먼저 실행해 주세요`);
+  if (/practice_|file_tip|bucket|does not exist|schema cache/i.test(m)) return new Error(`${what}: 0026·0027 SQL을 먼저 실행해 주세요`);
   return new Error(m.replace(/^.*?ERROR:\s*/, ''));
 };
 async function rpc<T>(fn: string, args: Record<string, unknown>, what: string): Promise<T> {
@@ -39,7 +39,8 @@ async function bytesOf(f: TipFile): Promise<ArrayBuffer> {
 }
 
 /** 제보 보내기: 첨부 올리기 → 제보 저장 (실패하면 올린 파일 지움) */
-export async function submitPracticeTip(uid: string, t: { univ: string; year: number | null; note: string; url: string; files: TipFile[] }) {
+export type TipTopic = 'practice' | 'event';
+export async function submitPracticeTip(uid: string, t: { topic?: TipTopic; univ: string; year: number | null; note: string; url: string; files: TipFile[] }) {
   const paths: string[] = [];
   try {
     for (const f of t.files.slice(0, 5)) {
@@ -51,14 +52,21 @@ export async function submitPracticeTip(uid: string, t: { univ: string; year: nu
       if (error) throw friendly(error, '첨부 올리기');
       paths.push(path);
     }
-    await rpc<number>('submit_practice_tip', { p_univ: t.univ, p_year: t.year, p_note: t.note, p_url: t.url, p_files: paths }, '제보');
+    const args = { p_univ: t.univ, p_year: t.year, p_note: t.note, p_url: t.url, p_files: paths };
+    try {
+      await rpc<number>('submit_file_tip', { p_topic: t.topic ?? 'practice', ...args }, '제보');
+    } catch (e) {
+      // 0027 SQL 실행 전: 실습 제보는 예전 함수로
+      if ((t.topic ?? 'practice') === 'practice' && /0026|0027|SQL/.test((e as Error).message)) await rpc<number>('submit_practice_tip', args, '제보');
+      else throw e;
+    }
   } catch (e) {
     if (paths.length) await supabase.storage.from(BUCKET).remove(paths);
     throw e;
   }
 }
 
-export type PracticeTip = { id: number; univ: string; year: number | null; note: string | null; url: string | null; file_paths: string[]; created_at: string };
+export type PracticeTip = { id: number; topic?: TipTopic; univ: string; year: number | null; note: string | null; url: string | null; file_paths: string[]; created_at: string };
 export async function listPracticeTips(): Promise<PracticeTip[]> {
   const { data, error } = await supabase.from('admin_practice_tips_v').select('*').order('created_at');
   if (error) throw friendly(error, '실습 제보');
