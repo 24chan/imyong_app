@@ -30,8 +30,8 @@ export function PublicResources() {
       items: [
         {
           title: elem ? '초등 임용 1차 기출 (교육학·교육과정)' : `중등 임용 1차 기출 (교육학·${subj ?? '전공'})`,
-          desc: '한국교육과정평가원이 공개한 연도별 문제지와 정답. 누리집 자료실에서 교원임용시험을 찾아요.',
-          url: 'https://www.kice.re.kr',
+          desc: '평가원이 공개한 연도별 문제지와 정답. 앱 안에서 바로 보고 파일도 받아요.',
+          go: () => router.push('/past-exams'),
           org: '한국교육과정평가원',
         },
         {
