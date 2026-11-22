@@ -4,9 +4,9 @@
 export const LEGAL = {
   appName: '임용몽땅',
   /** 운영자 이름 (개인정보 보호책임자). 사업자 등록을 하면 상호·대표자로 바꾸기 */
-  operator: '',
+  operator: '김유찬',
   /** 문의·개인정보 요청을 받을 메일 */
-  contactEmail: '',
+  contactEmail: 'imyonghelp@gmail.com',
   /** Supabase 서버 지역 — 대시보드 Project Settings → General → Region 에서 확인 (예: 대한민국 서울) */
   serverRegion: '일본 도쿄 (AWS ap-northeast-1)',
   /** 시행일 (예: 2027-01-15). 출시 날짜로 */
