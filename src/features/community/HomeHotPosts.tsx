@@ -10,10 +10,10 @@ import { PostRow } from './parts';
 
 /** 홈 '인기글': HOT 글 4개, 없으면 내 모드 게시판의 최신 글 */
 export function HomeHotPosts() {
-  const { settings, viewLevel } = useAppSettings();
+  const { viewLevel } = useAppSettings();
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [isHot, setIsHot] = useState(true);
-  const fallback = viewLevel === 'elementary' ? 'elem' : settings.subjectCode ? `sub_${settings.subjectCode}` : 'sec';
+  const fallback = viewLevel === 'elementary' ? 'elem' : 'sec';
   useFocusEffect(
     useCallback(() => {
       listPosts('hot', undefined, 4)

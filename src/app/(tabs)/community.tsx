@@ -9,6 +9,8 @@ import { useAppSettings } from '../../store/AppSettings';
 import { useAuth } from '../../store/Auth';
 import { PostRow, SanctionBanner, needWriterAlert, useWriterLabels } from '../../features/community/parts';
 import { StudyBoard } from '../../features/study/StudyBoard';
+import { REGIONS, regionByCode } from '../../data/regions';
+import { SUBJECTS, subjectByCode } from '../../data/subjects';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
@@ -20,9 +22,11 @@ export default function CommunityScreen() {
   const { uid, labels } = useWriterLabels();
   const [boards, setBoards] = useState<Board[]>([]);
   const [boardErr, setBoardErr] = useState<string | null>(null);
-  const defaultBoard = viewLevel === 'elementary' ? 'elem' : settings.subjectCode ? `sub_${settings.subjectCode}` : 'sec';
+  const defaultBoard = viewLevel === 'elementary' ? 'elem' : 'sec';
   const [board, setBoard] = useState<string>(defaultBoard);
-  const [showAll, setShowAll] = useState(false);
+  // 말머리 거르기 (중등: 과목, 지역 이야기: 지역). '' = 전체
+  const [tagSub, setTagSub] = useState<string>('');
+  const [tagReg, setTagReg] = useState<string>('');
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [more, setMore] = useState(true);
@@ -54,7 +58,7 @@ export default function CommunityScreen() {
       setError(null);
       try {
         const before = reset ? undefined : posts.at(-1)?.id;
-        const rows = await listPosts(board, before);
+        const rows = await listPosts(board, before, 20, { subject: board === 'sec' ? tagSub : null, region: board === 'region' ? tagReg : null });
         setPosts((p) => (reset ? rows : [...p, ...rows]));
         setMore(rows.length >= 20);
       } catch (e) {
@@ -63,7 +67,7 @@ export default function CommunityScreen() {
         setLoading(false);
       }
     },
-    [board, posts],
+    [board, posts, tagSub, tagReg],
   );
 
   // 게시판을 바꾸거나 화면에 돌아올 때 새로 불러오기
@@ -77,17 +81,17 @@ export default function CommunityScreen() {
           .catch(() => setSanction(null));
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [board, session]),
+    }, [board, session, tagSub, tagReg]),
   );
 
   const byId = useMemo(() => Object.fromEntries(boards.map((b) => [b.id, b])), [boards]);
-  const quick = useMemo(() => {
-    const ids = ['hot', defaultBoard, 'study', 'free', 'review'];
-    if (viewLevel === 'secondary' && defaultBoard !== 'sec') ids.push('sec');
-    // 관심 지역은 첫 번째 하나만 (나머지는 '다른 게시판'에서)
-    if (settings.regionCodes[0]) ids.push(`reg_${settings.regionCodes[0]}`);
-    return [...new Set(ids)];
-  }, [defaultBoard, viewLevel, settings.regionCodes]);
+  // 게시판 5개 + HOT + 스터디 모집 (2026-11-22 정리)
+  const quick = ['hot', defaultBoard, 'study', 'free', 'region', 'review'];
+  const subjectChips = useMemo(
+    () => (settings.subjectCode ? [settings.subjectCode, ...SUBJECTS.map((x) => x.code).filter((c) => c !== settings.subjectCode)] : SUBJECTS.map((x) => x.code)),
+    [settings.subjectCode],
+  );
+  const regionChips = useMemo(() => [...settings.regionCodes, ...REGIONS.map((x) => x.code).filter((c) => !settings.regionCodes.includes(c))], [settings.regionCodes]);
   const nameOf = (id: string) => (id === 'hot' ? 'HOT' : id === 'study' ? '스터디 모집' : byId[id]?.name ?? (id === 'elem' ? '초등' : id));
 
   const write = () => {
@@ -100,10 +104,7 @@ export default function CommunityScreen() {
     const on = board === id;
     return (
       <Pressable
-        onPress={() => {
-          setBoard(id);
-          setShowAll(false);
-        }}
+        onPress={() => setBoard(id)}
         style={{
           paddingHorizontal: 14,
           paddingVertical: 8,
@@ -143,30 +144,24 @@ export default function CommunityScreen() {
         {quick.map((id) => (
           <BoardChip key={id} id={id} />
         ))}
-        <Pressable
-          onPress={() => setShowAll((v) => !v)}
-          style={{ paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.line, flexDirection: 'row', gap: 4, alignItems: 'center' }}
-        >
-          <Txt style={{ fontWeight: '700', fontSize: 14 }}>다른 게시판</Txt>
-          <Ionicons name={showAll ? 'chevron-up' : 'chevron-down'} size={14} color={colors.text} />
-        </Pressable>
       </ScrollView>
-      {showAll && (
-        <View style={{ gap: space.sm }}>
-          {/* 초등 모드에서는 과목 게시판을 숨김 */}
-          {(viewLevel === 'elementary' ? (['level', 'region'] as const) : (['level', 'subject', 'region'] as const)).map((k) => (
-            <View key={k} style={{ gap: 6 }}>
-              <Txt variant="sub">{k === 'level' ? '구분' : k === 'subject' ? '과목' : '지역'}</Txt>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                {boards
-                  .filter((b) => b.kind === k && !quick.includes(b.id))
-                  .map((b) => (
-                    <BoardChip key={b.id} id={b.id} />
-                  ))}
-              </View>
-            </View>
-          ))}
-        </View>
+      {(board === 'sec' || board === 'region') && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+          {['', ...(board === 'sec' ? subjectChips : regionChips)].map((code) => {
+            const cur = board === 'sec' ? tagSub : tagReg;
+            const on = cur === code;
+            const name = code === '' ? '전체' : board === 'sec' ? subjectByCode(code)?.name ?? code : regionByCode(code)?.shortName ?? code;
+            return (
+              <Pressable
+                key={code || 'all'}
+                onPress={() => (board === 'sec' ? setTagSub(code) : setTagReg(code))}
+                style={{ paddingHorizontal: 11, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: on ? colors.cat.blue.bg : 'transparent', borderWidth: 1, borderColor: on ? colors.cat.blue.fg : colors.line }}
+              >
+                <Txt style={{ fontSize: 13, fontWeight: '700', color: on ? colors.cat.blue.fg : colors.textSub }}>{name}</Txt>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       )}
       {boardErr && <Txt color="down">{boardErr}</Txt>}
       {error && <Txt color="down">{error}</Txt>}

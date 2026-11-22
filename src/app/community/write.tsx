@@ -4,7 +4,10 @@ import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Pressable, Sc
 import { TextInput } from '../../components/TextField';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { Board, createPost, getBoards, getPost, updatePost } from '../../data/community';
+import { AuthorMode, useMyNickname } from '../../features/community/AuthorMode';
 import { LabelChooser, useWriterLabels } from '../../features/community/parts';
+import { REGIONS } from '../../data/regions';
+import { SUBJECTS } from '../../data/subjects';
 import { useAppSettings } from '../../store/AppSettings';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -25,6 +28,15 @@ export default function WriteScreen() {
   const [label, setLabel] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pickBoard, setPickBoard] = useState(false);
+  const [subject, setSubject] = useState<string | null>(null);
+  const [region, setRegion] = useState<string | null>(null);
+  const [useNick, setUseNick] = useState(false);
+  const nickname = useMyNickname();
+  // 말머리 기본값: 중등은 내 과목, 지역 이야기는 첫 관심 지역
+  useEffect(() => {
+    if (board === 'sec' && subject === null && settings.subjectCode) setSubject(settings.subjectCode);
+    if (board === 'region' && region === null && settings.regionCodes[0]) setRegion(settings.regionCodes[0]);
+  }, [board, settings.subjectCode, settings.regionCodes, subject, region]);
 
   useEffect(() => {
     getBoards().then(setBoards).catch(() => {});
@@ -38,15 +50,12 @@ export default function WriteScreen() {
   }, [editId]);
 
   const boardName = boards.find((b) => b.id === board)?.name ?? board;
-  // 고르기 쉬운 순서: 자유·합격 수기·초등/중등·내 과목·관심 지역 → 나머지
+  // 게시판 5개 (2026-11-22 정리): 과목·지역은 말머리로
   const ordered = useMemo(() => {
-    const top = ['free', 'review', 'elem', 'sec', settings.subjectCode ? `sub_${settings.subjectCode}` : '', ...settings.regionCodes.map((r) => `reg_${r}`)];
-    return [...boards].sort((a, b) => {
-      const ia = top.indexOf(a.id);
-      const ib = top.indexOf(b.id);
-      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-    });
-  }, [boards, settings.subjectCode, settings.regionCodes]);
+    const mine = settings.level === 'secondary' ? 'sec' : 'elem';
+    const top = ['free', mine, 'region', 'review', mine === 'sec' ? 'elem' : 'sec'];
+    return boards.filter((b) => top.includes(b.id)).sort((a, b) => top.indexOf(a.id) - top.indexOf(b.id));
+  }, [boards, settings.level]);
 
   const submit = async () => {
     setBusy(true);
@@ -55,7 +64,10 @@ export default function WriteScreen() {
         await updatePost(editId, title, body);
         router.back();
       } else {
-        const id = await createPost(board, title, body, label);
+        const id = await createPost({
+          board, title, body, verificationId: label, useNickname: useNick,
+          subject: board === 'sec' ? subject : null, region: board === 'region' ? region : null,
+        });
         router.replace({ pathname: '/community/[id]', params: { id: String(id) } });
       }
     } catch (e) {
@@ -93,12 +105,34 @@ export default function WriteScreen() {
             )}
           </View>
         )}
+        {!editId && board === 'sec' && (
+          <View style={{ gap: 6 }}>
+            <Txt variant="sub">과목 말머리 (선택)</Txt>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+              <Chip label="과목 없음" selected={subject === ''} onPress={() => setSubject('')} />
+              {SUBJECTS.map((x) => (
+                <Chip key={x.code} label={x.name} selected={subject === x.code} onPress={() => setSubject(x.code)} />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+        {!editId && board === 'region' && (
+          <View style={{ gap: 6 }}>
+            <Txt variant="sub">지역 말머리 (필수) · 글 주제예요. 내 지역은 표시되지 않아요</Txt>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+              {REGIONS.map((x) => (
+                <Chip key={x.code} label={x.shortName} selected={region === x.code} onPress={() => setRegion(x.code)} />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+        {!editId && <AuthorMode value={useNick} onChange={setUseNick} nickname={nickname} />}
         {labels === null ? <ActivityIndicator color={colors.brand} /> : <LabelChooser labels={labels} value={label} onChange={setLabel} />}
         <TextInput value={title} onChangeText={setTitle} placeholder="제목" placeholderTextColor={colors.textSub} maxLength={100} style={[input, { fontSize: 17, fontWeight: '700' }]} />
         <TextInput
           value={body}
           onChangeText={setBody}
-          placeholder="내용을 입력하세요. 다른 사람에게는 라벨만 보여요."
+          placeholder={useNick ? '내용을 입력하세요. 닉네임과 라벨이 함께 보여요.' : '내용을 입력하세요. 다른 사람에게는 라벨만 보여요.'}
           placeholderTextColor={colors.textSub}
           multiline
           textAlignVertical="top"
@@ -117,7 +151,7 @@ export default function WriteScreen() {
             </Txt>
           </Pressable>
         </View>
-        <PrimaryButton label={busy ? '저장 중…' : editId ? '수정 완료' : '올리기'} onPress={submit} disabled={busy || !title.trim() || !body.trim()} />
+        <PrimaryButton label={busy ? '저장 중…' : editId ? '수정 완료' : '올리기'} onPress={submit} disabled={busy || !title.trim() || !body.trim() || (!editId && board === 'region' && !region)} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

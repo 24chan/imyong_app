@@ -7,6 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { ago, appealSanction, blockAuthor, Post, REPORT_REASONS, reportContent, ReportTarget, Sanction, SANCTION_LABEL } from '../../data/community';
 import { getMyVerifications, Verification } from '../../data/verify';
+import { regionByCode } from '../../data/regions';
+import { subjectByCode } from '../../data/subjects';
 import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -24,6 +26,9 @@ export function LabelBadge({ label, small }: { label: string; small?: boolean })
 }
 
 /** 에브리타임식 글 한 줄: 굵은 제목, 두 줄 미리보기, 아래 라벨·시간·공감·댓글 */
+/** 말머리 이름 (중등 과목 / 지역) */
+export const tagName = (p: Post) => (p.tagSubject ? subjectByCode(p.tagSubject)?.name ?? null : p.tagRegion ? regionByCode(p.tagRegion)?.shortName ?? null : null);
+
 export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }) {
   const { colors } = useTheme();
   const hot = post.likeCount >= 10;
@@ -53,6 +58,7 @@ export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }
         )}
         <Txt style={{ fontWeight: '800', fontSize: 16, flex: 1 }} numberOfLines={1}>
           {post.status === 'hidden' ? '🔒 ' : ''}
+          {tagName(post) ? <Txt style={{ fontWeight: '800', fontSize: 16, color: colors.cat.blue.fg }}>[{tagName(post)}] </Txt> : null}
           {post.title}
         </Txt>
       </View>
@@ -62,6 +68,11 @@ export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }
         </Txt>
       )}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginTop: 2 }}>
+        {post.nickname && (
+          <Txt variant="sub" style={{ fontSize: 12.5, fontWeight: '800', color: colors.text }} numberOfLines={1}>
+            {post.nickname}
+          </Txt>
+        )}
         <LabelBadge label={post.label} small />
         <Txt variant="sub" style={{ fontSize: 12 }}>
           {ago(post.createdAt)}

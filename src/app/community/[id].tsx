@@ -10,6 +10,7 @@ import {
   anonName,
   Comment,
   createComment,
+  myCommentMode,
   deleteComment,
   deletePost,
   getPost,
@@ -20,6 +21,7 @@ import {
   togglePostLike,
   toggleScrap,
 } from '../../data/community';
+import { AuthorMode, useMyNickname } from '../../features/community/AuthorMode';
 import { LabelBadge, LabelChooser, needWriterAlert, ReportSheet, Sheet, useWriterLabels } from '../../features/community/parts';
 import { radius, space } from '../../theme/tokens';
 import type { CatKey } from '../../theme/tokens';
@@ -40,6 +42,10 @@ export default function PostScreen() {
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
   const [label, setLabel] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const nickname = useMyNickname();
+  // 이 글에서 내 댓글 방식 (null = 아직 안 정함 → 고를 수 있음)
+  const [mode, setMode] = useState<boolean | null>(null);
+  const [useNick, setUseNick] = useState(false);
   const [report, setReport] = useState<{ type: 'post' | 'comment'; id: number } | null>(null);
   const [menu, setMenu] = useState<{ kind: 'post' } | { kind: 'comment'; c: Comment } | null>(null);
 
@@ -48,13 +54,18 @@ export default function PostScreen() {
       const [p, cs] = await Promise.all([getPost(postId), listComments(postId)]);
       setPost(p);
       setComments(cs);
+      if (uid) {
+        const m = await myCommentMode(postId).catch(() => null);
+        setMode(m);
+        if (m !== null) setUseNick(m);
+      }
       setError(p ? null : '글을 찾을 수 없어요 (삭제됐거나 가려진 글)');
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [postId]);
+  }, [postId, uid]);
   useEffect(() => {
     load();
   }, [load]);
@@ -84,7 +95,7 @@ export default function PostScreen() {
     if (!text.trim() || guard()) return;
     setSending(true);
     try {
-      await createComment(postId, text.trim(), replyTo?.parentId ?? replyTo?.id ?? null, label);
+      await createComment(postId, text.trim(), replyTo?.parentId ?? replyTo?.id ?? null, label, useNick);
       setText('');
       setReplyTo(null);
       await load();
@@ -124,7 +135,7 @@ export default function PostScreen() {
       <View style={{ flex: 1, gap: 3, backgroundColor: reply ? colors.surface : 'transparent', borderRadius: radius.md, padding: reply ? space.sm : 0 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Txt style={{ fontWeight: '800', fontSize: 14 }} color={c.anonNo === 0 ? 'brand' : 'text'}>
-            {anonName(c.anonNo)}
+            {c.nickname ? (c.anonNo === 0 ? `${c.nickname}(글쓴이)` : c.nickname) : anonName(c.anonNo)}
           </Txt>
           <LabelBadge label={c.label} small />
           <View style={{ flex: 1 }} />
@@ -190,7 +201,7 @@ export default function PostScreen() {
           <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: colors.cat.gray.bg, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="person" size={18} color={colors.cat.gray.fg} />
           </View>
-          <Txt style={{ fontWeight: '800' }}>{post.isMine ? '나' : '익명'}</Txt>
+          <Txt style={{ fontWeight: '800' }}>{post.nickname ?? (post.isMine ? '나' : '익명')}</Txt>
           <LabelBadge label={post.label} />
           <Txt variant="sub">{ago(post.createdAt)}</Txt>
         </View>
@@ -241,6 +252,11 @@ export default function PostScreen() {
             </Pressable>
           </View>
         )}
+        {uid && (
+          <View style={{ paddingHorizontal: space.sm }}>
+            <AuthorMode compact value={useNick} onChange={setUseNick} nickname={nickname} locked={mode !== null} />
+          </View>
+        )}
         {labels && labels.length > 1 && (
           <View style={{ paddingHorizontal: space.sm }}>
             <LabelChooser labels={labels} value={label} onChange={setLabel} />
@@ -250,7 +266,7 @@ export default function PostScreen() {
           <TextInput
             value={text}
             onChangeText={setText}
-            placeholder={uid ? '댓글을 입력하세요 (익명)' : '로그인·인증 후 댓글을 쓸 수 있어요'}
+            placeholder={uid ? (useNick ? '댓글을 입력하세요 (닉네임)' : '댓글을 입력하세요 (익명)') : '로그인·인증 후 댓글을 쓸 수 있어요'}
             placeholderTextColor={colors.textSub}
             multiline
             onFocus={() => guard()}

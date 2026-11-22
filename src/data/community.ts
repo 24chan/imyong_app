@@ -19,6 +19,10 @@ export type Post = {
   isMine: boolean;
   liked: boolean;
   scrapped: boolean;
+  tagSubject: string | null;
+  tagRegion: string | null;
+  /** null = 익명 */
+  nickname: string | null;
 };
 export type Comment = {
   id: number;
@@ -32,6 +36,7 @@ export type Comment = {
   createdAt: string;
   isMine: boolean;
   liked: boolean;
+  nickname: string | null;
 };
 export type Conversation = { id: string; otherLabel: string; myLabel: string; originTitle: string | null; lastAt: string; lastBody: string | null; unread: number; blocked: boolean };
 export type Message = { id: number; body: string | null; imagePath: string | null; createdAt: string; isMine: boolean; readAt: string | null };
@@ -50,20 +55,22 @@ export const SANCTION_LABEL: Record<Sanction['level'], string> = {
 function err(e: { message?: string } | null, what: string): Error {
   const m = e?.message ?? '';
   if (/[가-힣]/.test(m)) return new Error(m.replace(/^.*?ERROR:\s*/, ''));
-  if (/does not exist|schema cache|Could not find/i.test(m)) return new Error('서버 준비가 덜 됐어요 (0011 SQL 실행 필요)');
+  if (/does not exist|schema cache|Could not find/i.test(m)) return new Error('서버 준비가 덜 됐어요 (최신 SQL 실행 필요)');
   if (/network|fetch/i.test(m)) return new Error('인터넷 연결을 확인해 주세요');
   return new Error(`${what}: ${m}`);
 }
 
-const POST_COLS = 'id,board_id,board_name,label,title,body,like_count,comment_count,scrap_count,status,created_at,updated_at,is_mine,liked,scrapped';
+const POST_COLS = 'id,board_id,board_name,label,title,body,like_count,comment_count,scrap_count,status,created_at,updated_at,is_mine,liked,scrapped,tag_subject,tag_region,nickname';
 type PostRow = {
   id: number; board_id: string; board_name: string; label: string; title: string; body: string; like_count: number; comment_count: number;
   scrap_count: number; status: Post['status']; created_at: string; updated_at: string; is_mine: boolean | null; liked: boolean | null; scrapped: boolean | null;
+  tag_subject: string | null; tag_region: string | null; nickname: string | null;
 };
 const toPost = (r: PostRow): Post => ({
   id: r.id, boardId: r.board_id, boardName: r.board_name, label: r.label, title: r.title, body: r.body, likeCount: r.like_count,
   commentCount: r.comment_count, scrapCount: r.scrap_count, status: r.status, createdAt: r.created_at, updatedAt: r.updated_at,
   isMine: !!r.is_mine, liked: !!r.liked, scrapped: !!r.scrapped,
+  tagSubject: r.tag_subject ?? null, tagRegion: r.tag_region ?? null, nickname: r.nickname ?? null,
 });
 
 export async function getBoards(): Promise<Board[]> {
@@ -75,9 +82,11 @@ export async function getBoards(): Promise<Board[]> {
 }
 
 /** 게시판 글 목록 (board = 'hot' 이면 HOT 게시판). before = 이 id 보다 오래된 것 (더 보기) */
-export async function listPosts(board: string, before?: number, limit = 20): Promise<Post[]> {
+export async function listPosts(board: string, before?: number, limit = 20, tag?: { subject?: string | null; region?: string | null }): Promise<Post[]> {
   let q = supabase.from(board === 'hot' ? 'hot_posts_v' : 'posts_v').select(POST_COLS).order('id', { ascending: false }).limit(limit);
   if (board !== 'hot') q = q.eq('board_id', board);
+  if (tag?.subject) q = q.eq('tag_subject', tag.subject);
+  if (tag?.region) q = q.eq('tag_region', tag.region);
   if (before) q = q.lt('id', before);
   const { data, error } = await q;
   if (error) throw err(error, '글 목록');
@@ -99,14 +108,14 @@ export async function getPost(id: number): Promise<Post | null> {
 export async function listComments(postId: number): Promise<Comment[]> {
   const { data, error } = await supabase
     .from('comments_v')
-    .select('id,post_id,parent_id,label,anon_no,body,like_count,status,created_at,is_mine,liked')
+    .select('id,post_id,parent_id,label,anon_no,body,like_count,status,created_at,is_mine,liked,nickname')
     .eq('post_id', postId)
     .order('id');
   if (error) throw err(error, '댓글');
   return (data ?? []).map(
-    (c: { id: number; post_id: number; parent_id: number | null; label: string; anon_no: number; body: string; like_count: number; status: Comment['status']; created_at: string; is_mine: boolean | null; liked: boolean | null }) => ({
+    (c: { id: number; post_id: number; parent_id: number | null; label: string; anon_no: number; body: string; like_count: number; status: Comment['status']; created_at: string; is_mine: boolean | null; liked: boolean | null; nickname: string | null }) => ({
       id: c.id, postId: c.post_id, parentId: c.parent_id, label: c.label, anonNo: c.anon_no, body: c.body, likeCount: c.like_count,
-      status: c.status, createdAt: c.created_at, isMine: !!c.is_mine, liked: !!c.liked,
+      status: c.status, createdAt: c.created_at, isMine: !!c.is_mine, liked: !!c.liked, nickname: c.nickname ?? null,
     }),
   );
 }
@@ -117,12 +126,25 @@ async function rpc<T>(fn: string, args: Record<string, unknown>, what: string): 
   return data as T;
 }
 
-export const createPost = (board: string, title: string, body: string, verificationId?: string | null) =>
-  rpc<number>('create_post', { p_board: board, p_title: title, p_body: body, p_verification: verificationId ?? null }, '글쓰기');
+export const createPost = (p: { board: string; title: string; body: string; verificationId?: string | null; subject?: string | null; region?: string | null; useNickname?: boolean }) =>
+  rpc<number>('create_post', {
+    p_board: p.board, p_title: p.title, p_body: p.body, p_verification: p.verificationId ?? null,
+    p_subject: p.subject ?? null, p_region: p.region ?? null, p_use_nickname: !!p.useNickname,
+  }, '글쓰기');
 export const updatePost = (id: number, title: string, body: string) => rpc<void>('update_post', { p_id: id, p_title: title, p_body: body }, '글 수정');
 export const deletePost = (id: number) => rpc<void>('delete_post', { p_id: id }, '글 삭제');
-export const createComment = (postId: number, body: string, parentId?: number | null, verificationId?: string | null) =>
-  rpc<number>('create_comment', { p_post: postId, p_body: body, p_parent: parentId ?? null, p_verification: verificationId ?? null }, '댓글');
+export const createComment = (postId: number, body: string, parentId?: number | null, verificationId?: string | null, useNickname?: boolean) =>
+  rpc<number>('create_comment', { p_post: postId, p_body: body, p_parent: parentId ?? null, p_verification: verificationId ?? null, p_use_nickname: !!useNickname }, '댓글');
+/** 이 글에서 내 댓글 방식: true 닉네임 / false 익명 / null 아직 안 정함 (한 글 안에서는 고정) */
+export const myCommentMode = (postId: number) => rpc<boolean | null>('my_comment_mode', { p_post: postId }, '댓글 방식');
+
+// ───── 닉네임 (글·댓글마다 익명/닉네임 선택) ─────
+export async function getMyNickname(): Promise<{ nickname: string | null; changedAt: string | null }> {
+  const { data, error } = await supabase.from('my_nickname_v').select('nickname,nickname_changed_at').maybeSingle();
+  if (error) throw err(error, '닉네임');
+  return { nickname: data?.nickname ?? null, changedAt: data?.nickname_changed_at ?? null };
+}
+export const setNickname = (nickname: string) => rpc<string>('set_nickname', { p_nickname: nickname }, '닉네임');
 export const deleteComment = (id: number) => rpc<void>('delete_comment', { p_id: id }, '댓글 삭제');
 export const togglePostLike = (id: number) => rpc<number>('toggle_post_like', { p_id: id }, '공감');
 export const toggleCommentLike = (id: number) => rpc<number>('toggle_comment_like', { p_id: id }, '공감');
