@@ -44,7 +44,7 @@ export async function submitPracticeTip(uid: string, t: { topic?: TipTopic; univ
   const paths: string[] = [];
   try {
     for (const f of t.files.slice(0, 5)) {
-      const ext = f.mime === 'application/pdf' ? 'pdf' : f.mime === 'image/png' ? 'png' : 'jpg';
+      const ext = ({ 'application/pdf': 'pdf', 'image/png': 'png', 'image/heic': 'heic', 'image/webp': 'webp' } as Record<string, string>)[f.mime] ?? 'jpg';
       const path = `${uid}/${rid()}.${ext}`;
       const body = await bytesOf(f);
       if (body.byteLength > 15 * 1024 * 1024) throw new Error('파일 하나는 15MB까지 올릴 수 있어요');

@@ -60,7 +60,16 @@ export function PracticeTipButton({ univ, year, label = '실습학교 목록 제
     if (!docPicker) return Alert.alert('PDF는 새 버전 앱에서 돼요', '지금은 사진(캡처)이나 공지 주소로 보내 주세요.');
     const res = await docPicker.getDocumentAsync({ type: ['application/pdf', 'image/*'], multiple: true, copyToCacheDirectory: true });
     if (res.canceled || !res.assets) return;
-    setFiles((f) => [...f, ...res.assets!.map((a) => ({ uri: a.uri, name: a.name, mime: a.mimeType ?? (a.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg') }))].slice(0, 5));
+    setFiles((f) =>
+      [
+        ...f,
+        ...res.assets!.map((a) => {
+          const n = a.name.toLowerCase();
+          const mime = n.endsWith('.pdf') ? 'application/pdf' : a.mimeType?.startsWith('image/') ? a.mimeType : n.endsWith('.png') ? 'image/png' : 'image/jpeg';
+          return { uri: a.uri, name: a.name, mime };
+        }),
+      ].slice(0, 5),
+    );
   };
   const urlOk = !url.trim() || /^https?:\/\/\S+\.\S+/.test(url.trim());
   const ok = (files.length > 0 || !!url.trim() || note.trim().length >= 4) && urlOk;

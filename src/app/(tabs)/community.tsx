@@ -216,7 +216,7 @@ export default function CommunityScreen() {
           paddingVertical: 13,
           borderRadius: radius.pill,
           backgroundColor: colors.brand,
-          shadowColor: '#000',
+          shadowColor: colors.text,
           shadowOpacity: 0.18,
           shadowRadius: 8,
           shadowOffset: { width: 0, height: 3 },

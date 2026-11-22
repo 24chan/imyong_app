@@ -182,7 +182,7 @@ export default function HomeScreen() {
                 <Ionicons name={b.icon} size={26} color={colors.cat[b.cat].fg} />
                 {!!b.badge && (
                   <View style={{ position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, backgroundColor: colors.down, alignItems: 'center', justifyContent: 'center' }}>
-                    <Txt style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800' }}>{b.badge > 99 ? '99+' : b.badge}</Txt>
+                    <Txt style={{ color: colors.background, fontSize: 11, fontWeight: '800' }}>{b.badge > 99 ? '99+' : b.badge}</Txt>
                   </View>
                 )}
               </View>

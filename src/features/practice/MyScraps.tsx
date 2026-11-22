@@ -21,7 +21,7 @@ export function MyScraps() {
       {list.map((s) => (
         <View key={`${s.region}|${s.name}`} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.line }}>
           <FoundMark found={s.found} size={10} />
-          <Pressable style={{ flex: 1 }} onPress={() => openRegionSchools(s.region, 'elementary', s.name)} accessibilityRole="button">
+          <Pressable style={{ flex: 1 }} onPress={() => openRegionSchools(s.region, !s.kind || s.kind === 'e' ? 'elementary' : 'secondary', s.name)} accessibilityRole="button">
             <Txt style={{ fontWeight: '700' }}>{s.name}</Txt>
             <Txt variant="sub" style={{ fontSize: 12 }}>
               {regionByCode(s.region)?.shortName} {s.sigungu}

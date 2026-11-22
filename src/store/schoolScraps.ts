@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 
 // 스크랩한 초등학교 — 기기에만 저장 (서버로 안 보냄, 로그인 필요 없음)
-export type ScrapSchool = { region: string; name: string; sigungu: string; lat: number; lng: number; found: 'p' | 's' | 'n'; at: string };
+export type ScrapSchool = { region: string; name: string; sigungu: string; lat: number; lng: number; found: 'p' | 's' | 'n'; kind?: 'e' | 'm' | 'h'; at: string };
 
 const KEY = 'schoolScraps.v1';
 let saved: ScrapSchool[] = [];

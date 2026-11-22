@@ -5,6 +5,7 @@ import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { getPractice, PRACTICE_UNIVS, PracticeSchool, sessionLabel } from '../../data/practice';
 import { regionByCode } from '../../data/regions';
 import { useAsync } from '../../data/useAsync';
+import { useAppSettings } from '../../store/AppSettings';
 import { toggleScrap, useIsScrapped } from '../../store/schoolScraps';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -23,6 +24,7 @@ type Row = PracticeSchool & { id: string; block: string; campus: string; d: numb
 
 export function PracticeTab() {
   const { colors } = useTheme();
+  const { viewLevel } = useAppSettings();
   const [univ, setUniv] = useState<string>(PRACTICE_UNIVS[0].code);
   const data = useAsync(() => getPractice(univ), [univ]);
   const d = data.data;
@@ -70,6 +72,11 @@ export function PracticeTab() {
 
   return (
     <View style={{ gap: space.md }}>
+      {viewLevel === 'secondary' && (
+        <Txt variant="sub" style={{ fontSize: 12 }}>
+          사범대 교육실습은 학교마다 신청 방식이 달라(출신 학교 실습 등) 공통 목록이 없어서, 지금은 교대 실습초 목록만 있어요.
+        </Txt>
+      )}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {PRACTICE_UNIVS.map((u) => (
           <Chip key={u.code} label={u.name} selected={univ === u.code} onPress={() => setUniv(u.code)} />
@@ -170,7 +177,7 @@ function SchoolCard({ row, campuses, year, onClose }: { row: Row; campuses: Reco
           </Txt>
         </View>
         <Pressable
-          onPress={() => toggleScrap({ region: row.region, name: row.name, sigungu: row.sigungu, lat: row.lat, lng: row.lng, found: row.found })}
+          onPress={() => toggleScrap({ region: row.region, name: row.name, sigungu: row.sigungu, lat: row.lat, lng: row.lng, found: row.found, kind: 'e' })}
           accessibilityRole="button"
           accessibilityLabel={scrapped ? '스크랩 해제' : '스크랩'}
           hitSlop={10}

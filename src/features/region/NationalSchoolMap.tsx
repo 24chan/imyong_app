@@ -458,7 +458,7 @@ function ScrapStar({ school }: { school: SchoolWithRegion }) {
   const on = useIsScrapped(school);
   return (
     <Pressable
-      onPress={() => toggleScrap({ region: school.region, name: school.name, sigungu: school.sigungu, lat: school.lat, lng: school.lng, found: school.found })}
+      onPress={() => toggleScrap({ region: school.region, name: school.name, sigungu: school.sigungu, lat: school.lat, lng: school.lng, found: school.found, kind: school.kind })}
       accessibilityRole="button"
       accessibilityLabel={on ? '스크랩 해제' : '스크랩'}
       hitSlop={10}
