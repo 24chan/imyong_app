@@ -1,0 +1,12 @@
+name: jobs-probe
+# B-7 조사: 사립 정규 채용을 더 모을 곳 찾기 (읽기만)
+on: { workflow_dispatch: {} }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python -u scripts/collector/jobs_probe.py
