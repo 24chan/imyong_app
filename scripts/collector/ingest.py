@@ -6,6 +6,7 @@ import json
 import re
 import os
 # 학원·민간 정리 자료 출처 표기 (2026-11-22 사용자 결정: 출처를 밝히고 사용)
+RESULT_FIELDS = ('selected', 'applicants', 'takers', 'first_passed', 'first_cutoff', 'final_passed', 'final_cutoff')
 COMPILED_SRC = 'KG에듀원·희소/쌤플러스·박문각 등 정리 자료(교육청 발표 기반)'
 import sys
 import urllib.error
@@ -45,7 +46,8 @@ def manual_records():
                     out.append({'region': e['region'], 'year': e['year'], 'level': 'elementary', 'subject': None,
                                 'category': cat, **{k: v for k, v in zip(d['cols'], e[cat]) if v is not None},
                                 'sources': [d['source_url']] if d.get('source_url') else [], 'source_title': d['source_title'],
-                                **({'_unverified': True} if d.get('unverified') else {})})
+                                **({'_unverified': True} if d.get('unverified') else {}),
+                                **({'_compiled': True} if ('compiled' in os.path.basename(f) or 'applicants' in os.path.basename(f)) else {})})
         for r in d.get('elementary', []):
             out.append({'region': d['region'], 'year': d['year'], 'level': 'elementary', 'subject': None,
                         'category': r['category'], **{k: v for k, v in r.items() if k != 'category' and not k.startswith('_')},
@@ -161,11 +163,13 @@ def secondary_rows(raw):
             if x:
                 add = {k: v for k, v in vals.items() if x.get(k) is None}
                 x.update(add)
+                if add:
+                    x['compiled'] = sorted(set(x.get('compiled', [])) | {k for k in add if k in RESULT_FIELDS})
                 used_manual = used_manual or bool(add)
                 unverified = unverified or (bool(add) and m['_unverified'])
             else:
                 keep.append({'region': region, 'year': year, 'level': 'secondary', 'subject': m['subject'], 'category': 'general',
-                             'sources': [], **vals})
+                             'sources': [], **vals, 'compiled': [k for k in RESULT_FIELDS if vals.get(k) is not None]})
                 used_manual = True
                 unverified = unverified or m['_unverified']
         if not keep:
@@ -207,13 +211,17 @@ def main(raw):
         k = (r['region'], r['year'], r['level'], r.get('subject'), r['category'])
         if k not in merged:
             merged[k] = dict(r)
+            if r.get('_compiled'):
+                merged[k]['compiled'] = [f for f in RESULT_FIELDS if r.get(f) is not None]
             continue
         m = merged[k]
         for f, v in r.items():
-            if f in ('sources', 'source_title', '_unverified'):
+            if f in ('sources', 'source_title', '_unverified', '_compiled'):
                 continue
             if m.get(f) is None and v is not None:
                 m[f] = v
+                if r.get('_compiled') and f in RESULT_FIELDS:
+                    m.setdefault('compiled', []).append(f)
         if r.get('source_title') and not m.get('source_title') and not m.get('sources'):
             m['source_title'] = r['source_title']
     recs = list(merged.values())
@@ -234,7 +242,7 @@ def main(raw):
         ref = next((r['source_title'] for r in rs if r.get('source_title')), None)
         if unv:
             ref = f'{year}학년도 {region} {level} 합격 현황 ({COMPILED_SRC})'
-        rs = [{k: v for k, v in r.items() if k not in ('source_title', '_unverified')} for r in rs]
+        rs = [{k: v for k, v in r.items() if k not in ('source_title', '_unverified', '_compiled')} for r in rs]
         rows.append({
             'region': region, 'level': level, 'doc_type': 'exam_results',
             'title': ref or f'{year}학년도 {region} {level} 선발·지원·1차·최종 합격 (공고 {len(srcs)}건)',
