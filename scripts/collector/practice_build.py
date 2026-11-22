@@ -73,14 +73,13 @@ def main(raw, src_dir):
         for se in src['sessions']:
             ids = []
             for b in se['blocks']:
-                near = camp['incheon' if b['region'] == 'incheon' else next(iter(camp))] if 'incheon' in camp else next(iter(camp.values()))
-                if b['region'] != 'incheon' and len(camp) > 1:
-                    near = [v for k, v in camp.items() if k != 'incheon'][0]
+                regions = b.get('regions') or [b['region']]
+                near = camp[b['campus']] if b.get('campus') in camp else next(iter(camp.values()))
                 for short in b['schools']:
                     cands = []
                     for i, n in enumerate(full_names(short)):  # 정식 이름 먼저, 없으면 앞 지역 이름 뺀 이름
                         pre = full_names(short)[0][:2] if i else ''
-                        cands = [dict(c, name=n) for c in schools.get(n, []) if c['region'] == b['region']
+                        cands = [dict(c, name=n) for c in schools.get(n, []) if c['region'] in regions
                                  and (not pre or pre == '인천' or c['sigungu'].startswith(pre))]  # '안산선일초' → 안산시의 선일초만
                         if cands:
                             break
@@ -94,13 +93,13 @@ def main(raw, src_dir):
                                     'found': best['found'], 'lat': best['lat'], 'lng': best['lng'],
                                     'km': {cid: km((best['lat'], best['lng']), (c['lat'], c['lng'])) for cid, c in camp.items()},
                                     'transit_min': {}}
-                    ids.append({'id': sid, 'block': b['region']})
+                    ids.append({'id': sid, 'block': b['region'], 'campus': b.get('campus') or next(iter(camp))})
             sessions.append({k: v for k, v in se.items() if k != 'blocks'} | {'schools': ids})
         if missing:
-            print('연결 못 한 학교:\n  ' + '\n  '.join(missing))
-            raise SystemExit(1)
+            print(f"[{src['univ']}] 연결 못 한 학교(목록에서 뺌):\n  " + '\n  '.join(missing))
         out = {'univ': src['univ'], 'name': src['name'], 'campuses': camp, 'grade_campus': src.get('grade_campus', {}),
                'sessions': sessions, 'schools': sch, 'built': time.strftime('%Y-%m-%d'),
+               'missing': missing,
                'notes': ['거리는 캠퍼스에서 학교까지 직선거리', '학교 위치: 공공데이터포털 전국초중등학교위치표준데이터', '캠퍼스 위치: OpenStreetMap']}
         path = os.path.join(out_dir, f"{src['univ']}.json")
         json.dump(out, open(path, 'w'), ensure_ascii=False, indent=1)

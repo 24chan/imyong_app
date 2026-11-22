@@ -21,7 +21,7 @@ export type PracticeSession = {
   grade: number | null;
   period?: string;
   source: { title: string; by: string; date: string };
-  schools: { id: string; block: string }[];
+  schools: { id: string; block: string; campus?: string }[];
 };
 export type PracticeData = {
   univ: string;
@@ -35,7 +35,11 @@ export type PracticeData = {
 };
 
 /** 실습학교 목록이 있는 교대 (늘어나면 여기에 추가) */
-export const PRACTICE_UNIVS = [{ code: 'ginue', name: '경인교대', univCodes: ['ginue'] }] as const;
+export const PRACTICE_UNIVS: { code: string; name: string }[] = [
+  { code: 'ginue', name: '경인교대' },
+  { code: 'dnue', name: '대구교대' },
+  { code: 'cnue', name: '춘천교대' },
+];
 
 const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/practice';
 

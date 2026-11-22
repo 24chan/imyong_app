@@ -6,6 +6,7 @@ import { getPractice, PRACTICE_UNIVS, PracticeSchool, sessionLabel } from '../..
 import { regionByCode } from '../../data/regions';
 import { useAsync } from '../../data/useAsync';
 import { useAppSettings } from '../../store/AppSettings';
+import { useWriterLabels } from '../community/parts';
 import { toggleScrap, useIsScrapped } from '../../store/schoolScraps';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
@@ -25,7 +26,13 @@ type Row = PracticeSchool & { id: string; block: string; campus: string; d: numb
 export function PracticeTab() {
   const { colors } = useTheme();
   const { viewLevel } = useAppSettings();
+  const { labels } = useWriterLabels();
   const [univ, setUniv] = useState<string>(PRACTICE_UNIVS[0].code);
+  // 처음엔 내가 인증한 교대 (목록이 있을 때)
+  const myUniv = labels?.find((v) => v.kind === 'school' && PRACTICE_UNIVS.some((u) => u.code === v.univCode))?.univCode ?? null;
+  useEffect(() => {
+    if (myUniv) setUniv(myUniv);
+  }, [myUniv]);
   const data = useAsync(() => getPractice(univ), [univ]);
   const d = data.data;
 
@@ -40,16 +47,18 @@ export function PracticeTab() {
   const [picked, setPicked] = useState<string | null>(null);
 
   useEffect(() => setYear(years[0] ?? null), [years]);
+  useEffect(() => setArea('all'), [univ]);
   useEffect(() => setSid(sessions[0]?.id ?? null), [sessions]);
   useEffect(() => {
     setPicked(null);
     setMode(session?.grade && d?.grade_campus[String(session.grade)] ? d.grade_campus[String(session.grade)] : 'auto');
   }, [session, d]);
 
-  const campusOf = (block: string) => {
+  const campusOf = (block: string, campus?: string) => {
     if (mode !== 'auto') return mode;
     if (!d) return block;
-    return d.campuses[block] ? block : Object.keys(d.campuses).find((c) => c !== 'incheon') ?? block;
+    if (campus && d.campuses[campus]) return campus;
+    return d.campuses[block] ? block : Object.keys(d.campuses)[0];
   };
   const rows: Row[] = useMemo(() => {
     if (!d || !session) return [];
@@ -57,7 +66,7 @@ export function PracticeTab() {
       .filter((x) => area === 'all' || x.block === area)
       .map((x) => {
         const s = d.schools[x.id];
-        const campus = campusOf(x.block);
+        const campus = campusOf(x.block, x.campus);
         return { ...s, id: x.id, block: x.block, campus, d: s.km[campus] ?? 0, min: s.transit_min?.[campus] };
       });
     return r.sort((a, b) => (sort === 'near' ? (a.min ?? a.d * 4) - (b.min ?? b.d * 4) : a.short.localeCompare(b.short, 'ko')));
@@ -103,16 +112,16 @@ export function PracticeTab() {
           <PracticeTipButton univ={d.name} year={session.year} label="이 실습 목록 제보하기" />
         </View>
       )}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      {Object.keys(d.campuses).length > 1 && <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <Chip label="가까운 캠퍼스 기준" selected={mode === 'auto'} onPress={() => setMode('auto')} />
         {Object.entries(d.campuses).map(([k, c]) => (
           <Chip key={k} label={`${c.name.replace('캠퍼스', '캠')} 기준`} selected={mode === k} onPress={() => setMode(k)} />
         ))}
-      </View>
-      {blocks.length > 1 && (
+      </View>}
+      {(blocks.length > 1 || (session?.schools.length ?? 0) > 5) && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-          <Chip label={`전체 ${session?.schools.length ?? 0}`} selected={area === 'all'} onPress={() => setArea('all')} />
-          {blocks.map((b) => (
+          {blocks.length > 1 && <Chip label={`전체 ${session?.schools.length ?? 0}`} selected={area === 'all'} onPress={() => setArea('all')} />}
+          {blocks.length > 1 && blocks.map((b) => (
             <Chip key={b} label={`${regionByCode(b)?.shortName ?? b} ${session?.schools.filter((x) => x.block === b).length}`} selected={area === b} onPress={() => setArea(b)} />
           ))}
           <Chip label={sort === 'near' ? '↕ 가까운 순' : '↕ 이름순'} selected={false} onPress={() => setSort(sort === 'near' ? 'name' : 'near')} />
