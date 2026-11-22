@@ -59,6 +59,12 @@
             "backgroundColor": "#0F1514"
           }
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#1F5E54"
+        }
       ]
     ],
     "splash": {

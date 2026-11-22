@@ -1,3 +1,4 @@
+import { useAlertSync } from '../features/alerts/AlertSettings';
 import { useFonts } from 'expo-font';
 import { router, Stack, usePathname } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -41,6 +42,7 @@ function RootStack() {
   // 저장된 설정을 불러오기 전에는 빈 배경만 보여줌
   const ready = hydrated && (fontsLoaded || !!fontError);
   useConsentGate(ready);
+  useAlertSync();
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);

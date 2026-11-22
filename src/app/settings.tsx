@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Alert, View } from 'react-native';
 import { RegionPicker, SubjectPicker } from '../components/pickers';
 import { AccountCard } from '../features/account/AccountCard';
+import { AlertSettingsCard } from '../features/alerts/AlertSettings';
 import { CommunitySettings } from '../features/account/CommunitySettings';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
@@ -100,6 +101,8 @@ export default function SettingsScreen() {
         <Txt variant="sub">다른 사람에게는 공개되지 않아요.</Txt>
         <RegionPicker value={settings.regionCodes} onChange={(regionCodes) => update({ regionCodes })} />
       </Card>
+
+      <AlertSettingsCard />
 
       <Card>
         <Txt variant="heading">데이터</Txt>

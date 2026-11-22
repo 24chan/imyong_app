@@ -13,6 +13,7 @@ import { useAppSettings, useToday } from '../../store/AppSettings';
 import type { CatKey } from '../../theme/tokens';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
+import { alertsAvailable, enableAlerts, toggleSavedSchedule, useAlertPrefs, useSavedSchedule } from '../../features/alerts/alerts';
 
 // 일정 탭 (2026-11-21 탭 개편 안 2): 임용 공식 일정(교육청) + 학원 개강·특강·모의고사 한곳에, 목록/달력
 type Kind = 'official' | 'open' | 'special' | 'mock';
@@ -36,6 +37,9 @@ export default function ScheduleScreen() {
   const [official, setOfficial] = useState<Item[] | null>(null);
   const [academy, setAcademy] = useState<Item[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const alertPrefs = useAlertPrefs();
+  const savedSch = useSavedSchedule();
+  const bell = useMemo(() => new Set(savedSch.map((x) => x.key)), [savedSch]);
   const r = regions.includes(region) ? region : regions[0];
 
   useFocusEffect(
@@ -110,6 +114,18 @@ export default function ScheduleScreen() {
             </Txt>
           )}
         </View>
+        {!past && alertsAvailable() && (
+          <Pressable
+            onPress={async () => {
+              if (!alertPrefs.enabled && !(await enableAlerts())) return;
+              await toggleSavedSchedule({ key: i.key, date: i.date, title: i.title, sub: i.sub });
+            }}
+            hitSlop={10}
+            accessibilityLabel={bell.has(i.key) ? '알림 끄기' : '하루 전 알림 받기'}
+          >
+            <Ionicons name={bell.has(i.key) ? 'notifications' : 'notifications-outline'} size={19} color={bell.has(i.key) ? colors.cat.amber.fg : colors.textSub} />
+          </Pressable>
+        )}
         {i.url && <Ionicons name="open-outline" size={16} color={colors.textSub} />}
       </Pressable>
     );
