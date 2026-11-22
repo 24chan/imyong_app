@@ -13,6 +13,7 @@ import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import type { SchoolFound } from '../../types/data';
 import { toggleScrap, useIsScrapped } from '../../store/schoolScraps';
+import { PracticeReviews } from '../practice/PracticeReviews';
 import { SchoolInfoBox } from './SchoolInfoBox';
 import { FoundMark, useFoundColor } from './SchoolMap';
 
@@ -413,6 +414,7 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
             </Pressable>
           </View>
           <SchoolInfoBox region={picked.region} name={picked.name} kind={picked.kind} />
+          {picked.kind === 'e' && <PracticeReviews school={`${picked.region}|${picked.name}`} defaultYear={new Date().getFullYear()} />}
           <Pressable onPress={() => openRegionSchools(picked.region, level, picked.name)} accessibilityRole="button" hitSlop={8} style={{ alignSelf: 'flex-start' }}>
             <Txt color="brand" style={{ fontWeight: '800' }}>
               주변 학교 지도로 보기 ›

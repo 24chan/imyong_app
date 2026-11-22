@@ -15,7 +15,7 @@ export const LEGAL = {
    * 약관·처리방침 버전. 내용을 크게 바꾸면 1 올리기 →
    * 로그인한 사람에게 다시 동의 화면이 떠요.
    */
-  version: 3, // 2026-11-22 소셜 로그인(구글·카카오) 추가로 다시 동의
+  version: 4, // 2026-11-22 실습학교 제보 첨부(사진·PDF)·실습 후기 추가로 다시 동의 (v3: 소셜 로그인)
 };
 
 export function fill(value: string, what: string): string {

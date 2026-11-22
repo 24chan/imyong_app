@@ -19,6 +19,7 @@ export type PracticeSession = {
   term: number;
   kind: string;
   grade: number | null;
+  period?: string;
   source: { title: string; by: string; date: string };
   schools: { id: string; block: string }[];
 };
@@ -47,6 +48,6 @@ export async function getPractice(univ: string): Promise<PracticeData | null> {
   });
 }
 
-/** 실습 이름: '2026 1학기 참관실습 (2학년)' — 학년을 모르면 실습 이름만 */
+/** 실습 이름: '2학년 · 1학기 참관실습' — 학년을 모르면 실습 이름만 */
 export const sessionLabel = (s: PracticeSession, withYear = false) =>
-  `${withYear ? `${s.year} ` : ''}${s.term}학기 ${s.kind}${s.grade ? ` · ${s.grade}학년` : ''}`;
+  `${withYear ? `${s.year} ` : ''}${s.grade ? `${s.grade}학년 · ` : ''}${s.term}학기 ${s.kind}`;

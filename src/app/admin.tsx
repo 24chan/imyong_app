@@ -9,6 +9,7 @@ import { useAsync } from '../data/useAsync';
 import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
 import { useAuth } from '../store/Auth';
 import { StatsAdmin } from '../features/admin/StatsAdmin';
+import { PracticeTipsAdmin } from '../features/admin/PracticeTipsAdmin';
 import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
 import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, EventTip, LECTURE_AREA, listPendingEventTips, PendingEnrollment, reviewEventTip } from '../data/academy';
@@ -86,6 +87,8 @@ export default function AdminScreen() {
             <JobTipsAdmin />
             <Txt variant="heading">일정 제보</Txt>
             <EventTipsAdmin />
+            <Txt variant="heading">실습학교 목록 제보</Txt>
+            <PracticeTipsAdmin />
           </>
         )}
         {tab === 'appeals' && (
@@ -200,7 +203,7 @@ function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: strin
   );
 }
 
-const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지', study: '스터디', material: '자료', mock_review: '모의고사 후기', lecture_review: '강의 후기' } as const;
+const TYPE_LABEL = { post: '글', comment: '댓글', message: '쪽지', study: '스터디', material: '자료', mock_review: '모의고사 후기', lecture_review: '강의 후기', practice_review: '실습 후기' } as const;
 
 function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
   const { colors } = useTheme();

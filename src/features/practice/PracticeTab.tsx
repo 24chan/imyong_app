@@ -12,6 +12,8 @@ import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import { SchoolInfoBox } from '../region/SchoolInfoBox';
 import { FoundMark, useFoundColor } from '../region/SchoolMap';
+import { PracticeReviews } from './PracticeReviews';
+import { PracticeTipButton } from './PracticeTipButton';
 import { openTransitRoute } from './route';
 
 // 실습초 탭 (2026-11-22 사용자 승인): 교대 → 학년도 → 실습(학기·종류, 학년을 알면 학년) → 지도 + 목록 + 학교 카드
@@ -31,7 +33,7 @@ export function PracticeTab() {
 
   const years = useMemo(() => [...new Set((d?.sessions ?? []).map((s) => s.year))].sort((a, b) => b - a), [d]);
   const [year, setYear] = useState<number | null>(null);
-  const sessions = useMemo(() => (d?.sessions ?? []).filter((s) => s.year === year), [d, year]);
+  const sessions = useMemo(() => (d?.sessions ?? []).filter((s) => s.year === year).sort((a, b) => (a.grade ?? 9) - (b.grade ?? 9) || a.term - b.term), [d, year]);
   const [sid, setSid] = useState<string | null>(null);
   const session = sessions.find((s) => s.id === sid) ?? null;
   const [mode, setMode] = useState<CampusMode>('auto');
@@ -41,7 +43,7 @@ export function PracticeTab() {
   const [cw, setCw] = useState(0);
 
   useEffect(() => setYear(years[0] ?? null), [years]);
-  useEffect(() => setSid(sessions[sessions.length - 1]?.id ?? null), [sessions]);
+  useEffect(() => setSid(sessions[0]?.id ?? null), [sessions]);
   useEffect(() => {
     setPicked(null);
     setMode(session?.grade && d?.grade_campus[String(session.grade)] ? d.grade_campus[String(session.grade)] : 'auto');
@@ -119,8 +121,18 @@ export function PracticeTab() {
           <Chip key={s.id} label={sessionLabel(s)} selected={sid === s.id} onPress={() => setSid(s.id)} />
         ))}
       </View>
-      {session && !session.grade && (
-        <Txt variant="sub" style={{ fontSize: 12 }}>공지에 학년이 적혀 있지 않아 실습 이름으로 보여요. 학년이 확인되면 함께 표시할게요.</Txt>
+      {session && (
+        <Txt variant="sub" style={{ fontSize: 12 }}>
+          {sessionLabel(session, true)}
+          {session.period ? ` · ${session.period}` : ''} · 학교 {session.schools.length}곳
+        </Txt>
+      )}
+      {session && session.schools.length === 0 && (
+        <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.surface }}>
+          <Txt>이 실습의 학교 목록은 아직 없어요.</Txt>
+          <Txt variant="sub">학사공지 캡처·사진·PDF·주소 무엇이든 보내 주시면 확인해서 올릴게요.</Txt>
+          <PracticeTipButton univ={d.name} year={session.year} label="이 실습 목록 제보하기" />
+        </View>
       )}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         <Chip label="가까운 캠퍼스 기준" selected={mode === 'auto'} onPress={() => setMode('auto')} />
@@ -159,9 +171,9 @@ export function PracticeTab() {
           </Pressable>
         )}
       </View>
-      <Txt variant="sub" style={{ fontSize: 12 }}>■ 캠퍼스 · ● 실습학교 (점을 누르면 학교 카드)</Txt>
+      {rows.length > 0 && <Txt variant="sub" style={{ fontSize: 12 }}>■ 캠퍼스 · ● 실습학교 (점을 누르면 학교 카드)</Txt>}
 
-      {sel && <SchoolCard row={sel} campuses={d.campuses} onClose={() => setPicked(null)} />}
+      {sel && <SchoolCard row={sel} campuses={d.campuses} year={session?.year ?? new Date().getFullYear()} onClose={() => setPicked(null)} />}
 
       {rows.map((r) => (
         <Pressable
@@ -185,7 +197,8 @@ export function PracticeTab() {
           </View>
         </Pressable>
       ))}
-      {session && (
+      <PracticeTipButton univ={d.name} year={year} label="실습학교 목록 제보 (사진·PDF·주소 무엇이든)" />
+      {session && session.schools.length > 0 && (
         <Txt variant="sub" style={{ fontSize: 12 }}>
           출처: {session.source.by} 「{session.source.title}」({session.source.date}). 학교 이름만 옮겼어요(신청 인원은 공지 시점 값이라 뺐어요). 거리는 직선거리, 학교 위치는 공공데이터포털 기준.
         </Txt>
@@ -194,7 +207,7 @@ export function PracticeTab() {
   );
 }
 
-function SchoolCard({ row, campuses, onClose }: { row: Row; campuses: Record<string, { name: string; lat: number; lng: number }>; onClose: () => void }) {
+function SchoolCard({ row, campuses, year, onClose }: { row: Row; campuses: Record<string, { name: string; lat: number; lng: number }>; year: number; onClose: () => void }) {
   const { colors } = useTheme();
   const scrapped = useIsScrapped(row);
   const campus = campuses[row.campus];
@@ -234,6 +247,7 @@ function SchoolCard({ row, campuses, onClose }: { row: Row; campuses: Record<str
         </View>
       </View>
       <SchoolInfoBox region={row.region} name={row.name} kind="e" />
+      <PracticeReviews school={row.id} defaultYear={year} />
     </View>
   );
 }
