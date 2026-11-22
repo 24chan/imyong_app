@@ -89,6 +89,7 @@ function RootStack() {
         <Stack.Screen name="report" options={{ title: '오류 신고', presentation: 'modal' }} />
         <Stack.Screen name="school-map" options={{ title: '전국 학교 지도', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="past-exams" options={{ title: '기출문제', headerBackTitle: '뒤로' }} />
+        <Stack.Screen name="web" options={{ title: '자료 보기', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="pdf" options={{ title: '미리보기', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="second-exam" options={{ title: '2차 시험', headerBackTitle: '뒤로' }} />
         <Stack.Screen name="nickname" options={{ title: '닉네임', headerBackTitle: '뒤로' }} />

@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Linking, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Txt } from '../../components/ui';
 import { subjectByCode } from '../../data/subjects';
 import { useAppSettings } from '../../store/AppSettings';
@@ -51,7 +51,7 @@ export function PublicResources() {
         {
           title: elem ? '초등 교육과정 총론·교과별 각론' : `${subj ? `${subj} ` : ''}교육과정 각론·총론`,
           desc: '내용 체계표와 성취기준은 교과별 각론 안에 있어요. 출제 범위가 되는 고시 번호는 시행계획 공고에서 확인해요.',
-          url: 'https://ncic.go.kr',
+          url: 'https://ncic.go.kr/inv/org/list.do',
           org: '국가교육과정정보센터',
         },
         {
@@ -98,7 +98,7 @@ export function PublicResources() {
 
   return (
     <View style={{ gap: space.lg }}>
-      <Txt variant="sub">공식 기관이 공개한 자료만 링크로 모았어요. 파일은 각 기관 누리집에서 받아요.</Txt>
+      <Txt variant="sub">공식 기관이 공개한 자료만 모았어요. 앱 안에서 바로 보고, 위의 버튼으로 원문을 열거나 파일을 받을 수 있어요.</Txt>
       {sections.map((s) => (
         <View key={s.key} style={{ gap: space.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -111,7 +111,7 @@ export function PublicResources() {
             {s.items.map((it, i) => (
               <Pressable
                 key={it.title}
-                onPress={() => (it.go ? it.go() : it.url && Linking.openURL(it.url))}
+                onPress={() => (it.go ? it.go() : it.url && router.push({ pathname: '/web', params: { url: it.url, title: it.title } }))}
                 accessibilityRole={it.url ? 'link' : 'button'}
                 style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
               >
@@ -122,7 +122,7 @@ export function PublicResources() {
                     {it.org}
                   </Txt>
                 </View>
-                <Ionicons name={it.url ? 'open-outline' : 'chevron-forward'} size={18} color={colors.textSub} />
+                <Ionicons name="chevron-forward" size={18} color={colors.textSub} />
               </Pressable>
             ))}
           </View>

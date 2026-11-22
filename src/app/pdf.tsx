@@ -5,23 +5,10 @@ import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
 import { PrimaryButton, Txt } from '../components/ui';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
+import { OFFICIAL_HOSTS, webview } from '../lib/webview';
 
 // PDF 미리보기: 공식 기관 파일 주소를 그대로 열어 앱 안에서 보여줌 (앱이 파일을 복사해 두지 않음).
 // 안드로이드는 웹뷰가 PDF를 직접 못 그려서 Google 문서 뷰어로 열고, iOS는 웹뷰가 바로 그림.
-// 옛 설치 파일에는 웹뷰 모듈이 없을 수 있어 조심스럽게 불러옴 → 없으면 '파일 열기' 버튼만
-type WV = typeof import('react-native-webview');
-let wv: WV | null | undefined;
-function webview(): WV | null {
-  if (wv !== undefined) return wv;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    wv = require('react-native-webview') as WV;
-  } catch {
-    wv = null;
-  }
-  return wv;
-}
-
 const ALLOWED = /^https:\/\/(docs\.google\.com|drive\.google\.com|www\.kice\.re\.kr|kice\.re\.kr|accounts\.google\.com)\//;
 
 export default function PdfScreen() {
@@ -66,7 +53,7 @@ export default function PdfScreen() {
             source={{ uri: viewer }}
             onLoadEnd={() => setLoading(false)}
             onError={() => setFailed(true)}
-            onShouldStartLoadWithRequest={(r) => ALLOWED.test(r.url)}
+            onShouldStartLoadWithRequest={(r) => OFFICIAL_HOSTS.test(r.url)}
             setSupportMultipleWindows={false}
             style={{ flex: 1, backgroundColor: colors.background }}
           />
