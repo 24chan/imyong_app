@@ -44,7 +44,7 @@ def subject_code(label, allow_other=False):
 
 def col_metric(t, doc_type):
     t = norm(t)
-    if not t or re.search(r'율|경쟁|비고|증감|남\)|여\)|공립만|사립만|동시|순위|과목|분야|구분|연번|교과', t):
+    if not t or re.search(r'율|경쟁|비고|증감|남\)|여\)|공립만|사립만|동시|순위|과목|분야|구분|연번|교과|배수|취업', t):
         return None
     first = '1차' in t or '제1차' in t
     final = '최종' in t or '2차' in t
@@ -130,6 +130,8 @@ def parse_wide(tbl, doc_type):
         recs = {}
         for j, m, cat in cols:
             v = num(r[j])
+            if v is None and m.endswith('cutoff') and re.fullmatch(r'\d\s\d{1,2}\.\d+', r[j].strip()):
+                v = num(r[j].replace(' ', ''))  # PDF에서 '76.00'이 '7 6.00'으로 갈라져 읽힘
             if v is None:
                 continue
             recs.setdefault(cat, {})[m] = v
@@ -199,9 +201,10 @@ def parse_layout_wide(path, doc_type):
                 runs.append([])
             runs[-1].append((x, t))
         cols = []
-        for run in runs:
+        for ri, run in enumerate(runs):
             cx = sum(x for x, _ in run) / len(run)
-            g = min(groups, key=lambda gg: abs(gg[0] + len(gg[1]) / 2 - cx))
+            # 묶음 수와 머리글 수가 같으면 순서대로 짝지음 (한글 폭 때문에 글자 위치가 밀려서 가까운 것 찾기가 틀릴 때가 있음)
+            g = groups[ri] if len(runs) == len(groups) else min(groups, key=lambda gg: abs(gg[0] + len(gg[1]) / 2 - cx))
             for _, t in run:
                 cols.append((col_metric(g[1], doc_type), col_cat(t)))
         skip = bool(re.search(r'사립|국립|위탁', ctx))
