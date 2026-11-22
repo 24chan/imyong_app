@@ -1,0 +1,354 @@
+{
+"_설명": "사용자가 보낸 총괄 요약 PDF 초등 2024~2025 지역별 표. 빈 칸만 채움.",
+"source_title": "교육청 합격자 발표 기준",
+"source_url": "",
+"unverified": true,
+"cols": [
+"selected",
+"applicants",
+"first_cutoff",
+"final_cutoff"
+],
+"entries": [
+{
+"region": "seoul",
+"year": 2024,
+"general": [
+101,
+452,
+100.0,
+171.97
+]
+},
+{
+"region": "seoul",
+"year": 2025,
+"general": [
+244,
+636,
+91.77,
+168.83
+]
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"general": [
+1220,
+2942,
+87.67,
+167.57
+]
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"general": [
+1626,
+3146,
+77.5,
+163.37
+]
+},
+{
+"region": "incheon",
+"year": 2024,
+"general": [
+147,
+380,
+87.0,
+165.4
+]
+},
+{
+"region": "incheon",
+"year": 2025,
+"general": [
+206,
+397,
+74.67,
+162.47
+]
+},
+{
+"region": "sejong",
+"year": 2024,
+"general": [
+9,
+53,
+95.83,
+172.9
+]
+},
+{
+"region": "sejong",
+"year": 2025,
+"general": [
+36,
+98,
+84.0,
+165.87
+]
+},
+{
+"region": "daejeon",
+"year": 2024,
+"general": [
+9,
+57,
+95.67,
+171.99
+]
+},
+{
+"region": "daejeon",
+"year": 2025,
+"general": [
+39,
+121,
+86.5,
+163.71
+]
+},
+{
+"region": "daegu",
+"year": 2024,
+"general": [
+28,
+66,
+88.5,
+160.23
+]
+},
+{
+"region": "daegu",
+"year": 2025,
+"general": [
+67,
+113,
+71.83,
+156.93
+]
+},
+{
+"region": "gwangju",
+"year": 2024,
+"general": [
+5,
+46,
+97.0,
+184.83
+]
+},
+{
+"region": "gwangju",
+"year": 2025,
+"general": [
+41,
+163,
+89.5,
+167.43
+]
+},
+{
+"region": "ulsan",
+"year": 2024,
+"general": [
+88,
+187,
+84.0,
+165.3
+]
+},
+{
+"region": "ulsan",
+"year": 2025,
+"general": [
+94,
+175,
+72.5,
+158.33
+]
+},
+{
+"region": "busan",
+"year": 2024,
+"general": [
+305,
+698,
+87.0,
+164.49
+]
+},
+{
+"region": "busan",
+"year": 2025,
+"general": [
+379,
+761,
+81.33,
+165.26
+]
+},
+{
+"region": "gangwon",
+"year": 2024,
+"general": [
+69,
+278,
+114.0,
+178.27
+]
+},
+{
+"region": "gangwon",
+"year": 2025,
+"general": [
+103,
+238,
+98.0,
+179.93
+]
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"general": [
+30,
+61,
+79.0,
+164.94
+]
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"general": [
+77,
+120,
+69.5,
+159.66
+]
+},
+{
+"region": "chungnam",
+"year": 2024,
+"general": [
+200,
+407,
+81.33,
+161.33
+]
+},
+{
+"region": "chungnam",
+"year": 2025,
+"general": [
+206,
+407,
+78.33,
+160.7
+]
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"general": [
+38,
+85,
+88.0,
+165.8
+]
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"general": [
+102,
+195,
+76.5,
+163.03
+]
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"general": [
+122,
+275,
+85.0,
+161.07
+]
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"general": [
+120,
+233,
+76.5,
+160.88
+]
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"general": [
+253,
+527,
+80.0,
+161.5
+]
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"general": [
+293,
+530,
+66.0,
+155.23
+]
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"general": [
+164,
+331,
+82.83,
+164.66
+]
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"general": [
+169,
+309,
+75.33,
+160.47
+]
+},
+{
+"region": "jeju",
+"year": 2024,
+"general": [
+80,
+173,
+83.5,
+163.03
+]
+},
+{
+"region": "jeju",
+"year": 2025,
+"general": [
+86,
+162,
+75.0,
+160.63
+]
+}
+]
+}

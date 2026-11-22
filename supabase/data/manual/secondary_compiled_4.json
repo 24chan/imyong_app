@@ -1,0 +1,8148 @@
+{
+"_설명": "사용자가 보낸 2024~2027 전 과목 총괄 요약 PDF(2026-11-22, 정리 자료) 지역×과목 표. KG 정리표와 2,679칸 일치, 23칸 다름(다르면 기존 값 유지). 빈 칸만 채움.",
+"source_title": "교육청 합격자 발표 기준",
+"unverified": true,
+"records": [
+{
+"region": "seoul",
+"year": 2024,
+"subject": "korean",
+"selected": 64,
+"applicants": 735,
+"first_cutoff": 79.0,
+"final_cutoff": 165.6,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "korean",
+"selected": 90,
+"applicants": 769,
+"first_cutoff": 62.67,
+"final_cutoff": 152.13,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "korean",
+"selected": 90,
+"applicants": 694,
+"first_cutoff": 67.0,
+"final_cutoff": 157.83,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "korean",
+"selected": 78,
+"applicants": 758,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "korean",
+"selected": 158,
+"applicants": 1471,
+"first_cutoff": 77.66,
+"final_cutoff": 172.17,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "korean",
+"selected": 195,
+"applicants": 1487,
+"first_cutoff": 60.33,
+"final_cutoff": 156.2,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "korean",
+"selected": 261,
+"applicants": 1646,
+"first_cutoff": 65.0,
+"final_cutoff": 159.5,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "korean",
+"selected": 180,
+"applicants": 1433,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "korean",
+"selected": 12,
+"applicants": 163,
+"first_cutoff": 75.0,
+"final_cutoff": 172.71,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "korean",
+"selected": 35,
+"applicants": 266,
+"first_cutoff": 58.33,
+"final_cutoff": 152.85,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "korean",
+"selected": 64,
+"applicants": 395,
+"first_cutoff": 64.67,
+"final_cutoff": 159.11,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "korean",
+"selected": 72,
+"applicants": 492,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "korean",
+"selected": 11,
+"applicants": 142,
+"first_cutoff": 78.0,
+"final_cutoff": 170.71,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2025,
+"subject": "korean",
+"selected": 2,
+"applicants": 37,
+"first_cutoff": 62.0,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "korean",
+"selected": 6,
+"applicants": 85,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "korean",
+"selected": 1,
+"applicants": 48,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "korean",
+"selected": 3,
+"applicants": 86,
+"first_cutoff": 79.67,
+"final_cutoff": 171.16,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "korean",
+"selected": 3,
+"applicants": 64,
+"first_cutoff": 64.67,
+"final_cutoff": 156.81,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "korean",
+"selected": 11,
+"applicants": 125,
+"final_cutoff": 159.81,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "korean",
+"selected": 19,
+"applicants": 232,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "korean",
+"selected": 1,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "korean",
+"selected": 1,
+"applicants": 27,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "korean",
+"selected": 4,
+"applicants": 48,
+"first_cutoff": 69.0,
+"final_cutoff": 164.0,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "korean",
+"selected": 1,
+"applicants": 35,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "korean",
+"selected": 5,
+"applicants": 83,
+"first_cutoff": 75.33,
+"final_cutoff": 174.04,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "korean",
+"selected": 5,
+"applicants": 62,
+"first_cutoff": 59.33,
+"final_cutoff": 158.53,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "korean",
+"selected": 10,
+"applicants": 96,
+"first_cutoff": 67.0,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "korean",
+"selected": 7,
+"applicants": 65,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "korean",
+"selected": 26,
+"applicants": 362,
+"first_cutoff": 79.33,
+"final_cutoff": 173.7,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "korean",
+"selected": 55,
+"applicants": 551,
+"first_cutoff": 62.67,
+"final_cutoff": 156.76,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "korean",
+"selected": 79,
+"applicants": 493,
+"first_cutoff": 62.67,
+"final_cutoff": 157.1,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "korean",
+"selected": 45,
+"applicants": 506,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "korean",
+"selected": 16,
+"applicants": 213,
+"first_cutoff": 75.0,
+"final_cutoff": 171.15,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "korean",
+"selected": 12,
+"applicants": 152,
+"first_cutoff": 58.67,
+"final_cutoff": 157.31,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "korean",
+"selected": 17,
+"applicants": 163,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "korean",
+"selected": 16,
+"applicants": 168,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "korean",
+"selected": 17,
+"applicants": 226,
+"first_cutoff": 75.33,
+"final_cutoff": 172.93,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "korean",
+"selected": 12,
+"applicants": 150,
+"first_cutoff": 60.67,
+"final_cutoff": 158.03,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "korean",
+"selected": 18,
+"applicants": 136,
+"first_cutoff": 61.0,
+"final_cutoff": 157.05,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "korean",
+"selected": 8,
+"applicants": 117,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "korean",
+"selected": 29,
+"applicants": 305,
+"first_cutoff": 74.34,
+"final_cutoff": 170.06,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "korean",
+"selected": 47,
+"applicants": 412,
+"first_cutoff": 61.67,
+"final_cutoff": 158.22,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "korean",
+"selected": 55,
+"applicants": 358,
+"first_cutoff": 63.33,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "korean",
+"selected": 35,
+"applicants": 339,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "korean",
+"selected": 16,
+"applicants": 214,
+"first_cutoff": 76.0,
+"final_cutoff": 173.1,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "korean",
+"selected": 21,
+"applicants": 194,
+"first_cutoff": 56.67,
+"final_cutoff": 155.04,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "korean",
+"selected": 26,
+"applicants": 248,
+"first_cutoff": 64.0,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "korean",
+"selected": 18,
+"applicants": 209,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "korean",
+"selected": 33,
+"applicants": 331,
+"first_cutoff": 74.33,
+"final_cutoff": 171.02,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "korean",
+"selected": 64,
+"applicants": 467,
+"first_cutoff": 59.33,
+"final_cutoff": 156.27,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "korean",
+"selected": 55,
+"applicants": 347,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "korean",
+"selected": 44,
+"applicants": 324,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "korean",
+"selected": 21,
+"applicants": 282,
+"first_cutoff": 76.0,
+"final_cutoff": 173.0,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "korean",
+"selected": 16,
+"applicants": 167,
+"first_cutoff": 60.0,
+"final_cutoff": 158.2,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "korean",
+"selected": 23,
+"applicants": 201,
+"first_cutoff": 63.0,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "korean",
+"selected": 10,
+"applicants": 129,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "korean",
+"selected": 32,
+"applicants": 459,
+"first_cutoff": 76.0,
+"final_cutoff": 171.7,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "korean",
+"selected": 45,
+"applicants": 469,
+"first_cutoff": 59.67,
+"final_cutoff": 155.63,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "korean",
+"selected": 56,
+"applicants": 481,
+"first_cutoff": 66.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "korean",
+"selected": 36,
+"applicants": 397,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "korean",
+"selected": 10,
+"applicants": 101,
+"first_cutoff": 74.0,
+"final_cutoff": 173.94,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "korean",
+"selected": 9,
+"applicants": 87,
+"first_cutoff": 62.33,
+"final_cutoff": 158.81,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "korean",
+"selected": 12,
+"applicants": 85,
+"first_cutoff": 66.33,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "korean",
+"selected": 7,
+"applicants": 86,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "ethics",
+"selected": 32,
+"applicants": 185,
+"first_cutoff": 68.0,
+"final_cutoff": 160.44,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "ethics",
+"selected": 40,
+"applicants": 186,
+"first_cutoff": 65.33,
+"final_cutoff": 155.86,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "ethics",
+"selected": 48,
+"applicants": 197,
+"first_cutoff": 67.67,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "ethics",
+"selected": 35,
+"applicants": 230,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "ethics",
+"selected": 85,
+"applicants": 392,
+"first_cutoff": 63.0,
+"final_cutoff": 161.49,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "ethics",
+"selected": 94,
+"applicants": 446,
+"first_cutoff": 62.33,
+"final_cutoff": 160.73,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "ethics",
+"selected": 125,
+"applicants": 478,
+"first_cutoff": 67.34,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "ethics",
+"selected": 81,
+"applicants": 472,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "ethics",
+"selected": 9,
+"applicants": 50,
+"first_cutoff": 55.33,
+"final_cutoff": 156.31,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "ethics",
+"selected": 22,
+"applicants": 98,
+"first_cutoff": 56.67,
+"final_cutoff": 153.83,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "ethics",
+"selected": 38,
+"applicants": 164,
+"first_cutoff": 70.0,
+"final_cutoff": 166.1,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "ethics",
+"selected": 20,
+"applicants": 109,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "ethics",
+"selected": 5,
+"applicants": 23,
+"first_cutoff": 55.33,
+"final_cutoff": 155.13,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "ethics",
+"selected": 3,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "ethics",
+"selected": 5,
+"applicants": 31,
+"first_cutoff": 60.33,
+"final_cutoff": 164.07,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "ethics",
+"selected": 4,
+"applicants": 38,
+"first_cutoff": 73.67,
+"final_cutoff": 172.47,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "ethics",
+"selected": 3,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "ethics",
+"selected": 2,
+"applicants": 23,
+"first_cutoff": 61.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "ethics",
+"selected": 2,
+"applicants": 18,
+"first_cutoff": 64.67,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "ethics",
+"selected": 7,
+"applicants": 33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "ethics",
+"selected": 13,
+"applicants": 93,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "ethics",
+"selected": 2,
+"applicants": 15,
+"first_cutoff": 63.67,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "ethics",
+"selected": 1,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "ethics",
+"selected": 3,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "ethics",
+"selected": 1,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "ethics",
+"selected": 3,
+"applicants": 19,
+"first_cutoff": 59.67,
+"final_cutoff": 158.24,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "ethics",
+"selected": 3,
+"applicants": 21,
+"first_cutoff": 63.0,
+"final_cutoff": 168.07,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "ethics",
+"selected": 7,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "ethics",
+"selected": 6,
+"applicants": 43,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "ethics",
+"selected": 26,
+"applicants": 176,
+"first_cutoff": 63.67,
+"final_cutoff": 160.47,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "ethics",
+"selected": 24,
+"applicants": 166,
+"first_cutoff": 65.67,
+"final_cutoff": 163.34,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "ethics",
+"selected": 24,
+"applicants": 104,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "ethics",
+"selected": 12,
+"applicants": 105,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "ethics",
+"selected": 9,
+"applicants": 52,
+"first_cutoff": 62.0,
+"final_cutoff": 157.74,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "ethics",
+"selected": 9,
+"applicants": 41,
+"first_cutoff": 57.0,
+"final_cutoff": 155.47,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "ethics",
+"selected": 8,
+"applicants": 36,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "ethics",
+"selected": 3,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "ethics",
+"selected": 4,
+"applicants": 29,
+"first_cutoff": 57.67,
+"final_cutoff": 160.77,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "ethics",
+"selected": 9,
+"applicants": 65,
+"first_cutoff": 60.67,
+"final_cutoff": 161.93,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "ethics",
+"selected": 8,
+"applicants": 45,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "ethics",
+"selected": 2,
+"applicants": 30,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "ethics",
+"selected": 14,
+"applicants": 83,
+"first_cutoff": 65.0,
+"final_cutoff": 157.97,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "ethics",
+"selected": 15,
+"applicants": 74,
+"first_cutoff": 57.0,
+"final_cutoff": 159.47,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "ethics",
+"selected": 25,
+"applicants": 101,
+"final_cutoff": 163.23,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "ethics",
+"selected": 13,
+"applicants": 102,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "ethics",
+"selected": 18,
+"applicants": 115,
+"first_cutoff": 64.0,
+"final_cutoff": 164.53,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "ethics",
+"selected": 16,
+"applicants": 77,
+"first_cutoff": 59.67,
+"final_cutoff": 158.7,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "ethics",
+"selected": 9,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "ethics",
+"selected": 6,
+"applicants": 62,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "ethics",
+"selected": 6,
+"applicants": 33,
+"first_cutoff": 57.33,
+"final_cutoff": 151.13,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "ethics",
+"selected": 16,
+"applicants": 78,
+"first_cutoff": 59.67,
+"final_cutoff": 156.5,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "ethics",
+"selected": 11,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "ethics",
+"selected": 4,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "ethics",
+"selected": 10,
+"applicants": 69,
+"first_cutoff": 58.0,
+"final_cutoff": 156.73,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "ethics",
+"selected": 12,
+"applicants": 61,
+"first_cutoff": 58.0,
+"final_cutoff": 160.43,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "ethics",
+"selected": 13,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "ethics",
+"selected": 6,
+"applicants": 35,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "ethics",
+"selected": 11,
+"applicants": 66,
+"first_cutoff": 59.33,
+"final_cutoff": 157.39,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "ethics",
+"selected": 21,
+"applicants": 116,
+"first_cutoff": 59.67,
+"final_cutoff": 156.4,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "ethics",
+"selected": 42,
+"applicants": 183,
+"first_cutoff": 67.33,
+"final_cutoff": 166.27,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "ethics",
+"selected": 20,
+"applicants": 121,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "ethics",
+"selected": 4,
+"applicants": 35,
+"first_cutoff": 70.33,
+"final_cutoff": 163.69,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "ethics",
+"selected": 3,
+"applicants": 17,
+"first_cutoff": 56.33,
+"final_cutoff": 150.95,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "ethics",
+"selected": 6,
+"applicants": 33,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "ethics",
+"selected": 2,
+"applicants": 24,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "history",
+"selected": 38,
+"applicants": 435,
+"first_cutoff": 64.67,
+"final_cutoff": 157.77,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "history",
+"selected": 39,
+"applicants": 416,
+"first_cutoff": 72.0,
+"final_cutoff": 160.3,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "history",
+"selected": 45,
+"applicants": 352,
+"first_cutoff": 73.67,
+"final_cutoff": 162.78,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "history",
+"selected": 36,
+"applicants": 311,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "history",
+"selected": 56,
+"applicants": 581,
+"first_cutoff": 63.33,
+"final_cutoff": 156.76,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "history",
+"selected": 65,
+"applicants": 625,
+"first_cutoff": 68.67,
+"final_cutoff": 166.34,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "history",
+"selected": 87,
+"applicants": 649,
+"first_cutoff": 68.67,
+"final_cutoff": 166.02,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "history",
+"selected": 64,
+"applicants": 678,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "history",
+"selected": 12,
+"applicants": 155,
+"first_cutoff": 65.33,
+"final_cutoff": 160.86,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "history",
+"selected": 20,
+"applicants": 154,
+"first_cutoff": 66.0,
+"final_cutoff": 161.35,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "history",
+"selected": 52,
+"applicants": 355,
+"first_cutoff": 67.0,
+"final_cutoff": 161.91,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "history",
+"selected": 28,
+"applicants": 257,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "history",
+"selected": 4,
+"applicants": 59,
+"first_cutoff": 63.33,
+"final_cutoff": 155.7,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "history",
+"selected": 2,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "history",
+"selected": 3,
+"applicants": 47,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "history",
+"selected": 1,
+"applicants": 27,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "history",
+"selected": 1,
+"applicants": 26,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "history",
+"selected": 2,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "history",
+"selected": 3,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "history",
+"selected": 2,
+"applicants": 39,
+"first_cutoff": 55.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "history",
+"selected": 1,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "history",
+"selected": 3,
+"applicants": 43,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "history",
+"selected": 9,
+"applicants": 133,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "history",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "history",
+"selected": 1,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "history",
+"selected": 3,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "history",
+"selected": 3,
+"applicants": 30,
+"first_cutoff": 55.33,
+"final_cutoff": 151.07,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "history",
+"selected": 3,
+"applicants": 37,
+"first_cutoff": 62.0,
+"final_cutoff": 156.73,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "history",
+"selected": 7,
+"applicants": 59,
+"final_cutoff": 166.33,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "history",
+"selected": 5,
+"applicants": 56,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "history",
+"selected": 18,
+"applicants": 250,
+"first_cutoff": 63.0,
+"final_cutoff": 159.07,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "history",
+"selected": 27,
+"applicants": 302,
+"first_cutoff": 66.67,
+"final_cutoff": 162.94,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "history",
+"selected": 29,
+"applicants": 291,
+"final_cutoff": 161.83,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "history",
+"selected": 10,
+"applicants": 201,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "history",
+"selected": 2,
+"applicants": 47,
+"first_cutoff": 65.33,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "history",
+"selected": 4,
+"applicants": 60,
+"first_cutoff": 69.0,
+"final_cutoff": 161.95,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "history",
+"selected": 9,
+"applicants": 70,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "history",
+"selected": 13,
+"applicants": 127,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "history",
+"selected": 3,
+"applicants": 59,
+"first_cutoff": 63.0,
+"final_cutoff": 161.38,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "history",
+"selected": 9,
+"applicants": 108,
+"first_cutoff": 68.0,
+"final_cutoff": 164.48,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "history",
+"selected": 19,
+"applicants": 130,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "history",
+"selected": 4,
+"applicants": 66,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "history",
+"selected": 12,
+"applicants": 171,
+"first_cutoff": 64.0,
+"final_cutoff": 159.0,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "history",
+"selected": 21,
+"applicants": 215,
+"first_cutoff": 69.0,
+"final_cutoff": 164.61,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "history",
+"selected": 18,
+"applicants": 119,
+"final_cutoff": 156.63,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "history",
+"selected": 9,
+"applicants": 137,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "history",
+"selected": 14,
+"applicants": 189,
+"first_cutoff": 65.0,
+"final_cutoff": 159.0,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "history",
+"selected": 12,
+"applicants": 119,
+"first_cutoff": 65.33,
+"final_cutoff": 158.67,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "history",
+"selected": 14,
+"applicants": 114,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "history",
+"selected": 11,
+"applicants": 139,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "history",
+"selected": 16,
+"applicants": 160,
+"first_cutoff": 63.0,
+"final_cutoff": 159.66,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "history",
+"selected": 14,
+"applicants": 111,
+"first_cutoff": 66.67,
+"final_cutoff": 164.05,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "history",
+"selected": 14,
+"applicants": 90,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "history",
+"selected": 6,
+"applicants": 82,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "history",
+"selected": 5,
+"applicants": 111,
+"first_cutoff": 61.67,
+"final_cutoff": 161.1,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "history",
+"selected": 5,
+"applicants": 81,
+"first_cutoff": 68.67,
+"final_cutoff": 167.04,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "history",
+"selected": 7,
+"applicants": 80,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "history",
+"selected": 1,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "history",
+"selected": 17,
+"applicants": 216,
+"first_cutoff": 62.33,
+"final_cutoff": 157.09,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "history",
+"selected": 22,
+"applicants": 233,
+"first_cutoff": 67.33,
+"final_cutoff": 161.86,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "history",
+"selected": 24,
+"applicants": 186,
+"first_cutoff": 66.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "history",
+"selected": 19,
+"applicants": 266,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "history",
+"selected": 3,
+"applicants": 35,
+"first_cutoff": 59.33,
+"final_cutoff": 155.06,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "history",
+"selected": 2,
+"applicants": 33,
+"first_cutoff": 66.0,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "history",
+"selected": 3,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "history",
+"selected": 2,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "social",
+"selected": 25,
+"applicants": 195,
+"first_cutoff": 85.0,
+"final_cutoff": 173.64,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "social",
+"selected": 34,
+"applicants": 226,
+"first_cutoff": 82.33,
+"final_cutoff": 172.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "social",
+"selected": 48,
+"applicants": 213,
+"first_cutoff": 82.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "social",
+"selected": 36,
+"applicants": 192,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "social",
+"selected": 56,
+"applicants": 462,
+"first_cutoff": 84.33,
+"final_cutoff": 179.43,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "social",
+"selected": 66,
+"applicants": 435,
+"first_cutoff": 81.0,
+"final_cutoff": 176.74,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "social",
+"selected": 128,
+"applicants": 567,
+"first_cutoff": 78.33,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "social",
+"selected": 104,
+"applicants": 540,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "social",
+"selected": 5,
+"applicants": 50,
+"first_cutoff": 82.67,
+"final_cutoff": 178.86,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "social",
+"selected": 14,
+"applicants": 97,
+"first_cutoff": 78.0,
+"final_cutoff": 174.69,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "social",
+"selected": 31,
+"applicants": 135,
+"first_cutoff": 80.0,
+"final_cutoff": 176.19,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "social",
+"selected": 25,
+"applicants": 128,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "social",
+"selected": 4,
+"applicants": 31,
+"first_cutoff": 85.0,
+"final_cutoff": 180.53,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "social",
+"selected": 3,
+"applicants": 16,
+"final_cutoff": 168.79,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "social",
+"selected": 2,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "social",
+"selected": 1,
+"applicants": 11,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "social",
+"selected": 4,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "social",
+"selected": 4,
+"applicants": 30,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "social",
+"selected": 2,
+"applicants": 21,
+"first_cutoff": 82.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "social",
+"selected": 7,
+"applicants": 43,
+"final_cutoff": 173.87,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "social",
+"selected": 16,
+"applicants": 106,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "social",
+"selected": 2,
+"applicants": 27,
+"first_cutoff": 81.67,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "social",
+"selected": 1,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "social",
+"selected": 4,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "social",
+"selected": 2,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "social",
+"selected": 3,
+"applicants": 26,
+"first_cutoff": 79.0,
+"final_cutoff": 180.6,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "social",
+"selected": 3,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "social",
+"selected": 3,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "social",
+"selected": 19,
+"applicants": 139,
+"first_cutoff": 82.67,
+"final_cutoff": 177.27,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "social",
+"selected": 11,
+"applicants": 112,
+"first_cutoff": 83.0,
+"final_cutoff": 177.73,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "social",
+"selected": 16,
+"applicants": 97,
+"final_cutoff": 178.27,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "social",
+"selected": 12,
+"applicants": 88,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "social",
+"selected": 1,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "social",
+"selected": 6,
+"applicants": 43,
+"first_cutoff": 82.0,
+"final_cutoff": 176.44,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "social",
+"selected": 13,
+"applicants": 49,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "social",
+"selected": 7,
+"applicants": 45,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "social",
+"selected": 4,
+"applicants": 29,
+"first_cutoff": 80.0,
+"final_cutoff": 177.74,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "social",
+"selected": 9,
+"applicants": 63,
+"first_cutoff": 78.67,
+"final_cutoff": 174.23,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "social",
+"selected": 15,
+"applicants": 70,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "social",
+"selected": 4,
+"applicants": 33,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "social",
+"selected": 14,
+"applicants": 108,
+"first_cutoff": 82.67,
+"final_cutoff": 176.61,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "social",
+"selected": 24,
+"applicants": 139,
+"first_cutoff": 79.33,
+"final_cutoff": 170.56,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "social",
+"selected": 20,
+"applicants": 98,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "social",
+"selected": 11,
+"applicants": 78,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "social",
+"selected": 9,
+"applicants": 59,
+"first_cutoff": 79.67,
+"final_cutoff": 179.57,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "social",
+"selected": 7,
+"applicants": 54,
+"first_cutoff": 79.0,
+"final_cutoff": 168.54,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "social",
+"selected": 11,
+"applicants": 53,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "social",
+"selected": 10,
+"applicants": 66,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "social",
+"selected": 17,
+"applicants": 131,
+"first_cutoff": 81.0,
+"final_cutoff": 178.22,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "social",
+"selected": 17,
+"applicants": 125,
+"first_cutoff": 77.33,
+"final_cutoff": 172.8,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "social",
+"selected": 17,
+"applicants": 102,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "social",
+"selected": 12,
+"applicants": 104,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "social",
+"selected": 8,
+"applicants": 70,
+"first_cutoff": 79.33,
+"final_cutoff": 176.54,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "social",
+"selected": 5,
+"applicants": 46,
+"first_cutoff": 75.0,
+"final_cutoff": 169.93,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "social",
+"selected": 10,
+"applicants": 56,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "social",
+"selected": 6,
+"applicants": 53,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "social",
+"selected": 19,
+"applicants": 154,
+"first_cutoff": 84.33,
+"final_cutoff": 180.33,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "social",
+"selected": 14,
+"applicants": 123,
+"first_cutoff": 80.67,
+"final_cutoff": 175.46,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "social",
+"selected": 42,
+"applicants": 204,
+"first_cutoff": 79.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "social",
+"selected": 21,
+"applicants": 122,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "social",
+"selected": 3,
+"applicants": 29,
+"first_cutoff": 86.33,
+"final_cutoff": 183.07,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "social",
+"selected": 3,
+"applicants": 26,
+"first_cutoff": 83.0,
+"final_cutoff": 179.06,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "social",
+"selected": 2,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "social",
+"selected": 2,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "geography",
+"selected": 13,
+"applicants": 87,
+"first_cutoff": 84.33,
+"final_cutoff": 177.09,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "geography",
+"selected": 23,
+"applicants": 127,
+"first_cutoff": 78.33,
+"final_cutoff": 170.4,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "geography",
+"selected": 30,
+"applicants": 158,
+"first_cutoff": 82.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "geography",
+"selected": 24,
+"applicants": 151,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "geography",
+"selected": 45,
+"applicants": 297,
+"first_cutoff": 83.0,
+"final_cutoff": 178.68,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "geography",
+"selected": 51,
+"applicants": 302,
+"first_cutoff": 77.33,
+"final_cutoff": 173.61,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "geography",
+"selected": 65,
+"applicants": 320,
+"first_cutoff": 86.0,
+"final_cutoff": 181.32,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "geography",
+"selected": 52,
+"applicants": 275,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "geography",
+"selected": 4,
+"applicants": 31,
+"first_cutoff": 84.33,
+"final_cutoff": 177.6,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "geography",
+"selected": 11,
+"applicants": 70,
+"first_cutoff": 78.0,
+"final_cutoff": 174.97,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "geography",
+"selected": 12,
+"applicants": 50,
+"first_cutoff": 81.0,
+"final_cutoff": 174.25,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "geography",
+"selected": 19,
+"applicants": 124,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "geography",
+"selected": 4,
+"applicants": 29,
+"first_cutoff": 83.33,
+"final_cutoff": 175.9,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "geography",
+"selected": 2,
+"applicants": 16,
+"first_cutoff": 78.67,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "geography",
+"selected": 1,
+"applicants": 7,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "geography",
+"selected": 3,
+"applicants": 33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "geography",
+"selected": 5,
+"applicants": 32,
+"final_cutoff": 176.44,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "geography",
+"selected": 2,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "geography",
+"selected": 1,
+"applicants": 10,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "geography",
+"selected": 1,
+"applicants": 10,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "geography",
+"selected": 3,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "geography",
+"selected": 1,
+"applicants": 13,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "geography",
+"selected": 3,
+"applicants": 24,
+"first_cutoff": 80.33,
+"final_cutoff": 176.31,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "geography",
+"selected": 3,
+"applicants": 22,
+"first_cutoff": 77.0,
+"final_cutoff": 174.77,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "geography",
+"selected": 3,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "geography",
+"selected": 3,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "geography",
+"selected": 11,
+"applicants": 105,
+"first_cutoff": 83.0,
+"final_cutoff": 180.34,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "geography",
+"selected": 14,
+"applicants": 145,
+"first_cutoff": 80.67,
+"final_cutoff": 173.89,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "geography",
+"selected": 10,
+"applicants": 71,
+"first_cutoff": 89.0,
+"final_cutoff": 179.88,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "geography",
+"selected": 6,
+"applicants": 67,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "geography",
+"selected": 4,
+"applicants": 57,
+"first_cutoff": 83.33,
+"final_cutoff": 176.85,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "geography",
+"selected": 3,
+"applicants": 26,
+"first_cutoff": 76.67,
+"final_cutoff": 173.49,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "geography",
+"selected": 9,
+"applicants": 48,
+"final_cutoff": 173.65,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "geography",
+"selected": 8,
+"applicants": 79,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "geography",
+"selected": 6,
+"applicants": 50,
+"first_cutoff": 84.0,
+"final_cutoff": 179.85,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "geography",
+"selected": 9,
+"applicants": 58,
+"first_cutoff": 77.67,
+"final_cutoff": 174.01,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "geography",
+"selected": 11,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "geography",
+"selected": 3,
+"applicants": 26,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "geography",
+"selected": 8,
+"applicants": 55,
+"first_cutoff": 82.33,
+"final_cutoff": 174.73,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "geography",
+"selected": 13,
+"applicants": 93,
+"first_cutoff": 82.0,
+"final_cutoff": 175.37,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "geography",
+"selected": 15,
+"applicants": 76,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "geography",
+"selected": 8,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "geography",
+"selected": 9,
+"applicants": 59,
+"first_cutoff": 83.67,
+"final_cutoff": 174.77,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "geography",
+"selected": 4,
+"applicants": 24,
+"first_cutoff": 81.33,
+"final_cutoff": 174.06,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "geography",
+"selected": 7,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "geography",
+"selected": 2,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "geography",
+"selected": 15,
+"applicants": 96,
+"first_cutoff": 82.0,
+"final_cutoff": 175.31,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "geography",
+"selected": 14,
+"applicants": 65,
+"first_cutoff": 74.0,
+"final_cutoff": 167.93,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "geography",
+"selected": 14,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "geography",
+"selected": 10,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "geography",
+"selected": 4,
+"applicants": 45,
+"first_cutoff": 81.0,
+"final_cutoff": 175.96,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "geography",
+"selected": 4,
+"applicants": 36,
+"first_cutoff": 76.33,
+"final_cutoff": 169.23,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "geography",
+"selected": 7,
+"applicants": 38,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "geography",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "geography",
+"selected": 8,
+"applicants": 68,
+"first_cutoff": 82.33,
+"final_cutoff": 174.14,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "geography",
+"selected": 7,
+"applicants": 53,
+"first_cutoff": 78.67,
+"final_cutoff": 174.97,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "geography",
+"selected": 20,
+"applicants": 118,
+"first_cutoff": 85.33,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "geography",
+"selected": 13,
+"applicants": 112,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "geography",
+"selected": 3,
+"applicants": 26,
+"first_cutoff": 83.33,
+"final_cutoff": 178.63,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "geography",
+"selected": 3,
+"applicants": 21,
+"first_cutoff": 83.0,
+"final_cutoff": 176.32,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "geography",
+"selected": 2,
+"applicants": 12,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "geography",
+"selected": 2,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "math",
+"selected": 92,
+"applicants": 584,
+"first_cutoff": 52.67,
+"final_cutoff": 144.14,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "math",
+"selected": 122,
+"applicants": 556,
+"first_cutoff": 59.33,
+"final_cutoff": 155.23,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "math",
+"selected": 144,
+"applicants": 506,
+"first_cutoff": 57.0,
+"final_cutoff": 155.6,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "math",
+"selected": 75,
+"applicants": 443,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "math",
+"selected": 153,
+"applicants": 799,
+"first_cutoff": 47.0,
+"final_cutoff": 144.03,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "math",
+"selected": 189,
+"applicants": 873,
+"first_cutoff": 56.67,
+"final_cutoff": 153.64,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "math",
+"selected": 254,
+"applicants": 883,
+"first_cutoff": 52.67,
+"final_cutoff": 153.0,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "math",
+"selected": 164,
+"applicants": 793,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "math",
+"selected": 12,
+"applicants": 94,
+"first_cutoff": 49.33,
+"final_cutoff": 146.81,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "math",
+"selected": 32,
+"applicants": 130,
+"first_cutoff": 50.0,
+"final_cutoff": 150.31,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "math",
+"selected": 71,
+"applicants": 243,
+"first_cutoff": 52.34,
+"final_cutoff": 152.29,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "math",
+"selected": 84,
+"applicants": 349,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "math",
+"selected": 15,
+"applicants": 132,
+"first_cutoff": 52.0,
+"final_cutoff": 146.03,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2025,
+"subject": "math",
+"selected": 2,
+"applicants": 25,
+"first_cutoff": 56.67,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "math",
+"selected": 3,
+"applicants": 21,
+"final_cutoff": 161.91,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "math",
+"selected": 3,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "math",
+"selected": 1,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "math",
+"selected": 4,
+"applicants": 37,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "math",
+"selected": 4,
+"applicants": 36,
+"first_cutoff": 44.34,
+"final_cutoff": 137.47,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "math",
+"selected": 3,
+"applicants": 39,
+"first_cutoff": 62.67,
+"final_cutoff": 154.75,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "math",
+"selected": 11,
+"applicants": 62,
+"final_cutoff": 147.37,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "math",
+"selected": 18,
+"applicants": 121,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "math",
+"selected": 2,
+"applicants": 30,
+"first_cutoff": 73.33,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "math",
+"selected": 5,
+"applicants": 49,
+"first_cutoff": 44.67,
+"final_cutoff": 142.69,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "math",
+"selected": 6,
+"applicants": 57,
+"first_cutoff": 62.67,
+"final_cutoff": 161.07,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "math",
+"selected": 10,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "math",
+"selected": 8,
+"applicants": 49,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "math",
+"selected": 27,
+"applicants": 231,
+"first_cutoff": 52.0,
+"final_cutoff": 150.77,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "math",
+"selected": 61,
+"applicants": 335,
+"first_cutoff": 60.0,
+"final_cutoff": 158.93,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "math",
+"selected": 74,
+"applicants": 294,
+"final_cutoff": 154.28,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "math",
+"selected": 42,
+"applicants": 251,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "math",
+"selected": 14,
+"applicants": 162,
+"first_cutoff": 51.67,
+"final_cutoff": 140.94,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "math",
+"selected": 7,
+"applicants": 69,
+"first_cutoff": 61.0,
+"final_cutoff": 156.49,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "math",
+"selected": 14,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "math",
+"selected": 25,
+"applicants": 107,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "math",
+"selected": 16,
+"applicants": 113,
+"first_cutoff": 50.0,
+"final_cutoff": 147.23,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "math",
+"selected": 17,
+"applicants": 109,
+"first_cutoff": 57.0,
+"final_cutoff": 155.43,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "math",
+"selected": 25,
+"applicants": 94,
+"first_cutoff": 44.0,
+"final_cutoff": 145.27,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "math",
+"selected": 8,
+"applicants": 72,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "math",
+"selected": 30,
+"applicants": 209,
+"first_cutoff": 49.0,
+"final_cutoff": 141.02,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "math",
+"selected": 52,
+"applicants": 240,
+"first_cutoff": 51.0,
+"final_cutoff": 149.93,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "math",
+"selected": 54,
+"applicants": 257,
+"first_cutoff": 59.0,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "math",
+"selected": 42,
+"applicants": 225,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "math",
+"selected": 18,
+"applicants": 160,
+"first_cutoff": 49.0,
+"final_cutoff": 140.0,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "math",
+"selected": 30,
+"applicants": 157,
+"first_cutoff": 56.67,
+"final_cutoff": 155.63,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "math",
+"selected": 26,
+"applicants": 116,
+"first_cutoff": 55.33,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "math",
+"selected": 18,
+"applicants": 127,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "math",
+"selected": 33,
+"applicants": 225,
+"first_cutoff": 50.0,
+"final_cutoff": 144.26,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "math",
+"selected": 51,
+"applicants": 229,
+"first_cutoff": 54.33,
+"final_cutoff": 152.59,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "math",
+"selected": 68,
+"applicants": 231,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "math",
+"selected": 31,
+"applicants": 178,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "math",
+"selected": 22,
+"applicants": 176,
+"first_cutoff": 49.67,
+"final_cutoff": 146.13,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "math",
+"selected": 22,
+"applicants": 121,
+"first_cutoff": 52.67,
+"final_cutoff": 155.34,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "math",
+"selected": 31,
+"applicants": 143,
+"first_cutoff": 55.0,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "math",
+"selected": 20,
+"applicants": 120,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "math",
+"selected": 25,
+"applicants": 222,
+"first_cutoff": 48.66,
+"final_cutoff": 146.5,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "math",
+"selected": 34,
+"applicants": 212,
+"first_cutoff": 56.67,
+"final_cutoff": 156.27,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "math",
+"selected": 73,
+"applicants": 273,
+"first_cutoff": 49.33,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "math",
+"selected": 39,
+"applicants": 246,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "math",
+"selected": 11,
+"applicants": 77,
+"first_cutoff": 52.33,
+"final_cutoff": 149.4,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "math",
+"selected": 9,
+"applicants": 49,
+"first_cutoff": 55.0,
+"final_cutoff": 156.8,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "math",
+"selected": 8,
+"applicants": 85,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "math",
+"selected": 6,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "physics",
+"selected": 32,
+"applicants": 156,
+"first_cutoff": 65.0,
+"final_cutoff": 155.99,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "physics",
+"selected": 30,
+"applicants": 115,
+"first_cutoff": 51.0,
+"final_cutoff": 148.22,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "physics",
+"selected": 52,
+"applicants": 172,
+"first_cutoff": 45.0,
+"final_cutoff": 137.92,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "physics",
+"selected": 22,
+"applicants": 107,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "physics",
+"selected": 40,
+"applicants": 211,
+"first_cutoff": 64.33,
+"final_cutoff": 159.92,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "physics",
+"selected": 51,
+"applicants": 209,
+"first_cutoff": 55.67,
+"final_cutoff": 144.54,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "physics",
+"selected": 79,
+"applicants": 253,
+"first_cutoff": 47.67,
+"final_cutoff": 139.43,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "physics",
+"selected": 53,
+"applicants": 212,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "physics",
+"selected": 4,
+"applicants": 24,
+"first_cutoff": 52.33,
+"final_cutoff": 149.81,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "physics",
+"selected": 11,
+"applicants": 50,
+"first_cutoff": 53.0,
+"final_cutoff": 152.18,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "physics",
+"selected": 20,
+"applicants": 61,
+"first_cutoff": 45.0,
+"final_cutoff": 144.19,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "physics",
+"selected": 14,
+"applicants": 58,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "physics",
+"selected": 6,
+"applicants": 33,
+"first_cutoff": 65.0,
+"final_cutoff": 158.38,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "physics",
+"selected": 3,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "physics",
+"selected": 2,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "physics",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "physics",
+"selected": 2,
+"applicants": 6,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "physics",
+"selected": 2,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "physics",
+"selected": 2,
+"applicants": 17,
+"first_cutoff": 62.0,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "physics",
+"selected": 2,
+"applicants": 12,
+"first_cutoff": 65.0,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "physics",
+"selected": 4,
+"applicants": 18,
+"final_cutoff": 141.18,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "physics",
+"selected": 11,
+"applicants": 40,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "physics",
+"selected": 1,
+"applicants": 8,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "physics",
+"selected": 1,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "physics",
+"selected": 3,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "physics",
+"selected": 1,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "physics",
+"selected": 2,
+"applicants": 14,
+"first_cutoff": 65.33,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "physics",
+"selected": 3,
+"applicants": 16,
+"first_cutoff": 52.67,
+"final_cutoff": 157.41,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "physics",
+"selected": 3,
+"applicants": 10,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "physics",
+"selected": 4,
+"applicants": 13,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "physics",
+"selected": 10,
+"applicants": 62,
+"first_cutoff": 66.33,
+"final_cutoff": 163.41,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "physics",
+"selected": 13,
+"applicants": 67,
+"first_cutoff": 59.67,
+"final_cutoff": 157.67,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "physics",
+"selected": 16,
+"applicants": 60,
+"final_cutoff": 148.63,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "physics",
+"selected": 8,
+"applicants": 44,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "physics",
+"selected": 2,
+"applicants": 16,
+"first_cutoff": 57.67,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "physics",
+"selected": 3,
+"applicants": 20,
+"first_cutoff": 52.67,
+"final_cutoff": 148.39,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "physics",
+"selected": 7,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "physics",
+"selected": 11,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "physics",
+"selected": 4,
+"applicants": 25,
+"first_cutoff": 66.34,
+"final_cutoff": 158.25,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "physics",
+"selected": 8,
+"applicants": 30,
+"first_cutoff": 58.67,
+"final_cutoff": 158.21,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "physics",
+"selected": 6,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "physics",
+"selected": 2,
+"applicants": 10,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "physics",
+"selected": 8,
+"applicants": 55,
+"first_cutoff": 64.33,
+"final_cutoff": 150.22,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "physics",
+"selected": 10,
+"applicants": 53,
+"first_cutoff": 52.67,
+"final_cutoff": 137.64,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "physics",
+"selected": 13,
+"applicants": 38,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "physics",
+"selected": 7,
+"applicants": 36,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "physics",
+"selected": 8,
+"applicants": 64,
+"first_cutoff": 65.67,
+"final_cutoff": 158.67,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "physics",
+"selected": 8,
+"applicants": 41,
+"first_cutoff": 56.33,
+"final_cutoff": 148.67,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "physics",
+"selected": 11,
+"applicants": 44,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "physics",
+"selected": 6,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "physics",
+"selected": 6,
+"applicants": 46,
+"first_cutoff": 67.0,
+"final_cutoff": 160.2,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "physics",
+"selected": 11,
+"applicants": 50,
+"first_cutoff": 53.0,
+"final_cutoff": 151.08,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "physics",
+"selected": 15,
+"applicants": 54,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "physics",
+"selected": 9,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "physics",
+"selected": 7,
+"applicants": 44,
+"first_cutoff": 63.33,
+"final_cutoff": 152.42,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "physics",
+"selected": 6,
+"applicants": 28,
+"first_cutoff": 55.0,
+"final_cutoff": 151.74,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "physics",
+"selected": 10,
+"applicants": 24,
+"final_cutoff": 125.83,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "physics",
+"selected": 6,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "physics",
+"selected": 6,
+"applicants": 54,
+"first_cutoff": 68.33,
+"final_cutoff": 166.16,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "physics",
+"selected": 9,
+"applicants": 48,
+"first_cutoff": 62.33,
+"final_cutoff": 159.6,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "physics",
+"selected": 14,
+"applicants": 47,
+"first_cutoff": 47.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "physics",
+"selected": 15,
+"applicants": 77,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "physics",
+"selected": 3,
+"applicants": 24,
+"first_cutoff": 70.0,
+"final_cutoff": 165.38,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "physics",
+"selected": 3,
+"applicants": 33,
+"first_cutoff": 69.67,
+"final_cutoff": 159.0,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "physics",
+"selected": 3,
+"applicants": 22,
+"final_cutoff": 153.83,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "physics",
+"selected": 3,
+"applicants": 26,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "chemistry",
+"selected": 33,
+"applicants": 138,
+"first_cutoff": 56.67,
+"final_cutoff": 147.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "chemistry",
+"selected": 30,
+"applicants": 127,
+"first_cutoff": 57.0,
+"final_cutoff": 149.68,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "chemistry",
+"selected": 39,
+"applicants": 137,
+"first_cutoff": 50.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "chemistry",
+"selected": 24,
+"applicants": 110,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "chemistry",
+"selected": 48,
+"applicants": 248,
+"first_cutoff": 63.33,
+"final_cutoff": 160.77,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "chemistry",
+"selected": 62,
+"applicants": 253,
+"first_cutoff": 60.67,
+"final_cutoff": 161.23,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "chemistry",
+"selected": 80,
+"applicants": 272,
+"first_cutoff": 54.33,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "chemistry",
+"selected": 53,
+"applicants": 247,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "chemistry",
+"selected": 4,
+"applicants": 25,
+"first_cutoff": 51.67,
+"final_cutoff": 151.58,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "chemistry",
+"selected": 12,
+"applicants": 54,
+"first_cutoff": 58.0,
+"final_cutoff": 151.69,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "chemistry",
+"selected": 24,
+"applicants": 74,
+"first_cutoff": 47.0,
+"final_cutoff": 148.4,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "chemistry",
+"selected": 20,
+"applicants": 91,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "chemistry",
+"selected": 5,
+"applicants": 23,
+"first_cutoff": 59.33,
+"final_cutoff": 167.25,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2025,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 9,
+"first_cutoff": 58.0,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 5,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "chemistry",
+"selected": 1,
+"applicants": 7,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "chemistry",
+"selected": 1,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "chemistry",
+"selected": 5,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 21,
+"first_cutoff": 72.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "chemistry",
+"selected": 7,
+"applicants": 24,
+"final_cutoff": 138.86,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "chemistry",
+"selected": 11,
+"applicants": 61,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "chemistry",
+"selected": 1,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "chemistry",
+"selected": 1,
+"applicants": 13,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 21,
+"first_cutoff": 66.33,
+"final_cutoff": 161.8,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 18,
+"final_cutoff": 163.87,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "chemistry",
+"selected": 12,
+"applicants": 80,
+"first_cutoff": 65.0,
+"final_cutoff": 159.59,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "chemistry",
+"selected": 16,
+"applicants": 107,
+"first_cutoff": 71.0,
+"final_cutoff": 165.2,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "chemistry",
+"selected": 15,
+"applicants": 53,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "chemistry",
+"selected": 7,
+"applicants": 61,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "chemistry",
+"selected": 4,
+"applicants": 33,
+"first_cutoff": 59.33,
+"final_cutoff": 152.49,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 12,
+"first_cutoff": 57.67,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "chemistry",
+"selected": 7,
+"applicants": 36,
+"first_cutoff": 61.0,
+"final_cutoff": 153.84,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "chemistry",
+"selected": 4,
+"applicants": 25,
+"first_cutoff": 71.67,
+"final_cutoff": 163.67,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "chemistry",
+"selected": 11,
+"applicants": 55,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "chemistry",
+"selected": 9,
+"applicants": 50,
+"first_cutoff": 55.67,
+"final_cutoff": 149.3,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "chemistry",
+"selected": 16,
+"applicants": 81,
+"first_cutoff": 64.33,
+"final_cutoff": 153.34,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "chemistry",
+"selected": 17,
+"applicants": 43,
+"final_cutoff": 121.38,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "chemistry",
+"selected": 7,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "chemistry",
+"selected": 10,
+"applicants": 77,
+"first_cutoff": 63.0,
+"final_cutoff": 152.7,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "chemistry",
+"selected": 8,
+"applicants": 46,
+"first_cutoff": 62.67,
+"final_cutoff": 158.13,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "chemistry",
+"selected": 10,
+"applicants": 50,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "chemistry",
+"selected": 10,
+"applicants": 68,
+"first_cutoff": 56.67,
+"final_cutoff": 150.05,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "chemistry",
+"selected": 15,
+"applicants": 85,
+"first_cutoff": 52.0,
+"final_cutoff": 150.56,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "chemistry",
+"selected": 14,
+"applicants": 81,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "chemistry",
+"selected": 7,
+"applicants": 60,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "chemistry",
+"selected": 5,
+"applicants": 33,
+"first_cutoff": 61.67,
+"final_cutoff": 152.35,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "chemistry",
+"selected": 4,
+"applicants": 26,
+"first_cutoff": 61.0,
+"final_cutoff": 155.96,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "chemistry",
+"selected": 8,
+"applicants": 31,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "chemistry",
+"selected": 4,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "chemistry",
+"selected": 9,
+"applicants": 75,
+"first_cutoff": 69.33,
+"final_cutoff": 163.1,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "chemistry",
+"selected": 6,
+"applicants": 45,
+"first_cutoff": 58.33,
+"final_cutoff": 163.7,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "chemistry",
+"selected": 26,
+"applicants": 109,
+"first_cutoff": 55.33,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "chemistry",
+"selected": 17,
+"applicants": 95,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "chemistry",
+"selected": 5,
+"applicants": 22,
+"first_cutoff": 48.67,
+"final_cutoff": 145.75,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 14,
+"first_cutoff": 61.34,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "chemistry",
+"selected": 3,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "chemistry",
+"selected": 2,
+"applicants": 11,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "biology",
+"selected": 38,
+"applicants": 228,
+"first_cutoff": 72.33,
+"final_cutoff": 159.7,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "biology",
+"selected": 37,
+"applicants": 198,
+"first_cutoff": 71.0,
+"final_cutoff": 164.63,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "biology",
+"selected": 43,
+"applicants": 185,
+"first_cutoff": 61.67,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "biology",
+"selected": 27,
+"applicants": 187,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "biology",
+"selected": 50,
+"applicants": 372,
+"first_cutoff": 74.33,
+"final_cutoff": 168.65,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "biology",
+"selected": 61,
+"applicants": 363,
+"first_cutoff": 72.0,
+"final_cutoff": 167.2,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "biology",
+"selected": 84,
+"applicants": 367,
+"first_cutoff": 66.0,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "biology",
+"selected": 51,
+"applicants": 350,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "biology",
+"selected": 4,
+"applicants": 38,
+"first_cutoff": 75.0,
+"final_cutoff": 167.41,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "biology",
+"selected": 7,
+"applicants": 45,
+"first_cutoff": 71.33,
+"final_cutoff": 166.09,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "biology",
+"selected": 23,
+"applicants": 96,
+"first_cutoff": 66.0,
+"final_cutoff": 162.41,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "biology",
+"selected": 14,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "biology",
+"selected": 5,
+"applicants": 48,
+"first_cutoff": 76.0,
+"final_cutoff": 170.63,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2025,
+"subject": "biology",
+"selected": 2,
+"applicants": 14,
+"first_cutoff": 65.33,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "biology",
+"selected": 2,
+"applicants": 11,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "biology",
+"selected": 6,
+"applicants": 41,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "biology",
+"selected": 2,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "biology",
+"selected": 4,
+"applicants": 26,
+"final_cutoff": 147.59,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "biology",
+"selected": 2,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "biology",
+"selected": 1,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "biology",
+"selected": 1,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "biology",
+"selected": 3,
+"applicants": 21,
+"final_cutoff": 166.03,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "biology",
+"selected": 1,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "biology",
+"selected": 3,
+"applicants": 24,
+"first_cutoff": 75.67,
+"final_cutoff": 170.87,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "biology",
+"selected": 3,
+"applicants": 18,
+"first_cutoff": 75.67,
+"final_cutoff": 170.97,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "biology",
+"selected": 5,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "biology",
+"selected": 4,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "biology",
+"selected": 11,
+"applicants": 104,
+"first_cutoff": 74.33,
+"final_cutoff": 169.59,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "biology",
+"selected": 14,
+"applicants": 125,
+"first_cutoff": 76.33,
+"final_cutoff": 170.89,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "biology",
+"selected": 23,
+"applicants": 117,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "biology",
+"selected": 12,
+"applicants": 115,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "biology",
+"selected": 1,
+"applicants": 18,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "biology",
+"selected": 2,
+"applicants": 18,
+"first_cutoff": 71.33,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "biology",
+"selected": 8,
+"applicants": 47,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "biology",
+"selected": 12,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "biology",
+"selected": 7,
+"applicants": 65,
+"first_cutoff": 75.0,
+"final_cutoff": 164.2,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "biology",
+"selected": 10,
+"applicants": 65,
+"first_cutoff": 73.33,
+"final_cutoff": 162.44,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "biology",
+"selected": 4,
+"applicants": 34,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "biology",
+"selected": 9,
+"applicants": 52,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "biology",
+"selected": 6,
+"applicants": 56,
+"first_cutoff": 72.67,
+"final_cutoff": 169.78,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "biology",
+"selected": 13,
+"applicants": 71,
+"first_cutoff": 73.0,
+"final_cutoff": 159.8,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "biology",
+"selected": 13,
+"applicants": 6,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "biology",
+"selected": 9,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "biology",
+"selected": 11,
+"applicants": 92,
+"first_cutoff": 73.67,
+"final_cutoff": 161.4,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "biology",
+"selected": 8,
+"applicants": 62,
+"first_cutoff": 74.0,
+"final_cutoff": 170.53,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "biology",
+"selected": 11,
+"applicants": 47,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "biology",
+"selected": 10,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "biology",
+"selected": 12,
+"applicants": 91,
+"first_cutoff": 70.0,
+"final_cutoff": 164.44,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "biology",
+"selected": 15,
+"applicants": 104,
+"first_cutoff": 72.67,
+"final_cutoff": 166.54,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "biology",
+"selected": 15,
+"applicants": 84,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "biology",
+"selected": 11,
+"applicants": 80,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "biology",
+"selected": 4,
+"applicants": 56,
+"first_cutoff": 74.0,
+"final_cutoff": 165.16,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "biology",
+"selected": 6,
+"applicants": 47,
+"first_cutoff": 66.33,
+"final_cutoff": 162.08,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "biology",
+"selected": 9,
+"applicants": 47,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "biology",
+"selected": 5,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "biology",
+"selected": 9,
+"applicants": 89,
+"first_cutoff": 75.67,
+"final_cutoff": 172.57,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "biology",
+"selected": 12,
+"applicants": 79,
+"first_cutoff": 68.67,
+"final_cutoff": 166.64,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "biology",
+"selected": 24,
+"applicants": 125,
+"first_cutoff": 62.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "biology",
+"selected": 9,
+"applicants": 85,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "biology",
+"selected": 3,
+"applicants": 34,
+"first_cutoff": 79.33,
+"final_cutoff": 172.38,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "biology",
+"selected": 3,
+"applicants": 27,
+"first_cutoff": 76.0,
+"final_cutoff": 170.24,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "biology",
+"selected": 2,
+"applicants": 24,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "biology",
+"selected": 2,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "earth",
+"selected": 17,
+"applicants": 90,
+"first_cutoff": 55.0,
+"final_cutoff": 143.62,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "earth",
+"selected": 18,
+"applicants": 102,
+"first_cutoff": 68.67,
+"final_cutoff": 166.35,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "earth",
+"selected": 48,
+"applicants": 166,
+"first_cutoff": 52.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "earth",
+"selected": 9,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "earth",
+"selected": 41,
+"applicants": 226,
+"first_cutoff": 56.67,
+"final_cutoff": 152.33,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "earth",
+"selected": 42,
+"applicants": 196,
+"first_cutoff": 66.33,
+"final_cutoff": 164.46,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "earth",
+"selected": 51,
+"applicants": 193,
+"first_cutoff": 55.0,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "earth",
+"selected": 26,
+"applicants": 188,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "earth",
+"selected": 3,
+"applicants": 21,
+"first_cutoff": 51.0,
+"final_cutoff": 153.36,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "earth",
+"selected": 8,
+"applicants": 38,
+"first_cutoff": 66.33,
+"final_cutoff": 161.31,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "earth",
+"selected": 19,
+"applicants": 66,
+"first_cutoff": 55.67,
+"final_cutoff": 152.55,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "earth",
+"selected": 12,
+"applicants": 78,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "earth",
+"selected": 6,
+"applicants": 36,
+"first_cutoff": 54.67,
+"final_cutoff": 142.71,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "earth",
+"selected": 2,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "earth",
+"selected": 1,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "earth",
+"selected": 1,
+"applicants": 7,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "earth",
+"selected": 1,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "earth",
+"selected": 2,
+"applicants": 20,
+"first_cutoff": 58.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "earth",
+"selected": 2,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "earth",
+"selected": 2,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "earth",
+"selected": 1,
+"applicants": 12,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "earth",
+"selected": 2,
+"applicants": 22,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "earth",
+"selected": 1,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "earth",
+"selected": 3,
+"applicants": 18,
+"first_cutoff": 53.0,
+"final_cutoff": 155.03,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "earth",
+"selected": 3,
+"applicants": 12,
+"final_cutoff": 153.33,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "earth",
+"selected": 10,
+"applicants": 83,
+"first_cutoff": 58.0,
+"final_cutoff": 152.87,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "earth",
+"selected": 17,
+"applicants": 125,
+"first_cutoff": 67.0,
+"final_cutoff": 164.7,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "earth",
+"selected": 6,
+"applicants": 40,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "earth",
+"selected": 4,
+"applicants": 58,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "earth",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "earth",
+"selected": 2,
+"applicants": 14,
+"first_cutoff": 65.0,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "earth",
+"selected": 8,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "earth",
+"selected": 6,
+"applicants": 38,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "earth",
+"selected": 3,
+"applicants": 19,
+"first_cutoff": 51.0,
+"final_cutoff": 146.54,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "earth",
+"selected": 4,
+"applicants": 23,
+"first_cutoff": 64.67,
+"final_cutoff": 163.91,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "earth",
+"selected": 5,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "earth",
+"selected": 4,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "earth",
+"selected": 9,
+"applicants": 54,
+"first_cutoff": 54.33,
+"final_cutoff": 145.76,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "earth",
+"selected": 11,
+"applicants": 55,
+"first_cutoff": 65.33,
+"final_cutoff": 154.32,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "earth",
+"selected": 13,
+"applicants": 41,
+"final_cutoff": 143.53,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "earth",
+"selected": 7,
+"applicants": 41,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "earth",
+"selected": 8,
+"applicants": 37,
+"first_cutoff": 55.33,
+"final_cutoff": 150.87,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "earth",
+"selected": 8,
+"applicants": 37,
+"first_cutoff": 64.0,
+"final_cutoff": 158.8,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "earth",
+"selected": 7,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "earth",
+"selected": 5,
+"applicants": 28,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "earth",
+"selected": 4,
+"applicants": 47,
+"first_cutoff": 53.33,
+"final_cutoff": 152.18,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2025,
+"subject": "earth",
+"selected": 10,
+"applicants": 49,
+"first_cutoff": 61.0,
+"final_cutoff": 162.14,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "earth",
+"selected": 10,
+"applicants": 62,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "earth",
+"selected": 12,
+"applicants": 64,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "earth",
+"selected": 2,
+"applicants": 16,
+"first_cutoff": 53.33,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2025,
+"subject": "earth",
+"selected": 4,
+"applicants": 22,
+"first_cutoff": 67.67,
+"final_cutoff": 165.99,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "earth",
+"selected": 5,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "earth",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2024,
+"subject": "earth",
+"selected": 5,
+"applicants": 28,
+"first_cutoff": 55.0,
+"final_cutoff": 146.23,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2025,
+"subject": "earth",
+"selected": 3,
+"applicants": 21,
+"first_cutoff": 65.67,
+"final_cutoff": 160.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "earth",
+"selected": 19,
+"applicants": 84,
+"first_cutoff": 58.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "earth",
+"selected": 6,
+"applicants": 53,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2024,
+"subject": "earth",
+"selected": 4,
+"applicants": 21,
+"first_cutoff": 53.0,
+"final_cutoff": 148.64,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2025,
+"subject": "earth",
+"selected": 1,
+"applicants": 7,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "earth",
+"selected": 2,
+"applicants": 5,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "pe",
+"selected": 55,
+"applicants": 510,
+"first_cutoff": 77.0,
+"final_cutoff": 160.44,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "pe",
+"selected": 71,
+"applicants": 437,
+"first_cutoff": 69.33,
+"final_cutoff": 149.1,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "pe",
+"selected": 74,
+"applicants": 464,
+"first_cutoff": 70.33,
+"final_cutoff": 155.37,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "pe",
+"selected": 46,
+"applicants": 424,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "pe",
+"selected": 118,
+"applicants": 946,
+"first_cutoff": 74.67,
+"final_cutoff": 157.22,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "pe",
+"selected": 133,
+"applicants": 993,
+"first_cutoff": 69.67,
+"final_cutoff": 154.36,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "pe",
+"selected": 177,
+"applicants": 1129,
+"first_cutoff": 70.0,
+"final_cutoff": 154.76,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "pe",
+"selected": 127,
+"applicants": 1150,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "pe",
+"selected": 12,
+"applicants": 132,
+"first_cutoff": 76.67,
+"final_cutoff": 158.68,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "pe",
+"selected": 30,
+"applicants": 172,
+"first_cutoff": 68.0,
+"final_cutoff": 157.51,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "pe",
+"selected": 30,
+"applicants": 196,
+"first_cutoff": 69.0,
+"final_cutoff": 153.22,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "pe",
+"selected": 30,
+"applicants": 222,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "pe",
+"selected": 7,
+"applicants": 64,
+"first_cutoff": 72.0,
+"final_cutoff": 157.57,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2025,
+"subject": "pe",
+"selected": 3,
+"applicants": 35,
+"first_cutoff": 73.0,
+"final_cutoff": 168.07,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "pe",
+"selected": 2,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "pe",
+"selected": 2,
+"applicants": 24,
+"first_cutoff": 77.0,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2025,
+"subject": "pe",
+"selected": 1,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "pe",
+"selected": 2,
+"applicants": 21,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "pe",
+"selected": 2,
+"applicants": 34,
+"first_cutoff": 75.33,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "pe",
+"selected": 4,
+"applicants": 34,
+"first_cutoff": 58.33,
+"final_cutoff": 150.02,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "pe",
+"selected": 9,
+"applicants": 76,
+"final_cutoff": 161.17,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "pe",
+"selected": 19,
+"applicants": 165,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "pe",
+"selected": 2,
+"applicants": 31,
+"first_cutoff": 76.67,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2025,
+"subject": "pe",
+"selected": 2,
+"applicants": 23,
+"first_cutoff": 69.0,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "pe",
+"selected": 4,
+"applicants": 30,
+"final_cutoff": 165.08,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "pe",
+"selected": 2,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "pe",
+"selected": 4,
+"applicants": 38,
+"first_cutoff": 72.0,
+"final_cutoff": 159.93,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "pe",
+"selected": 7,
+"applicants": 48,
+"first_cutoff": 65.67,
+"final_cutoff": 149.34,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "pe",
+"selected": 10,
+"applicants": 60,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "pe",
+"selected": 8,
+"applicants": 73,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "pe",
+"selected": 33,
+"applicants": 355,
+"first_cutoff": 73.0,
+"final_cutoff": 156.48,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "pe",
+"selected": 57,
+"applicants": 503,
+"first_cutoff": 70.0,
+"final_cutoff": 149.11,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "pe",
+"selected": 55,
+"applicants": 364,
+"final_cutoff": 155.54,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "pe",
+"selected": 32,
+"applicants": 300,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "pe",
+"selected": 18,
+"applicants": 146,
+"first_cutoff": 72.0,
+"final_cutoff": 151.65,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "pe",
+"selected": 15,
+"applicants": 101,
+"first_cutoff": 64.33,
+"final_cutoff": 151.26,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "pe",
+"selected": 15,
+"applicants": 103,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "pe",
+"selected": 15,
+"applicants": 139,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "pe",
+"selected": 20,
+"applicants": 211,
+"first_cutoff": 76.0,
+"final_cutoff": 160.98,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "pe",
+"selected": 20,
+"applicants": 163,
+"first_cutoff": 67.33,
+"final_cutoff": 154.07,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "pe",
+"selected": 25,
+"applicants": 183,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "pe",
+"selected": 23,
+"applicants": 195,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "pe",
+"selected": 22,
+"applicants": 179,
+"first_cutoff": 73.33,
+"final_cutoff": 147.04,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "pe",
+"selected": 34,
+"applicants": 212,
+"first_cutoff": 66.33,
+"final_cutoff": 140.04,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "pe",
+"selected": 28,
+"applicants": 178,
+"final_cutoff": 142.5,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "pe",
+"selected": 21,
+"applicants": 209,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "pe",
+"selected": 22,
+"applicants": 188,
+"first_cutoff": 75.33,
+"final_cutoff": 159.38,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "pe",
+"selected": 26,
+"applicants": 137,
+"first_cutoff": 67.0,
+"final_cutoff": 152.12,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "pe",
+"selected": 17,
+"applicants": 103,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "pe",
+"selected": 7,
+"applicants": 77,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "pe",
+"selected": 16,
+"applicants": 182,
+"first_cutoff": 74.0,
+"final_cutoff": 153.67,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "pe",
+"selected": 44,
+"applicants": 248,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "pe",
+"selected": 11,
+"applicants": 168,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2024,
+"subject": "pe",
+"selected": 14,
+"applicants": 141,
+"first_cutoff": 73.67,
+"final_cutoff": 158.51,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "pe",
+"selected": 17,
+"applicants": 123,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "pe",
+"selected": 8,
+"applicants": 87,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "pe",
+"selected": 52,
+"applicants": 293,
+"first_cutoff": 69.33,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "pe",
+"selected": 27,
+"applicants": 278,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "pe",
+"selected": 7,
+"applicants": 40,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "pe",
+"selected": 2,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "music",
+"selected": 35,
+"applicants": 334,
+"first_cutoff": 81.33,
+"final_cutoff": 159.24,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "music",
+"selected": 24,
+"applicants": 286,
+"first_cutoff": 70.0,
+"final_cutoff": 145.38,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "music",
+"selected": 20,
+"applicants": 250,
+"first_cutoff": 73.67,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "music",
+"selected": 11,
+"applicants": 237,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "music",
+"selected": 56,
+"applicants": 692,
+"first_cutoff": 82.0,
+"final_cutoff": 165.44,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "music",
+"selected": 57,
+"applicants": 637,
+"first_cutoff": 71.33,
+"final_cutoff": 155.3,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "music",
+"selected": 77,
+"applicants": 788,
+"first_cutoff": 70.0,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "music",
+"selected": 44,
+"applicants": 747,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "music",
+"selected": 6,
+"applicants": 59,
+"first_cutoff": 75.0,
+"final_cutoff": 163.97,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "music",
+"selected": 12,
+"applicants": 97,
+"first_cutoff": 67.0,
+"final_cutoff": 146.81,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "music",
+"selected": 24,
+"applicants": 179,
+"first_cutoff": 68.33,
+"final_cutoff": 154.02,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "music",
+"selected": 20,
+"applicants": 209,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "music",
+"selected": 3,
+"applicants": 48,
+"first_cutoff": 80.33,
+"final_cutoff": 169.28,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "music",
+"selected": 1,
+"applicants": 35,
+"first_cutoff": 81.67,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "music",
+"selected": 2,
+"applicants": 48,
+"first_cutoff": 80.67,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "music",
+"selected": 2,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "music",
+"selected": 3,
+"applicants": 65,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "music",
+"selected": 2,
+"applicants": 27,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "music",
+"selected": 3,
+"applicants": 45,
+"first_cutoff": 82.33,
+"final_cutoff": 172.82,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "music",
+"selected": 3,
+"applicants": 34,
+"first_cutoff": 72.0,
+"final_cutoff": 162.78,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "music",
+"selected": 4,
+"applicants": 36,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "music",
+"selected": 3,
+"applicants": 44,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "music",
+"selected": 12,
+"applicants": 172,
+"first_cutoff": 81.33,
+"final_cutoff": 168.78,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "music",
+"selected": 9,
+"applicants": 145,
+"first_cutoff": 73.0,
+"final_cutoff": 163.51,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "music",
+"selected": 10,
+"applicants": 131,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "music",
+"selected": 7,
+"applicants": 150,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "music",
+"selected": 5,
+"applicants": 72,
+"first_cutoff": 78.33,
+"final_cutoff": 165.04,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "music",
+"selected": 3,
+"applicants": 42,
+"first_cutoff": 66.67,
+"final_cutoff": 159.99,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "music",
+"selected": 4,
+"applicants": 41,
+"first_cutoff": 68.33,
+"final_cutoff": 160.66,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "music",
+"selected": 2,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "music",
+"selected": 11,
+"applicants": 123,
+"first_cutoff": 80.0,
+"final_cutoff": 161.95,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "music",
+"selected": 20,
+"applicants": 156,
+"first_cutoff": 65.67,
+"final_cutoff": 148.91,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "music",
+"selected": 8,
+"applicants": 100,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "music",
+"selected": 8,
+"applicants": 132,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "music",
+"selected": 7,
+"applicants": 95,
+"first_cutoff": 80.33,
+"final_cutoff": 161.12,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "music",
+"selected": 10,
+"applicants": 78,
+"first_cutoff": 66.0,
+"final_cutoff": 146.19,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "music",
+"selected": 7,
+"applicants": 77,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "music",
+"selected": 2,
+"applicants": 50,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "music",
+"selected": 5,
+"applicants": 81,
+"first_cutoff": 81.33,
+"final_cutoff": 174.6,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "music",
+"selected": 7,
+"applicants": 91,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "music",
+"selected": 2,
+"applicants": 70,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "music",
+"selected": 6,
+"applicants": 70,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2027,
+"subject": "music",
+"selected": 1,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "music",
+"selected": 8,
+"applicants": 122,
+"first_cutoff": 72.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "music",
+"selected": 11,
+"applicants": 175,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "art",
+"selected": 18,
+"applicants": 219,
+"first_cutoff": 65.33,
+"final_cutoff": 147.27,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "art",
+"selected": 13,
+"applicants": 139,
+"first_cutoff": 66.67,
+"final_cutoff": 152.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "art",
+"selected": 9,
+"applicants": 135,
+"first_cutoff": 74.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "art",
+"selected": 6,
+"applicants": 123,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "art",
+"selected": 57,
+"applicants": 419,
+"first_cutoff": 61.67,
+"final_cutoff": 147.54,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "art",
+"selected": 69,
+"applicants": 463,
+"first_cutoff": 66.0,
+"final_cutoff": 153.46,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "art",
+"selected": 81,
+"applicants": 452,
+"first_cutoff": 66.67,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "art",
+"selected": 49,
+"applicants": 477,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "art",
+"selected": 6,
+"applicants": 71,
+"first_cutoff": 63.0,
+"final_cutoff": 155.04,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "art",
+"selected": 11,
+"applicants": 74,
+"first_cutoff": 61.67,
+"final_cutoff": 149.94,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "art",
+"selected": 16,
+"applicants": 118,
+"first_cutoff": 72.0,
+"final_cutoff": 153.74,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "art",
+"selected": 15,
+"applicants": 138,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2024,
+"subject": "art",
+"selected": 1,
+"applicants": 26,
+"first_cutoff": 60.0,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "art",
+"selected": 2,
+"applicants": 32,
+"first_cutoff": 67.67,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "art",
+"selected": 2,
+"applicants": 41,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2024,
+"subject": "art",
+"selected": 1,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "art",
+"selected": 2,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "art",
+"selected": 2,
+"applicants": 30,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "art",
+"selected": 3,
+"applicants": 45,
+"first_cutoff": 58.0,
+"final_cutoff": 147.92,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "art",
+"selected": 4,
+"applicants": 43,
+"first_cutoff": 64.67,
+"final_cutoff": 152.19,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "art",
+"selected": 6,
+"applicants": 59,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "art",
+"selected": 3,
+"applicants": 44,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "art",
+"selected": 15,
+"applicants": 188,
+"first_cutoff": 64.33,
+"final_cutoff": 150.06,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "art",
+"selected": 16,
+"applicants": 166,
+"first_cutoff": 65.0,
+"final_cutoff": 152.01,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "art",
+"selected": 21,
+"applicants": 198,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "art",
+"selected": 12,
+"applicants": 147,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "art",
+"selected": 7,
+"applicants": 82,
+"first_cutoff": 63.0,
+"final_cutoff": 153.92,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "art",
+"selected": 5,
+"applicants": 36,
+"first_cutoff": 63.33,
+"final_cutoff": 156.91,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "art",
+"selected": 4,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "art",
+"selected": 6,
+"applicants": 45,
+"first_cutoff": 60.0,
+"final_cutoff": 147.23,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "art",
+"selected": 2,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "art",
+"selected": 9,
+"applicants": 84,
+"first_cutoff": 61.33,
+"final_cutoff": 137.44,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "art",
+"selected": 15,
+"applicants": 86,
+"first_cutoff": 61.33,
+"final_cutoff": 139.62,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "art",
+"selected": 10,
+"applicants": 90,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "art",
+"selected": 9,
+"applicants": 105,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "art",
+"selected": 11,
+"applicants": 113,
+"first_cutoff": 59.67,
+"final_cutoff": 142.13,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "art",
+"selected": 8,
+"applicants": 64,
+"first_cutoff": 59.0,
+"final_cutoff": 144.58,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "art",
+"selected": 9,
+"applicants": 89,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2027,
+"subject": "art",
+"selected": 2,
+"applicants": 36,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "art",
+"selected": 8,
+"applicants": 68,
+"first_cutoff": 59.33,
+"final_cutoff": 145.48,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "art",
+"selected": 8,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2027,
+"subject": "art",
+"selected": 4,
+"applicants": 69,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "art",
+"selected": 4,
+"applicants": 42,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "art",
+"selected": 14,
+"applicants": 108,
+"first_cutoff": 68.0,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2027,
+"subject": "art",
+"selected": 15,
+"applicants": 146,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "art",
+"selected": 4,
+"applicants": 26,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2027,
+"subject": "art",
+"selected": 2,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2024,
+"subject": "english",
+"selected": 54,
+"applicants": 462,
+"first_cutoff": 75.33,
+"final_cutoff": 165.5,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2025,
+"subject": "english",
+"selected": 86,
+"applicants": 569,
+"first_cutoff": 82.0,
+"final_cutoff": 171.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "english",
+"selected": 82,
+"applicants": 469,
+"first_cutoff": 67.33,
+"final_cutoff": 159.74,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "english",
+"selected": 57,
+"applicants": 453,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2024,
+"subject": "english",
+"selected": 137,
+"applicants": 997,
+"first_cutoff": 72.0,
+"final_cutoff": 167.95,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2025,
+"subject": "english",
+"selected": 166,
+"applicants": 931,
+"first_cutoff": 77.33,
+"final_cutoff": 172.13,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "english",
+"selected": 236,
+"applicants": 1102,
+"first_cutoff": 63.33,
+"final_cutoff": 158.87,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "english",
+"selected": 165,
+"applicants": 1009,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2024,
+"subject": "english",
+"selected": 9,
+"applicants": 95,
+"first_cutoff": 73.33,
+"final_cutoff": 166.64,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2025,
+"subject": "english",
+"selected": 22,
+"applicants": 138,
+"first_cutoff": 77.33,
+"final_cutoff": 171.89,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "english",
+"selected": 55,
+"applicants": 222,
+"first_cutoff": 60.0,
+"final_cutoff": 156.03,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "english",
+"selected": 58,
+"applicants": 303,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2024,
+"subject": "english",
+"selected": 3,
+"applicants": 49,
+"first_cutoff": 72.67,
+"final_cutoff": 170.7,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "english",
+"selected": 1,
+"applicants": 32,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2024,
+"subject": "english",
+"selected": 4,
+"applicants": 69,
+"first_cutoff": 70.67,
+"final_cutoff": 164.53,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2025,
+"subject": "english",
+"selected": 4,
+"applicants": 44,
+"first_cutoff": 75.0,
+"final_cutoff": 165.42,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "english",
+"selected": 11,
+"applicants": 87,
+"final_cutoff": 154.3,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "english",
+"selected": 19,
+"applicants": 155,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "english",
+"selected": 2,
+"applicants": 28,
+"first_cutoff": 73.34,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2024,
+"subject": "english",
+"selected": 4,
+"applicants": 52,
+"first_cutoff": 69.67,
+"final_cutoff": 163.36,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2025,
+"subject": "english",
+"selected": 9,
+"applicants": 76,
+"first_cutoff": 75.0,
+"final_cutoff": 167.87,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "english",
+"selected": 10,
+"applicants": 81,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "english",
+"selected": 7,
+"applicants": 62,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2024,
+"subject": "english",
+"selected": 21,
+"applicants": 263,
+"first_cutoff": 74.33,
+"final_cutoff": 168.9,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2025,
+"subject": "english",
+"selected": 38,
+"applicants": 318,
+"first_cutoff": 78.67,
+"final_cutoff": 172.33,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "english",
+"selected": 61,
+"applicants": 325,
+"final_cutoff": 160.17,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "english",
+"selected": 36,
+"applicants": 288,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2024,
+"subject": "english",
+"selected": 14,
+"applicants": 140,
+"first_cutoff": 72.0,
+"final_cutoff": 164.78,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2025,
+"subject": "english",
+"selected": 13,
+"applicants": 97,
+"first_cutoff": 74.67,
+"final_cutoff": 168.91,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "english",
+"selected": 13,
+"applicants": 75,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "english",
+"selected": 12,
+"applicants": 103,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2024,
+"subject": "english",
+"selected": 11,
+"applicants": 103,
+"first_cutoff": 70.33,
+"final_cutoff": 167.17,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2025,
+"subject": "english",
+"selected": 17,
+"applicants": 124,
+"first_cutoff": 74.0,
+"final_cutoff": 165.64,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "english",
+"selected": 24,
+"applicants": 94,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "english",
+"selected": 6,
+"applicants": 61,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2024,
+"subject": "english",
+"selected": 29,
+"applicants": 193,
+"first_cutoff": 68.33,
+"final_cutoff": 156.23,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2025,
+"subject": "english",
+"selected": 41,
+"applicants": 257,
+"first_cutoff": 75.0,
+"final_cutoff": 168.42,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "english",
+"selected": 49,
+"applicants": 251,
+"final_cutoff": 153.16,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2027,
+"subject": "english",
+"selected": 42,
+"applicants": 260,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2024,
+"subject": "english",
+"selected": 22,
+"applicants": 186,
+"first_cutoff": 69.33,
+"final_cutoff": 165.84,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2025,
+"subject": "english",
+"selected": 26,
+"applicants": 168,
+"first_cutoff": 74.67,
+"final_cutoff": 164.67,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "english",
+"selected": 33,
+"applicants": 187,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2024,
+"subject": "english",
+"selected": 33,
+"applicants": 294,
+"first_cutoff": 69.0,
+"final_cutoff": 164.83,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "english",
+"selected": 43,
+"applicants": 218,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "english",
+"selected": 34,
+"applicants": 220,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "english",
+"selected": 33,
+"applicants": 210,
+"first_cutoff": 63.0,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "english",
+"selected": 10,
+"applicants": 63,
+"first_cutoff": 60.0,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "tech",
+"selected": 20,
+"applicants": 56,
+"first_cutoff": 64.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "tech",
+"selected": 15,
+"applicants": 66,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "tech",
+"selected": 56,
+"applicants": 131,
+"first_cutoff": 59.33,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "tech",
+"selected": 35,
+"applicants": 127,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "tech",
+"selected": 20,
+"applicants": 34,
+"first_cutoff": 54.0,
+"final_cutoff": 160.64,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "tech",
+"selected": 8,
+"applicants": 25,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "tech",
+"selected": 2,
+"applicants": 6,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "tech",
+"selected": 2,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "tech",
+"selected": 2,
+"applicants": 7,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "tech",
+"selected": 5,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "tech",
+"selected": 8,
+"applicants": 40,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "tech",
+"selected": 1,
+"applicants": 5,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "tech",
+"selected": 3,
+"applicants": 9,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "tech",
+"selected": 2,
+"applicants": 6,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "tech",
+"selected": 7,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "tech",
+"selected": 2,
+"applicants": 13,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "tech",
+"selected": 2,
+"applicants": 3,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "tech",
+"selected": 3,
+"applicants": 14,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "tech",
+"selected": 19,
+"applicants": 43,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "tech",
+"selected": 9,
+"applicants": 24,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "tech",
+"selected": 5,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "tech",
+"selected": 10,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "tech",
+"selected": 24,
+"applicants": 62,
+"first_cutoff": 59.67,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "tech",
+"selected": 3,
+"applicants": 5,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "homeec",
+"selected": 12,
+"applicants": 84,
+"first_cutoff": 61.33,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "homeec",
+"selected": 8,
+"applicants": 87,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "homeec",
+"selected": 58,
+"applicants": 270,
+"first_cutoff": 55.67,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "homeec",
+"selected": 36,
+"applicants": 255,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "homeec",
+"selected": 16,
+"applicants": 69,
+"first_cutoff": 52.33,
+"final_cutoff": 147.01,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "homeec",
+"selected": 15,
+"applicants": 109,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "homeec",
+"selected": 1,
+"applicants": 8,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "homeec",
+"selected": 1,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "homeec",
+"selected": 2,
+"applicants": 16,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "homeec",
+"selected": 1,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "homeec",
+"selected": 3,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "homeec",
+"selected": 3,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "homeec",
+"selected": 8,
+"applicants": 48,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "homeec",
+"selected": 3,
+"applicants": 13,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "homeec",
+"selected": 12,
+"applicants": 71,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "homeec",
+"selected": 9,
+"applicants": 87,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "homeec",
+"selected": 5,
+"applicants": 39,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "homeec",
+"selected": 4,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "homeec",
+"selected": 15,
+"applicants": 105,
+"first_cutoff": 55.67,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "homeec",
+"selected": 2,
+"applicants": 10,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2026,
+"subject": "info",
+"selected": 23,
+"applicants": 86,
+"first_cutoff": 56.67,
+"category": "general"
+},
+{
+"region": "seoul",
+"year": 2027,
+"subject": "info",
+"selected": 24,
+"applicants": 135,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2026,
+"subject": "info",
+"selected": 115,
+"applicants": 301,
+"first_cutoff": 49.0,
+"final_cutoff": 150.68,
+"category": "general"
+},
+{
+"region": "gyeonggi",
+"year": 2027,
+"subject": "info",
+"selected": 61,
+"applicants": 233,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2026,
+"subject": "info",
+"selected": 20,
+"applicants": 70,
+"first_cutoff": 45.0,
+"final_cutoff": 145.94,
+"category": "general"
+},
+{
+"region": "incheon",
+"year": 2027,
+"subject": "info",
+"selected": 31,
+"applicants": 116,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2026,
+"subject": "info",
+"selected": 5,
+"applicants": 19,
+"category": "general"
+},
+{
+"region": "sejong",
+"year": 2027,
+"subject": "info",
+"selected": 8,
+"applicants": 33,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2026,
+"subject": "info",
+"selected": 4,
+"applicants": 17,
+"category": "general"
+},
+{
+"region": "daejeon",
+"year": 2027,
+"subject": "info",
+"selected": 4,
+"applicants": 20,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2026,
+"subject": "info",
+"selected": 9,
+"applicants": 31,
+"category": "general"
+},
+{
+"region": "daegu",
+"year": 2027,
+"subject": "info",
+"selected": 8,
+"applicants": 26,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2026,
+"subject": "info",
+"selected": 3,
+"applicants": 11,
+"category": "general"
+},
+{
+"region": "gwangju",
+"year": 2027,
+"subject": "info",
+"selected": 3,
+"applicants": 15,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2026,
+"subject": "info",
+"selected": 10,
+"applicants": 29,
+"category": "general"
+},
+{
+"region": "ulsan",
+"year": 2027,
+"subject": "info",
+"selected": 8,
+"applicants": 24,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2026,
+"subject": "info",
+"selected": 20,
+"applicants": 60,
+"final_cutoff": 131.86,
+"category": "general"
+},
+{
+"region": "busan",
+"year": 2027,
+"subject": "info",
+"selected": 16,
+"applicants": 75,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2026,
+"subject": "info",
+"selected": 9,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "gangwon",
+"year": 2027,
+"subject": "info",
+"selected": 8,
+"applicants": 31,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2026,
+"subject": "info",
+"selected": 6,
+"applicants": 23,
+"category": "general"
+},
+{
+"region": "chungbuk",
+"year": 2027,
+"subject": "info",
+"selected": 2,
+"applicants": 5,
+"category": "general"
+},
+{
+"region": "chungnam",
+"year": 2026,
+"subject": "info",
+"selected": 23,
+"applicants": 65,
+"category": "general"
+},
+{
+"region": "jeonbuk",
+"year": 2026,
+"subject": "info",
+"selected": 14,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "jeonnam",
+"year": 2026,
+"subject": "info",
+"selected": 20,
+"applicants": 51,
+"category": "general"
+},
+{
+"region": "gyeongbuk",
+"year": 2026,
+"subject": "info",
+"selected": 14,
+"applicants": 46,
+"category": "general"
+},
+{
+"region": "gyeongnam",
+"year": 2026,
+"subject": "info",
+"selected": 40,
+"applicants": 114,
+"first_cutoff": 42.0,
+"category": "general"
+},
+{
+"region": "jeju",
+"year": 2026,
+"subject": "info",
+"selected": 4,
+"applicants": 16,
+"category": "general"
+}
+]
+}
