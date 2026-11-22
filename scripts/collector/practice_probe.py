@@ -28,6 +28,8 @@ UNIVS = {
     'ginue': ('경인교대', 'https://www.ginue.ac.kr/'),
 }
 MENU = re.compile(r'공지|학사|교육실습|실습')
+# 홈에서 메뉴를 못 찾는 학교: 직접 넣은 게시판 주소 (2차 조사에서 확인한 것)
+EXTRA = {}
 HIT = re.compile(r'실습')
 STRONG = re.compile(r'(실습\s*(학교|협력|배정|운영)|협력\s*학교|참관\s*실습|수업\s*실습|실무\s*실습|종합\s*실습|실습학교)')
 SKIP = re.compile(r'평생교육|해외|글로벌|봉사|심폐|응급|교육대학원|유치원|중등')
@@ -73,6 +75,16 @@ def probe(code, name, home, out):
         log['errors'].append(f'홈 접속 실패: {type(e).__name__} {str(e)[:100]}')
         return log
     boards = []
+    log['home_final'] = final
+    log['home_len'] = len(html)
+    allA = [(t, h) for t, h, _ in crawl.anchors(html, final)]
+    log['anchors'] = len(allA)
+    log['anchor_sample'] = [f'{t[:20]} {h[:90]}' for t, h in allA if re.search(r'공지|학사|실습|notice|board|bbs', t + h, re.I)][:25]
+    m = re.search(r'(?i)(?:location\.href|location\.replace|http-equiv=["\']refresh["\'][^>]*url=)\s*\(?["\']?([^"\'\s>)]+)', html)
+    if m:
+        log['redirect'] = m.group(1)
+    for extra in EXTRA.get(code, []):
+        boards.append(('추가', extra))
     for text, href, _ in crawl.anchors(html, final):
         if href and MENU.search(text) and len(text) <= 20 and href.split('/')[2].endswith(home.split('/')[2].replace('www.', '')):
             boards.append((text, href))
@@ -144,5 +156,9 @@ if __name__ == '__main__':
             print('   [글]', p.get('date'), p['title'][:70], '| 첨부', len(p['files']), '| 그림', len(p['images']), p.get('error', ''))
         for e in lg['errors'][:3]:
             print('   [오류]', e)
+        if not lg['boards']:
+            print('   [홈]', lg.get('home_final'), lg.get('home_len'), 'a', lg.get('anchors'), 'redirect', lg.get('redirect'))
+            for a in lg.get('anchor_sample', [])[:25]:
+                print('     ·', a)
         summary.append({'univ': code, 'name': name, 'boards': len(lg['boards']), 'posts': len(lg['posts']), 'errors': lg['errors'][:3]})
     save(f'{out}/summary.json', json.dumps(summary, ensure_ascii=False, indent=1))
