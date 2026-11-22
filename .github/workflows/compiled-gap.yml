@@ -1,0 +1,18 @@
+name: compiled-gap
+# 학원 정리표 값을 빼면 빌 칸 세기 (DB 안 건드림)
+on: { workflow_dispatch: {} }
+jobs:
+  gap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git fetch -q origin raw-files
+          git archive FETCH_HEAD raw | tar -x
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: |
+          sudo apt-get install -y -qq poppler-utils >/dev/null
+          pip install -q pdfplumber openpyxl xlrd cryptography
+      - run: python -u scripts/collector/compiled_gap.py raw
