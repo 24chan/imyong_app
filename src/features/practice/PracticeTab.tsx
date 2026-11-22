@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { getPractice, PRACTICE_UNIVS, PracticeSchool, sessionLabel } from '../../data/practice';
 import { regionByCode } from '../../data/regions';
@@ -77,19 +77,38 @@ export function PracticeTab() {
 
   if (data.loading) return <ActivityIndicator color={colors.brand} />;
   if (data.error) return <Txt color="down">{data.error.message}</Txt>;
-  if (!d) return <Txt variant="sub">실습학교 목록을 준비 중이에요.</Txt>;
-
-  return (
-    <View style={{ gap: space.md }}>
+  const univChips = (
+    <>
       {viewLevel === 'secondary' && (
         <Txt variant="sub" style={{ fontSize: 12 }}>
           사범대 교육실습은 학교마다 신청 방식이 달라(출신 학교 실습 등) 공통 목록이 없어서, 지금은 교대 실습초 목록만 있어요.
         </Txt>
       )}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         {PRACTICE_UNIVS.map((u) => (
           <Chip key={u.code} label={u.name} selected={univ === u.code} onPress={() => setUniv(u.code)} />
         ))}
+      </ScrollView>
+    </>
+  );
+  if (!d) {
+    const name = PRACTICE_UNIVS.find((u) => u.code === univ)?.name ?? '';
+    return (
+      <View style={{ gap: space.md }}>
+        {univChips}
+        <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.surface }}>
+          <Txt>{name} 실습학교 목록은 아직 없어요.</Txt>
+          <Txt variant="sub">학교 누리집 공지에서 목록을 찾지 못했어요. 실습학교 안내 공지 캡처·사진·PDF·주소 무엇이든 보내 주시면 확인해서 올릴게요.</Txt>
+          <PracticeTipButton univ={name} year={new Date().getFullYear()} label="실습학교 목록 제보하기" />
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ gap: space.md }}>
+      {univChips}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
         {years.map((y) => (
           <Chip key={y} label={`${y}학년도`} selected={year === y} onPress={() => setYear(y)} />
         ))}

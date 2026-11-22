@@ -34,12 +34,21 @@ export type PracticeData = {
   notes: string[];
 };
 
-/** 실습학교 목록이 있는 교대 (늘어나면 여기에 추가) */
+/** 실습초 탭의 교대 (목록이 있는 곳 먼저). 목록 파일이 없는 교대는 '준비 중 + 제보' 화면 */
 export const PRACTICE_UNIVS: { code: string; name: string }[] = [
   { code: 'ginue', name: '경인교대' },
   { code: 'dnue', name: '대구교대' },
-  { code: 'cnue', name: '춘천교대' },
   { code: 'gnue', name: '광주교대' },
+  { code: 'cnue', name: '춘천교대' },
+  { code: 'snue', name: '서울교대' },
+  { code: 'cje', name: '청주교대' },
+  { code: 'gjue', name: '공주교대' },
+  { code: 'jnue', name: '전주교대' },
+  { code: 'bnue', name: '부산교대' },
+  { code: 'cue', name: '진주교대' },
+  { code: 'knue', name: '한국교원대' },
+  { code: 'ewha_elem', name: '이화여대' },
+  { code: 'jeju_elem', name: '제주대' },
 ];
 
 const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/practice';
