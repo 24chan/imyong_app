@@ -25,21 +25,26 @@ SLOW = {'gnue': 3.0}  # 빨리 요청하면 연결을 끊는 곳
 UNIVS = {
     'snue': ('서울교대', 'https://www.snue.ac.kr/'),
     'cnue': ('춘천교대', 'https://www.cnue.ac.kr/'),
-    'cje': ('청주교대', 'https://www.cje.ac.kr/'),
-    'gjue': ('공주교대', 'https://www.gjue.ac.kr/'),
-    'jnue': ('전주교대', 'https://www.jnue.kr/'),
+    'cje': ('청주교대', 'https://www.cje.ac.kr/ctps/'),
+    'gjue': ('공주교대', 'https://www.gjue.ac.kr/html/kor/index.html'),
+    'jnue': ('전주교대', 'https://www.jnue.kr/portal/jnue/main/main.do'),
     'gnue': ('광주교대', 'https://www.gnue.ac.kr/'),
     'dnue': ('대구교대', 'https://www.dnue.ac.kr/'),
-    'bnue': ('부산교대', 'https://www.bnue.ac.kr/'),
+    'bnue': ('부산교대', 'https://www.bnue.ac.kr/home/main'),
     'cue': ('진주교대', 'https://www.cue.ac.kr/'),
     'knue': ('한국교원대', 'https://www.knue.ac.kr/'),
-    'jejunu': ('제주대 교육대학', 'https://www.jejunu.ac.kr/'),
+    'jejunu': ('제주대 교육대학', 'https://www.jejunu.ac.kr/index.htm'),
     'ewha': ('이화여대 초등교육과', 'https://elementary.ewha.ac.kr/'),
     'ginue': ('경인교대', 'https://www.ginue.ac.kr/'),
 }
 MENU = re.compile(r'공지|학사|교육실습|실습')
 # 홈에서 메뉴를 못 찾는 학교: 직접 넣은 게시판 주소 (2차 조사에서 확인한 것)
 EXTRA = {}
+# 바로 받아 볼 페이지 (조사에서 주소를 찾은 것)
+DIRECT = {
+    'gnue': [('실습학교주소', 'https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86391170028a'),
+             ('실습운영계획', 'https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86387c490287')],
+}
 HIT = re.compile(r'실습')
 STRONG = re.compile(r'(실습\s*(학교|협력|배정|운영)|협력\s*학교|참관\s*실습|수업\s*실습|실무\s*실습|종합\s*실습|실습학교)')
 SKIP = re.compile(r'평생교육|해외|글로벌|봉사|심폐|응급|교육대학원|유치원|중등')
@@ -110,6 +115,8 @@ def probe(code, name, home, out):
         if href and MENU.search(text) and len(text) <= 20 and href.split('/')[2].endswith(home.split('/')[2].replace('www.', '')):
             boards.append((text, href))
     seen_b, posts = set(), {}
+    for t, u in DIRECT.get(code, []):
+        posts[u] = t
     for text, href in boards[:14]:
         if href in seen_b:
             continue
