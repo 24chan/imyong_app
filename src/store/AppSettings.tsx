@@ -105,8 +105,7 @@ export const levelLabel = (level: Level) => (level === 'elementary' ? '초등' :
 
 /** 오늘 날짜 (개발용 날짜가 있으면 그 값) */
 export function useToday() {
-  const { settings } = useAppSettings();
-  if (settings.devDate) return settings.devDate;
+  // 개발용 테스트 날짜는 없앰 (2026-11-22): 항상 실제 오늘
   const now = new Date();
   const p = (n: number) => String(n).padStart(2, '0');
   return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
