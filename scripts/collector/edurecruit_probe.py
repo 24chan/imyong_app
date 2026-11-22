@@ -1,5 +1,4 @@
-"""조사(읽기만): 나이스 교직원 온라인채용(edurecruit.go.kr) 공고 목록을 자동으로 가져올 수 있는지.
-넥사크로 앱이라 첫 화면은 비어 있음 → 불러오는 스크립트·설정 파일에서 데이터 주소(.do, SSV/XML)를 찾는다."""
+"""조사(읽기만): 나이스 교직원 온라인채용(edurecruit.go.kr) — 넥사크로 앱(/nxui)의 설정·화면 파일에서 공고 목록 데이터 주소 찾기"""
 import os
 import re
 import sys
@@ -7,31 +6,30 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import crawl  # noqa: E402
 
-seen = set()
+B = 'https://edurecruit.go.kr/nxui/'
 
 
-def show(url, depth=0):
-    if url in seen or depth > 2 or len(seen) > 40:
-        return
-    seen.add(url)
+def get(path):
     try:
-        final, body = crawl.get(url, timeout=30)
+        f, body = crawl.get(B + path, timeout=30)
+        print(f'● {path} len={len(body)}')
+        return body
     except Exception as e:  # noqa: BLE001
-        print(f'{"  " * depth}✗ {url} {type(e).__name__} {str(e)[:80]}')
-        return
-    print(f'{"  " * depth}● {final} len={len(body)}')
-    hits = sorted(set(re.findall(r'["\'](/[^"\'\s<>]{2,120}\.(?:do|xfdl\.js|xjs|js|xml|json))["\']', body)))
-    for h in hits[:30]:
-        print(f'{"  " * depth}   - {h}')
-    for kw in ('svcurl', 'serviceurl', 'Services', 'prefixid', 'url=', 'transaction(', 'nexacro', 'ajax', 'fetch('):
-        for m in list(re.finditer(re.escape(kw), body, re.I))[:2]:
-            print(f'{"  " * depth}   [{kw}] ' + re.sub(r'\s+', ' ', body[max(0, m.start() - 80):m.start() + 160]))
-    base = '/'.join(final.split('/')[:3])
-    for h in hits:
-        if re.search(r'environment|typedef|appvariables|svc|service|config|main|index|start|recruit|ntc|notice|job', h, re.I):
-            show(base + h, depth + 1)
+        print(f'✗ {path} {str(e)[:60]}')
+        return ''
 
 
-for u in ['https://edurecruit.go.kr/', 'https://www.edurecruit.go.kr/', 'https://edurecruit.go.kr/index.html',
-          'https://edurecruit.go.kr/environment.xml', 'https://edurecruit.go.kr/typedefinition.xml']:
-    show(u)
+idx = get('index.html')
+for m in re.findall(r'["\']([^"\']+\.(?:js|json|xml))["\']', idx):
+    if 'nexacrolib' not in m:
+        print('  idx ->', m)
+for p in ('environment.xml.js', 'typedefinition.xml.js', 'start.json', 'application.xadl.js', 'Application_Desktop.xadl.js', 'appvariables.xml.js'):
+    body = get(p)
+    for m in re.finditer(r'(?:url|prefixid|services|this\.set_|_addService|addService|_setServices)[^;\n]{0,200}', body, re.I):
+        print('   ', m.group(0)[:220])
+    forms = sorted(set(re.findall(r'[\w/]+\.xfdl', body)))[:40]
+    if forms:
+        print('   forms:', forms)
+# 공고 관련 화면 후보 불러 보기
+for cand in re.findall(r'[\w/]*(?:rcrt|recr|ntc|notice|pbanc|job|empl|hire)[\w/]*\.xfdl', idx + ''.join(get(x) for x in ()), re.I)[:10]:
+    get(cand + '.js')
