@@ -1,17 +1,16 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, GestureResponderEvent, Pressable, View } from 'react-native';
-import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
+import { ActivityIndicator, Pressable, View } from 'react-native';
 import { Chip, PrimaryButton, Txt } from '../../components/ui';
 import { getPractice, PRACTICE_UNIVS, PracticeSchool, sessionLabel } from '../../data/practice';
 import { regionByCode } from '../../data/regions';
-import { getSidoGeo } from '../../data/repository';
 import { useAsync } from '../../data/useAsync';
 import { toggleScrap, useIsScrapped } from '../../store/schoolScraps';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import { SchoolInfoBox } from '../region/SchoolInfoBox';
-import { FoundMark, useFoundColor } from '../region/SchoolMap';
+import { FoundMark } from '../region/SchoolMap';
+import { PracticeMap } from './PracticeMap';
 import { PracticeReviews } from './PracticeReviews';
 import { PracticeTipButton } from './PracticeTipButton';
 import { openTransitRoute } from './route';
@@ -21,14 +20,11 @@ import { openTransitRoute } from './route';
 type CampusMode = 'auto' | string;
 type Row = PracticeSchool & { id: string; block: string; campus: string; d: number; min?: number };
 
-const merc = (lat: number) => (Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) * 180) / Math.PI;
 
 export function PracticeTab() {
   const { colors } = useTheme();
-  const colorOf = useFoundColor();
   const [univ, setUniv] = useState<string>(PRACTICE_UNIVS[0].code);
   const data = useAsync(() => getPractice(univ), [univ]);
-  const geo = useAsync(() => getSidoGeo(), []);
   const d = data.data;
 
   const years = useMemo(() => [...new Set((d?.sessions ?? []).map((s) => s.year))].sort((a, b) => b - a), [d]);
@@ -40,7 +36,6 @@ export function PracticeTab() {
   const [area, setArea] = useState<'all' | string>('all');
   const [sort, setSort] = useState<'near' | 'name'>('near');
   const [picked, setPicked] = useState<string | null>(null);
-  const [cw, setCw] = useState(0);
 
   useEffect(() => setYear(years[0] ?? null), [years]);
   useEffect(() => setSid(sessions[0]?.id ?? null), [sessions]);
@@ -68,39 +63,6 @@ export function PracticeTab() {
   }, [d, session, area, sort, mode]);
   const blocks = useMemo(() => [...new Set(session?.schools.map((x) => x.block) ?? [])], [session]);
   const sel = rows.find((r) => r.id === picked) ?? null;
-
-  // 작은 지도: 보이는 학교 + 캠퍼스 범위
-  const map = useMemo(() => {
-    if (!d || !rows.length || !cw) return null;
-    const pts = [...rows.map((r) => [r.lng, merc(r.lat)]), ...Object.values(d.campuses).map((c) => [c.lng, merc(c.lat)])];
-    const xs = pts.map((p) => p[0]), ys = pts.map((p) => -p[1]);
-    let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-    const pad = Math.max(x1 - x0, y1 - y0) * 0.08 + 0.01;
-    x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
-    const h = Math.min(320, Math.max(200, (cw * (y1 - y0)) / (x1 - x0)));
-    const sx = cw / (x1 - x0), sy = h / (y1 - y0), s = Math.min(sx, sy);
-    const ox = (cw - (x1 - x0) * s) / 2, oy = (h - (y1 - y0) * s) / 2;
-    const P = (lng: number, lat: number): [number, number] => [ox + (lng - x0) * s, oy + (-merc(lat) - y0) * s];
-    return { h, P };
-  }, [d, rows, cw]);
-  const outline = useMemo(() => {
-    if (!map || !geo.data) return '';
-    return geo.data.sido
-      .filter((g) => ['incheon', 'gyeonggi', 'seoul'].includes(g.r))
-      .flatMap((g) => g.p.map((ring) => 'M' + ring.map(([lng, lat]) => map.P(lng, lat).map((v) => v.toFixed(1)).join(',')).join('L') + 'Z'))
-      .join('');
-  }, [map, geo.data]);
-  const tapMap = (e: GestureResponderEvent) => {
-    if (!map) return;
-    const { locationX: x, locationY: y } = e.nativeEvent;
-    let best: Row | null = null, bd = 24 * 24;
-    rows.forEach((r) => {
-      const [px, py] = map.P(r.lng, r.lat);
-      const dd = (px - x) ** 2 + (py - y) ** 2;
-      if (dd < bd) (bd = dd), (best = r);
-    });
-    setPicked(best ? (best as Row).id : null);
-  };
 
   if (data.loading) return <ActivityIndicator color={colors.brand} />;
   if (data.error) return <Txt color="down">{data.error.message}</Txt>;
@@ -150,28 +112,15 @@ export function PracticeTab() {
         </View>
       )}
 
-      <View onLayout={(e) => setCw(e.nativeEvent.layout.width)} style={{ borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
-        {map && (
-          <Pressable onPress={tapMap} accessibilityLabel="실습학교 지도. 점을 누르면 학교 카드가 열려요">
-            <Svg width={cw} height={map.h}>
-              <Path d={outline} fill={colors.background} stroke={colors.line} strokeWidth={1} />
-              {Object.entries(d.campuses).map(([k, c]) => {
-                const [x, y] = map.P(c.lng, c.lat);
-                return (
-                  <G key={k}>
-                    <Rect x={x - 6} y={y - 6} width={12} height={12} rx={3} fill={colors.accent} stroke={colors.background} strokeWidth={1.5} />
-                  </G>
-                );
-              })}
-              {rows.map((r) => {
-                const [x, y] = map.P(r.lng, r.lat);
-                return <Circle key={r.id} cx={x} cy={y} r={picked === r.id ? 7 : 4.5} fill={colorOf(r.found)} stroke={picked === r.id ? colors.text : colors.background} strokeWidth={picked === r.id ? 2 : 1} />;
-              })}
-            </Svg>
-          </Pressable>
-        )}
-      </View>
-      {rows.length > 0 && <Txt variant="sub" style={{ fontSize: 12 }}>■ 캠퍼스 · ● 실습학교 (점을 누르면 학교 카드)</Txt>}
+      {rows.length > 0 && (
+        <PracticeMap
+          points={rows.map((r) => ({ id: r.id, name: r.short, lat: r.lat, lng: r.lng, found: r.found }))}
+          campuses={Object.entries(d.campuses).map(([id, c]) => ({ id, name: c.name, lat: c.lat, lng: c.lng }))}
+          picked={picked}
+          onPick={setPicked}
+        />
+      )}
+      {rows.length > 0 && <Txt variant="sub" style={{ fontSize: 12 }}>■ 캠퍼스 · ● 실습학교 · 두 손가락으로 확대하면 학교 이름이 보여요</Txt>}
 
       {sel && <SchoolCard row={sel} campuses={d.campuses} year={session?.year ?? new Date().getFullYear()} onClose={() => setPicked(null)} />}
 

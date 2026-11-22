@@ -26,7 +26,7 @@ const KIND_LABEL = { e: '초등학교', m: '중학교', h: '고등학교' } as c
 const MAX_ZOOM = 14;
 
 // 이웃한 지역끼리 다른 색 (지역 칠하기)
-const REGION_CAT: Record<string, CatKey> = {
+export const REGION_CAT: Record<string, CatKey> = {
   gyeonggi: 'teal', seoul: 'amber', incheon: 'blue', gangwon: 'purple', chungbuk: 'blue', chungnam: 'purple', sejong: 'amber',
   daejeon: 'teal', jeonbuk: 'amber', gyeongbuk: 'teal', daegu: 'amber', gyeongnam: 'purple', jeonnam: 'blue', gwangju: 'amber',
   busan: 'teal', ulsan: 'blue', jeju: 'purple',

@@ -8,6 +8,7 @@ import { markNewsSeen, unseenOf, useSeenNews } from '../../store/seenNews';
 import { SampleBadge } from '../../components/DataBits';
 import { useModeLabel, ViewModeBanner } from '../../components/ModeToggle';
 import { Txt } from '../../components/ui';
+import { AppMark } from '../../components/AppMark';
 import { daysUntil, dDayLabel, EVENT_LABEL, getReceiptInfo, shortDate } from '../../data/receiptStatus';
 import { regionByCode } from '../../data/regions';
 import { getNotices, getRegionSummaries, getSchedules } from '../../data/repository';
@@ -117,9 +118,7 @@ export default function HomeScreen() {
 
       {/* 머리: 앱 이름 + 초등/중등 + 검색·설정 */}
       <View style={{ paddingTop: insets.top + space.sm, paddingHorizontal: space.lg, paddingBottom: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-        <View style={{ width: 30, height: 30, borderRadius: 9, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name="book" size={17} color={onBrand} />
-        </View>
+        <AppMark size={30} />
         <Txt style={{ fontSize: 21, fontWeight: '800', letterSpacing: -0.5 }}>임용몽땅</Txt>
         <View style={{ flexDirection: 'row', marginLeft: 4, padding: 2, borderRadius: radius.pill, backgroundColor: colors.surface }}>
           {(['elementary', 'secondary'] as Level[]).map((lv) => {
