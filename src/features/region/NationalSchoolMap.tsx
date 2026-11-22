@@ -57,9 +57,15 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
   const geo = useAsync(() => getSidoGeo(), []);
   const [cw, setCw] = useState(0);
   const [picked, setPicked] = useState<SchoolWithRegion | null>(null);
-  useEffect(() => setPicked(null), [level]);
+  // 처음엔 지역만 → 지역을 누르면 그 지역으로 확대하고 그 지역 학교만 (2026-11-22 사용자 요청)
+  const [focus, setFocus] = useState<string | null>(null);
+  useEffect(() => {
+    setPicked(null);
+    setFocus(null);
+  }, [level]);
 
-  const schools = useMemo(() => schoolsForLevel(data.data ?? [], level), [data.data, level]);
+  const allSchools = useMemo(() => schoolsForLevel(data.data ?? [], level), [data.data, level]);
+  const schools = useMemo(() => (focus ? allSchools.filter((x) => x.region === focus) : []), [allSchools, focus]);
   const sido = useMemo(() => geo.data?.sido ?? [], [geo.data]);
 
   // 처음 화면: 육지 경계(없으면 학교) 범위
@@ -67,12 +73,12 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
     const xs: number[] = [];
     const ys: number[] = [];
     sido.forEach((s) => s.p.forEach((r) => r.forEach(([lng, lat]) => lng < 130.5 && (xs.push(X(lng)), ys.push(Y(lat))))));
-    if (!xs.length) schools.forEach((s) => (xs.push(X(s.lng)), ys.push(Y(s.lat))));
+    if (!xs.length) allSchools.forEach((s) => (xs.push(X(s.lng)), ys.push(Y(s.lat))));
     if (!xs.length) return null;
     const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
     const pad = (x1 - x0) * 0.03;
     return { x: x0 - pad, y: y0 - pad, w: x1 - x0 + pad * 2, h: y1 - y0 + pad * 2 };
-  }, [sido, schools]);
+  }, [sido, allSchools]);
 
   const W = Math.max(1, Math.floor(cw));
   const H = initial ? Math.max(1, Math.round(Math.min(maxHeight, (W * initial.h) / initial.w))) : 1;
@@ -134,6 +140,11 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
     const kk = W / v.w;
     const mx = v.x + sx / kk;
     const my = v.y + sy / kk;
+    const hit = fns.current.regionAt(mx, my);
+    if (!fns.current.focus || (hit && hit !== fns.current.focus)) {
+      if (hit) fns.current.focusRegion(hit);
+      return;
+    }
     const lim = 22 / kk;
     let best: SchoolWithRegion | null = null;
     let bd = lim * lim;
@@ -144,8 +155,44 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
     setPicked(best);
   };
 
-  const fns = useRef({ commit, pickAt, schools, W, H, zoomed });
-  fns.current = { commit, pickAt, schools, W, H, zoomed };
+  // 지역 경계 (지도 좌표) — 누른 곳 찾기·확대 범위
+  const rings = useMemo(
+    () => sido.map((x) => ({ r: x.r, rings: x.p.map((ring) => ring.map(([lng, lat]) => [X(lng), Y(lat)] as [number, number])) })),
+    [sido],
+  );
+  const regionAt = (mx: number, my: number): string | null => {
+    for (const g0 of rings) {
+      let inside = false;
+      for (const ring of g0.rings) {
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+          const [xi, yi] = ring[i];
+          const [xj, yj] = ring[j];
+          if (yi > my !== yj > my && mx < ((xj - xi) * (my - yi)) / (yj - yi) + xi) inside = !inside;
+        }
+      }
+      if (inside) return g0.r;
+    }
+    return null;
+  };
+  const focusRegion = (r: string) => {
+    const g0 = rings.find((x) => x.r === r);
+    setPicked(null);
+    setFocus(r);
+    if (!g0) return;
+    const pts = g0.rings.flat().filter(([x]) => x < 130.5);
+    const x0 = Math.min(...pts.map((p0) => p0[0])), x1 = Math.max(...pts.map((p0) => p0[0]));
+    const y0 = Math.min(...pts.map((p0) => p0[1])), y1 = Math.max(...pts.map((p0) => p0[1]));
+    const pad = Math.max(x1 - x0, y1 - y0) * 0.08;
+    setView(fit({ x: x0 - pad, y: y0 - pad, w: x1 - x0 + pad * 2, h: y1 - y0 + pad * 2 }));
+  };
+  const showAll = () => {
+    setFocus(null);
+    setPicked(null);
+    if (initial) setView(fit(initial));
+  };
+
+  const fns = useRef({ commit, pickAt, schools, W, H, zoomed, focus, regionAt, focusRegion });
+  fns.current = { commit, pickAt, schools, W, H, zoomed, focus, regionAt, focusRegion };
   const g = useRef({ mode: 'none' as 'none' | 'pan' | 'pinch', s0: 1, tx0: 0, ty0: 0, d0: 1, mx0: 0, my0: 0, x0: 0, y0: 0, t0: 0, moved: false });
 
   const responder = useRef(
@@ -240,10 +287,16 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
     return d;
   }, [schools, view, W, level]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const byRegion = useMemo(() => {
+    const m = new Map<string, number>();
+    allSchools.forEach((s) => m.set(s.region, (m.get(s.region) ?? 0) + 1));
+    return m;
+  }, [allSchools]);
+
   // 지역 이름표 (화면 픽셀 좌표, 겹치면 작은 것 생략)
   const labels = useMemo(() => {
     const boxes: [number, number, number, number][] = [];
-    const out: { r: string; x: number; y: number; t: string; big: boolean }[] = [];
+    const out: { r: string; x: number; y: number; t: string; big: boolean; n?: number }[] = [];
     const order = [...sido].sort((a, b) => Number(METRO.has(a.r)) - Number(METRO.has(b.r)));
     for (const s of order) {
       const [lng, lat] = LABEL_AT[s.r] ?? s.c;
@@ -257,24 +310,19 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
       const box: [number, number, number, number] = [x - hw, y - fsz * 0.7, x + hw, y + fsz * 0.7];
       if (boxes.some((o) => o[0] < box[2] && box[0] < o[2] && o[1] < box[3] && box[1] < o[3])) continue;
       boxes.push(box);
-      out.push({ r: s.r, x, y, t, big });
+      out.push({ r: s.r, x, y, t, big, n: focus ? undefined : byRegion.get(s.r) });
     }
     return out;
-  }, [sido, view, k, W, H]);
+  }, [sido, view, k, W, H, focus, byRegion]);
 
   const counts = useMemo(() => {
     const c: Record<SchoolFound, number> = { p: 0, s: 0, n: 0 };
-    schools.forEach((s) => (c[s.found] += 1));
+    (focus ? schools : allSchools).forEach((s) => (c[s.found] += 1));
     return c;
-  }, [schools]);
-  const byRegion = useMemo(() => {
-    const m = new Map<string, number>();
-    schools.forEach((s) => m.set(s.region, (m.get(s.region) ?? 0) + 1));
-    return m;
-  }, [schools]);
+  }, [schools, allSchools, focus]);
 
   const loading = (data.loading && !data.data) || (geo.loading && geo.data === undefined);
-  const ready = !!initial && W > 1 && schools.length > 0;
+  const ready = !!initial && W > 1 && allSchools.length > 0;
 
   return (
     <View style={{ gap: space.sm }} onLayout={(e) => setCw(e.nativeEvent.layout.width)}>
@@ -287,11 +335,11 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
         <Txt variant="sub">{data.error ? `학교 위치를 불러오지 못했어요: ${data.error.message}` : '학교 위치 자료가 아직 없어요.'}</Txt>
       ) : (
         <View style={{ width: W, height: H, borderRadius: radius.lg, overflow: 'hidden', backgroundColor: colors.surface }}>
-          <View style={{ width: W, height: H }} {...responder.panHandlers} accessibilityLabel="전국 학교 지도. 두 손가락으로 확대, 학교를 누르면 정보">
+          <View style={{ width: W, height: H }} {...responder.panHandlers} accessibilityLabel="전국 학교 지도. 지역을 누르면 그 지역 학교, 학교를 누르면 정보">
             <Animated.View pointerEvents="none" style={{ width: W, height: H, transform: [{ translateX: aX }, { translateY: aY }, { scale: aS }] }}>
               <Svg width={W} height={H} viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}>
                 {shapes.map((s) => (
-                  <Path key={s.r} d={s.d} fill={colors.cat[REGION_CAT[s.r] ?? 'gray'].bg} />
+                  <Path key={s.r} d={s.d} fill={focus && s.r !== focus ? colors.background : colors.cat[REGION_CAT[s.r] ?? 'gray'].bg} fillOpacity={focus && s.r !== focus ? 0.6 : 1} />
                 ))}
                 {shapes.map((s) => (
                   <Path key={`o-${s.r}`} d={s.d} fill="none" stroke={colors.textSub} strokeOpacity={0.55} strokeWidth={1 * u} strokeLinejoin="round" />
@@ -310,6 +358,11 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
                     <SvgText x={l.x} y={l.y + (l.big ? 4.5 : 4)} fontSize={l.big ? 13 : 11} fontFamily="Pretendard-Bold" textAnchor="middle" fill={colors.text}>
                       {l.t}
                     </SvgText>
+                    {l.n != null && l.big && (
+                      <SvgText x={l.x} y={l.y + 18} fontSize={10} fontFamily="Pretendard-Bold" textAnchor="middle" fill={colors.textSub}>
+                        {l.n.toLocaleString()}
+                      </SvgText>
+                    )}
                   </G>
                 ))}
               </Svg>
@@ -327,9 +380,9 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
               </Pressable>
             ))}
           </View>
-          {zoomed && initial && (
+          {(zoomed || focus) && initial && (
             <Pressable
-              onPress={() => setView(fit(initial))}
+              onPress={showAll}
               accessibilityRole="button"
               style={{ position: 'absolute', left: space.sm, top: space.sm, flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line }}
             >
@@ -379,7 +432,7 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
               </View>
             ))}
           <Txt variant="sub" style={{ flex: 1, textAlign: 'right' }}>
-            두 손가락으로 확대
+            {focus ? `${regionByCode(focus)?.shortName} 학교 · 학교를 누르면 정보` : '지역을 누르면 그 지역 학교가 보여요'}
           </Txt>
         </View>
       )}
@@ -387,7 +440,7 @@ export function NationalSchoolMap({ level, maxHeight = 420, showChips = false }:
       {ready && showChips && (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
           {REGIONS.filter((r) => byRegion.has(r.code)).map((r) => (
-            <Chip key={r.code} label={`${r.shortName} ${byRegion.get(r.code)?.toLocaleString()}`} selected={false} onPress={() => openRegionSchools(r.code, level)} />
+            <Chip key={r.code} label={`${r.shortName} ${byRegion.get(r.code)?.toLocaleString()}`} selected={focus === r.code} onPress={() => (focus === r.code ? showAll() : focusRegion(r.code))} />
           ))}
         </View>
       )}
