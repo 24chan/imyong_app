@@ -71,6 +71,17 @@ def probe(code, name, home, out):
     log = {'univ': code, 'name': name, 'home': home, 'boards': [], 'posts': [], 'errors': []}
     try:
         final, html = crawl.get(home, timeout=40)
+        # 스크립트·meta로 넘기는 첫 화면은 따라감 (최대 3번)
+        for _ in range(3):
+            m = re.search(r'(?i)(?:location\.href|location\.replace|window\.location(?:\.href)?)\s*=?\s*\(?\s*["\']([^"\']+)["\']', html) \
+                or re.search(r'(?i)http-equiv=["\']?refresh["\']?[^>]*content=["\'][^"\']*url=([^"\'>]+)', html)
+            if not m or len(html) > 20000:
+                break
+            nxt = urllib.parse.urljoin(final, m.group(1).strip())
+            if nxt == final:
+                break
+            final, html = crawl.get(nxt, timeout=40)
+        save(f'{out}/{code}/home.html', html)
     except Exception as e:  # noqa: BLE001
         log['errors'].append(f'홈 접속 실패: {type(e).__name__} {str(e)[:100]}')
         return log
