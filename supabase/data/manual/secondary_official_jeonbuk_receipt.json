@@ -1,0 +1,1221 @@
+{
+ "_설명": "그림으로 된 교육청 원서접수현황 PDF를 옮겨 적음(scripts/tools/ocr_official.py). 일반+장애=계, 과목 합=소계, 소계 합=합계, 경쟁률=접수÷모집 모두 확인. 교육청 원문이라 정리 자료보다 우선.",
+ "source_title": "전북교육청 원서접수현황(공립/최종)",
+ "records": [
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 16,
+   "applicants": 214
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 18,
+   "applicants": 115
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 9,
+   "applicants": 59
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 14,
+   "applicants": 189
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 2
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 9,
+   "applicants": 59
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 18,
+   "applicants": 160
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 8,
+   "applicants": 64
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 10,
+   "applicants": 77
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 11,
+   "applicants": 92
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "earth",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 8,
+   "applicants": 37
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "earth",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 9,
+   "applicants": 46
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 9,
+   "applicants": 82
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 22,
+   "applicants": 188
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 2
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 7,
+   "applicants": 95
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 11,
+   "applicants": 113
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 22,
+   "applicants": 186
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "japanese",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 4,
+   "applicants": 33
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "japanese",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "hanmun",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 3,
+   "applicants": 43
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "info",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 3,
+   "applicants": 13
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "health",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 12,
+   "applicants": 70
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "health",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "librarian",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 7,
+   "applicants": 47
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "librarian",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 42,
+   "applicants": 309
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 4,
+   "applicants": 3
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 22,
+   "applicants": 127
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "general",
+   "selected": 13,
+   "applicants": 145
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2024,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=5&searchOperation=AND&categoryCode1=BB&dataSid=484188",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 2
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 21,
+   "applicants": 194
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 16,
+   "applicants": 77
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 7,
+   "applicants": 54
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 12,
+   "applicants": 119
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 2
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 4,
+   "applicants": 24
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 30,
+   "applicants": 157
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 8,
+   "applicants": 41
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 8,
+   "applicants": 46
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 8,
+   "applicants": 62
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "earth",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 8,
+   "applicants": 37
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "earth",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 7,
+   "applicants": 24
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 7,
+   "applicants": 85
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 26,
+   "applicants": 137
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 10,
+   "applicants": 78
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 8,
+   "applicants": 64
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 26,
+   "applicants": 168
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "japanese",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 3,
+   "applicants": 19
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "hanmun",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 5,
+   "applicants": 43
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "hanmun",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "info",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 5,
+   "applicants": 22
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "info",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "health",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 5,
+   "applicants": 27
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "health",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "librarian",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 5,
+   "applicants": 54
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "librarian",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 3
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 19,
+   "applicants": 208
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 12,
+   "applicants": 96
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "general",
+   "selected": 17,
+   "applicants": 154
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2025,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=4&searchOperation=AND&categoryCode1=BB&dataSid=714558",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 5
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 26,
+   "applicants": 248
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "korean",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 3,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 26,
+   "applicants": 116
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "math",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 3,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 11,
+   "applicants": 44
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "physics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 10,
+   "applicants": 50
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "chemistry",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 11,
+   "applicants": 47
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "biology",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "earth",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 7,
+   "applicants": 25
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 11,
+   "applicants": 53
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "social",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 14,
+   "applicants": 114
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "history",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 2
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 7,
+   "applicants": 28
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "geography",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 9,
+   "applicants": 46
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "ethics",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 17,
+   "applicants": 103
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "pe",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 3,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 7,
+   "applicants": 77
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "music",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 9,
+   "applicants": 89
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "art",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "hanmun",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 5,
+   "applicants": 46
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 33,
+   "applicants": 187
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "english",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 3,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 9,
+   "applicants": 24
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "tech",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 9,
+   "applicants": 87
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "homeec",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "info",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 14,
+   "applicants": 46
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "info",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "health",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 2,
+   "applicants": 29
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "librarian",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 3,
+   "applicants": 39
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 8,
+   "applicants": 95
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "counsel",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 9,
+   "applicants": 96
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "nutrition",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 0
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "general",
+   "selected": 10,
+   "applicants": 113
+  },
+  {
+   "region": "jeonbuk",
+   "year": 2026,
+   "subject": "special",
+   "source": "https://www.jbe.go.kr/board/view.jbe?boardId=BBS_0000043&menuCd=DOM_000000103004002000&orderBy=REGISTER_DATE:DESC&paging=ok&startPage=3&searchOperation=AND&categoryCode1=BB&dataSid=871530",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  }
+ ]
+}

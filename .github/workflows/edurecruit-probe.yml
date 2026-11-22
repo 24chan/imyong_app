@@ -1,0 +1,12 @@
+name: edurecruit-probe
+# B-7 후속 조사: 나이스 교직원 온라인채용 자동 수집 가능 여부 (읽기만)
+on: { workflow_dispatch: {} }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: python -I -u scripts/collector/edurecruit_probe.py

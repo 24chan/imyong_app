@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import { authStorage } from './authStorage';
 
 // Supabase 연결 정보
 // publishable 키는 앱에 들어가도 되는 공개용 키입니다. (secret 키는 절대 넣지 말 것)
@@ -10,7 +10,7 @@ export const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_m
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: AsyncStorage, // v1 로그인 때 사용
+    storage: authStorage, // 기기 보안 저장소(없으면 AsyncStorage), lib/authStorage.ts
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

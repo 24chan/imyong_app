@@ -130,6 +130,11 @@ def secondary_rows(raw):
         for m in md['records']:
             manual.setdefault((m['region'], m['year']), []).append({**m, '_unverified': bool(md.get('unverified'))})
             groups.setdefault((m['region'], m['year']), [])
+    official = {}
+    for of in sorted(glob.glob(os.path.join(MANUAL_DIR, 'secondary_official_*.json'))):
+        for o in json.load(open(of))['records']:
+            official.setdefault((o['region'], o['year']), []).append(o)
+            groups.setdefault((o['region'], o['year']), [])
     rows = []
     NONSUBJ = {'special', 'health', 'nutrition', 'librarian', 'counsel'}
     for (region, year), rs in sorted(groups.items()):
@@ -155,6 +160,22 @@ def secondary_rows(raw):
             if bad:
                 continue
             keep += [{k: v for k, v in x.items() if k not in ('agree', 'conflict')} for x in srs if not x.get('conflict')]
+        # 그림 공고를 옮겨 적고 표 안 계산으로 확인한 교육청 원문(secondary_official_*.json): 원문이라 정리 자료·파싱 값보다 우선
+        for o in official.get((region, year), []):
+            vals = {k: v for k, v in o.items() if k not in ('region', 'year', 'subject', 'category', 'source')}
+            cats = ('general', 'all') if o['category'] == 'general' else (o['category'],)
+            x = next((x for x in keep if x['subject'] == o['subject'] and x['category'] in cats), None)
+            if x is None:
+                x = {'region': region, 'year': year, 'level': 'secondary', 'subject': o['subject'], 'category': o['category'], 'sources': []}
+                keep.append(x)
+            for k, v in vals.items():
+                if x.get(k) is not None and x[k] != v and k not in x.get('compiled', []):
+                    print(f'  원문 옮김 우선 {region} {year} {o["subject"]} {k}: {x[k]} → {v}')
+                x[k] = v
+            if x.get('compiled'):
+                x['compiled'] = [k for k in x['compiled'] if k not in vals]
+            if o['source'] not in x['sources']:
+                x['sources'] = x['sources'] + [o['source']]
         used_manual = False
         unverified = False
         for m in manual.get((region, year), []):

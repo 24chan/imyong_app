@@ -1,0 +1,438 @@
+{
+ "_설명": "그림으로 된 교육청 원서접수현황 PDF를 옮겨 적음(scripts/tools/ocr_official.py). 일반+장애=계, 과목 합=소계, 소계 합=합계, 경쟁률=접수÷모집 모두 확인. 교육청 원문이라 정리 자료보다 우선.",
+ "source_title": "경기도교육청 응시원서 접수현황(공립)",
+ "records": [
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "korean",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 261,
+   "applicants": 1646
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "korean",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 22,
+   "applicants": 5
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "math",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 254,
+   "applicants": 883
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "math",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 21,
+   "applicants": 4
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "physics",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 79,
+   "applicants": 253
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "physics",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 3
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "chemistry",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 80,
+   "applicants": 272
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "chemistry",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 2
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "biology",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 84,
+   "applicants": 367
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "biology",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 3
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "earth",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 51,
+   "applicants": 193
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "earth",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 5,
+   "applicants": 0
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "social",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 128,
+   "applicants": 567
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "social",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 10,
+   "applicants": 6
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "history",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 87,
+   "applicants": 649
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "history",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 4
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "geography",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 65,
+   "applicants": 320
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "geography",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 5,
+   "applicants": 3
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "ethics",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 125,
+   "applicants": 478
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "ethics",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 10,
+   "applicants": 3
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "pe",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 177,
+   "applicants": 1129
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "pe",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 15,
+   "applicants": 11
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "music",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 77,
+   "applicants": 788
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "music",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 5
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "art",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 81,
+   "applicants": 452
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "art",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 7,
+   "applicants": 5
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "hanmun",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 13,
+   "applicants": 130
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "hanmun",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 1
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "english",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 236,
+   "applicants": 1102
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "english",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 20,
+   "applicants": 2
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "japanese",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 23,
+   "applicants": 157
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "japanese",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 2,
+   "applicants": 0
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "tech",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 56,
+   "applicants": 131
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "tech",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 5,
+   "applicants": 1
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "homeec",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 58,
+   "applicants": 270
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "homeec",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 5,
+   "applicants": 3
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "info",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 115,
+   "applicants": 301
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "info",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 10,
+   "applicants": 0
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "chinese",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 2,
+   "applicants": 108
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "health",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 27,
+   "applicants": 169
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "health",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 3,
+   "applicants": 2
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "librarian",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 2,
+   "applicants": 64
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "counsel",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 16,
+   "applicants": 194
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "counsel",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 1,
+   "applicants": 2
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "nutrition",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 40,
+   "applicants": 343
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "nutrition",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 4,
+   "applicants": 2
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "special",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "general",
+   "selected": 49,
+   "applicants": 420
+  },
+  {
+   "region": "gyeonggi",
+   "year": 2026,
+   "subject": "special",
+   "source": "https://www.goe.go.kr/goe/na/ntt/selectNttInfo.do?mi=10154&bbsId=2583&nttSn=2329662",
+   "category": "disabled",
+   "selected": 5,
+   "applicants": 19
+  }
+ ]
+}

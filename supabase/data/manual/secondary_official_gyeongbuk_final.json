@@ -1,0 +1,407 @@
+{
+ "_설명": "그림으로 된 경북 2026 공립 중등 과목별 최종합격 인원 및 합격선(붙임1)을 옮겨 적음. 선발·2차 응시·최종합격 합계와 공고 본문의 일반/장애 합격자 수 확인.",
+ "source_title": "경상북도교육청 최종합격 인원 및 합격선",
+ "records": [
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "korean",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 23,
+   "second_takers": 37,
+   "final_passed": 23,
+   "final_cutoff": 160.56
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "korean",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 3,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "ethics",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 13,
+   "second_takers": 20,
+   "final_passed": 13,
+   "final_cutoff": 165.23
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "ethics",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "history",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 7,
+   "second_takers": 11,
+   "final_passed": 7,
+   "final_cutoff": 164.35
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "history",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "social",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 10,
+   "second_takers": 15,
+   "final_passed": 10,
+   "final_cutoff": 175.54
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "social",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 1,
+   "final_passed": 1
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "geography",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 7,
+   "second_takers": 11,
+   "final_passed": 7,
+   "final_cutoff": 180.24
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "math",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 31,
+   "second_takers": 47,
+   "final_passed": 31,
+   "final_cutoff": 152.23
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "math",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 3,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "physics",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 10,
+   "second_takers": 7,
+   "final_passed": 7,
+   "final_cutoff": 125.83
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "physics",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "chemistry",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 8,
+   "second_takers": 9,
+   "final_passed": 8,
+   "final_cutoff": 131.26
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "chemistry",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "biology",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 9,
+   "second_takers": 14,
+   "final_passed": 9,
+   "final_cutoff": 156.17
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "biology",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "earth",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 5,
+   "second_takers": 8,
+   "final_passed": 5,
+   "final_cutoff": 145.06
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "pe",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 17,
+   "second_takers": 26,
+   "final_passed": 17,
+   "final_cutoff": 155.99
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "pe",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 1,
+   "final_passed": 1
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "music",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 6,
+   "second_takers": 9,
+   "final_passed": 6,
+   "final_cutoff": 162.28
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "art",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 4,
+   "second_takers": 6,
+   "final_passed": 4,
+   "final_cutoff": 156.59
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "english",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 34,
+   "second_takers": 54,
+   "final_passed": 34,
+   "final_cutoff": 157.7
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "english",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 3,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "homeec",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 4,
+   "second_takers": 6,
+   "final_passed": 4,
+   "final_cutoff": 143.97
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "tech",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 10,
+   "second_takers": 15,
+   "final_passed": 10,
+   "final_cutoff": 152.07
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "tech",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "hanmun",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 3,
+   "final_passed": 2
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "info",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 14,
+   "second_takers": 18,
+   "final_passed": 14,
+   "final_cutoff": 147.99
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "info",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "special",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 18,
+   "second_takers": 28,
+   "final_passed": 18,
+   "final_cutoff": 165.38
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "special",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 3,
+   "final_passed": 2
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "counsel",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 8,
+   "second_takers": 12,
+   "final_passed": 8,
+   "final_cutoff": 161.48
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "counsel",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 1,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "health",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 7,
+   "second_takers": 12,
+   "final_passed": 7,
+   "final_cutoff": 146.47
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "nutrition",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 17,
+   "second_takers": 26,
+   "final_passed": 17,
+   "final_cutoff": 149.42
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "nutrition",
+   "category": "disabled",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 0,
+   "final_passed": 0
+  },
+  {
+   "region": "gyeongbuk",
+   "year": 2026,
+   "subject": "librarian",
+   "category": "general",
+   "source": "https://www.gbe.kr/main/na/ntt/selectNttInfo.do?mi=3538&bbsId=1882&nttSn=1580340",
+   "selected": 2,
+   "second_takers": 3,
+   "final_passed": 2
+  }
+ ]
+}

@@ -14,9 +14,9 @@ from parse_results import SKIP_FILE, num, norm, tables  # noqa: E402
 
 SUBJECTS = {
     'korean': r'국어', 'english': r'영어', 'math': r'수학', 'social': r'일반사회|공통사회', 'history': r'역사',
-    'geography': r'지리', 'ethics': r'도덕[·ㆍ・‧.]?윤리|윤리', 'physics': r'물리', 'chemistry': r'화학',
+    'geography': r'지리', 'ethics': r'도덕[·ㆍ・‧․.]?윤리|윤리', 'physics': r'물리', 'chemistry': r'화학',
     'biology': r'생물', 'earth': r'지구과학', 'pe': r'체육', 'music': r'음악', 'art': r'미술',
-    'tech': r'기술', 'homeec': r'가정', 'info': r'정보[·ㆍ・‧.]?컴퓨터', 'hanmun': r'한문',
+    'tech': r'기술', 'homeec': r'가정', 'info': r'정보[·ㆍ・‧․.]?컴퓨터', 'hanmun': r'한문',
     'japanese': r'일본어', 'chinese': r'중국어', 'health': r'보건', 'counsel': r'전문상담|상담',
     'librarian': r'사서', 'nutrition': r'영양', 'special': r'특수(\(중등\)|학교\(중등\)|교사\(중등\))?',
 }
@@ -295,6 +295,11 @@ def main(raw, out_path=None):
                     cur_tbl.append(r)
                 elif len(r) == 1 and r[0].strip():
                     ctx = r[0][-60:]  # 표 바로 앞 문단 (예: '[사립]', '나. 장애인 구분모집')
+            if path.endswith('.pdf') and m['type'] == 'plan' and len({c for c, _, _ in recs if not c.startswith('x:')}) < 5:
+                import plan_text  # 시행계획 '선발예정 과목 및 인원' 표: 합계까지 맞을 때만
+                prow, _ = plan_text.parse(path)
+                if prow:
+                    recs = [(c, cat, {'selected': v}) for c, g, d, _t in prow for cat, v in (('general', g), ('disabled', d)) if cat == 'general' or v]
             if path.endswith('.pdf') and len({c for c, _, _ in recs if not c.startswith('x:')}) < 5:
                 recs = parse_layout_wide(path, m['type'])
         except Exception as e:  # noqa: BLE001
@@ -324,6 +329,21 @@ def main(raw, out_path=None):
                 cur['sources'].append(m['post_url'])
             got += 1
         log.append(f"{'OK ' if got else '-- '}{m['region']} {m['year']} {m['type']} {m['path'].split('/')[-1]} rows={got}")
+    # 같은 과목에 '구분 없음(all)'과 '일반'이 함께 있으면: all 인원 = 일반(장애 0) 또는 일반+장애일 때 all을 준 공고도 일반을 확인한 것으로 셈
+    for k in [k for k in merged if k[4] == 'all']:
+        g = k[:4] + ('general',)
+        if g not in merged or 'selected' not in merged[k] or 'selected' not in merged[g]:
+            continue
+        dsel = merged.get(k[:4] + ('disabled',), {}).get('selected') or 0
+        a_sel, g_sel = merged[k]['selected'], merged[g]['selected']
+        if a_sel not in (g_sel, g_sel + dsel) or agreements.get(k, {}).get('conflict'):
+            continue
+        agreements.setdefault(g, {'docs': set(), 'conflict': False})['docs'] |= agreements.get(k, {}).get('docs', set())
+        merged[g]['sources'] += [u for u in merged[k]['sources'] if u not in merged[g]['sources']]
+        if a_sel == g_sel and not dsel:
+            for f, v in merged[k].items():
+                if f != 'sources' and f not in merged[g]:
+                    merged[g][f] = v
     has_cat = {k[:4] for k in merged if k[4] in ('general', 'disabled', 'regional')}
     for k, v in merged.items():
         a = agreements.get(k, {'docs': set(), 'conflict': False})
