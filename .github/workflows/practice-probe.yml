@@ -24,4 +24,4 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add raw/practice_probe
           git commit -qm "실습학교 조사 $(date +%F)" || exit 0
-          git push -q origin HEAD:raw-files
+          for i in 1 2 3 4 5; do git pull -q --rebase origin raw-files && git push -q origin HEAD:raw-files && break; sleep $((i*5)); done

@@ -12,6 +12,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import crawl  # noqa: E402
 
 crawl.DELAY[0] = 0.6
+# 진주교대처럼 옛 보안 방식 서버도 읽을 수 있게 (공개 공지 읽기 전용)
+try:
+    import ssl
+    import urllib.request
+    crawl.CTX_LOOSE.set_ciphers('DEFAULT:@SECLEVEL=0')
+    crawl.CTX_LOOSE.options |= getattr(ssl, 'OP_LEGACY_SERVER_CONNECT', 0x4)
+    crawl.CTX_LOOSE.minimum_version = ssl.TLSVersion.TLSv1
+except Exception:  # noqa: BLE001
+    pass
+SLOW = {'gnue': 3.0}  # 빨리 요청하면 연결을 끊는 곳
 UNIVS = {
     'snue': ('서울교대', 'https://www.snue.ac.kr/'),
     'cnue': ('춘천교대', 'https://www.cnue.ac.kr/'),
@@ -73,7 +83,7 @@ def probe(code, name, home, out):
         final, html = crawl.get(home, timeout=40)
         # 스크립트·meta로 넘기는 첫 화면은 따라감 (최대 3번)
         for _ in range(3):
-            m = re.search(r'(?i)(?:location\.href|location\.replace|window\.location(?:\.href)?)\s*=?\s*\(?\s*["\']([^"\']+)["\']', html) \
+            m = re.search(r'(?i)location(?:\.href|\.replace)?\s*[=(]\s*["\']([^"\']+)["\']', html) \
                 or re.search(r'(?i)http-equiv=["\']?refresh["\']?[^>]*content=["\'][^"\']*url=([^"\'>]+)', html)
             if not m or len(html) > 20000:
                 break
@@ -105,7 +115,7 @@ def probe(code, name, home, out):
             continue
         seen_b.add(href)
         log['boards'].append(f'{text} {href}')
-        for u in search_urls(href)[:9]:
+        for u in search_urls(href)[: (3 if code in SLOW else 9)]:
             try:
                 f2, h2 = crawl.get(u, timeout=30)
             except Exception as e:  # noqa: BLE001
@@ -157,6 +167,7 @@ if __name__ == '__main__':
     summary = []
     for code in only:
         name, home = UNIVS[code]
+        crawl.DELAY[0] = SLOW.get(code, 0.6)
         print(f'== {name}', flush=True)
         lg = probe(code, name, home, out)
         save(f'{out}/{code}/log.json', json.dumps(lg, ensure_ascii=False, indent=1))
