@@ -36,8 +36,8 @@ export function PublicResources() {
         },
         {
           title: '2차 문제 (면접·수업실연)',
-          desc: '지역 교육청마다 공개 범위가 달라요. 지역 공고(임용 소식)에서 확인해요.',
-          go: () => router.push('/news'),
+          desc: '지역마다 방식이 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.',
+          go: () => router.push('/second-exam'),
           org: '시도교육청',
         },
       ],
