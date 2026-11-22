@@ -39,6 +39,7 @@ export const PRACTICE_UNIVS: { code: string; name: string }[] = [
   { code: 'ginue', name: '경인교대' },
   { code: 'dnue', name: '대구교대' },
   { code: 'cnue', name: '춘천교대' },
+  { code: 'gnue', name: '광주교대' },
 ];
 
 const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/practice';
@@ -54,4 +55,4 @@ export async function getPractice(univ: string): Promise<PracticeData | null> {
 
 /** 실습 이름: '2학년 · 1학기 참관실습' — 학년을 모르면 실습 이름만 */
 export const sessionLabel = (s: PracticeSession, withYear = false) =>
-  `${withYear ? `${s.year} ` : ''}${s.grade ? `${s.grade}학년 · ` : ''}${s.term}학기 ${s.kind}`;
+  `${withYear ? `${s.year} ` : ''}${s.grade ? `${s.grade}학년 · ` : ''}${s.term ? `${s.term}학기 ` : ''}${s.kind}`;

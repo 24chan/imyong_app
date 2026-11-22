@@ -16,6 +16,7 @@ import urllib.parse
 import urllib.request
 
 UA = 'imyong-app-practice/1.0 (github.com/24chan/imyong_app)'
+METRO = {'서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종'}  # 광역시 이름은 구 이름과 달라서 구 확인 안 함
 
 
 def km(a, b):
@@ -80,7 +81,7 @@ def main(raw, src_dir):
                     for i, n in enumerate(full_names(short)):  # 정식 이름 먼저, 없으면 앞 지역 이름 뺀 이름
                         pre = full_names(short)[0][:2] if i else ''
                         cands = [dict(c, name=n) for c in schools.get(n, []) if c['region'] in regions
-                                 and (not pre or pre == '인천' or c['sigungu'].startswith(pre))]  # '안산선일초' → 안산시의 선일초만
+                                 and (not pre or pre in METRO or c['sigungu'].startswith(pre))]  # '안산선일초' → 안산시의 선일초만
                         if cands:
                             break
                     if not cands:
