@@ -6,6 +6,10 @@ on:
         description: '지역 코드(공백 구분, 비우면 전체)'
         required: false
         default: 'seoul busan daegu gwangju daejeon ulsan gyeonggi gangwon chungbuk chungnam jeonbuk gyeongbuk gyeongnam jeju'
+      max_pages:
+        description: '게시판 몇 쪽까지 볼지 (기본 15, 옛 공고를 찾을 땐 60)'
+        required: false
+        default: '15'
   schedule:
     - cron: '17 20 * * *'   # 매일 05:17 (한국 시간). 끝나면 collector-ingest 가 자동으로 이어서 실행
 permissions:
@@ -38,6 +42,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: 내려받기
+        env:
+          MAX_PAGES: ${{ github.event.inputs.max_pages || '15' }}
         run: python -I -u scripts/collector/fetch.py ${{ matrix.region }}
       - uses: actions/upload-artifact@v4
         if: always()
