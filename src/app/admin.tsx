@@ -8,6 +8,7 @@ import { subjectByCode } from '../data/subjects';
 import { useAsync } from '../data/useAsync';
 import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
 import { useAuth } from '../store/Auth';
+import { StatsAdmin } from '../features/admin/StatsAdmin';
 import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
 import { adminAddEvent, adminAddLecture, adminDelete, adminEnrollments, adminLectureRequests, adminReviewEnrollment, Area, enrollDocUrls, EVENT_KIND, EventTip, LECTURE_AREA, listPendingEventTips, PendingEnrollment, reviewEventTip } from '../data/academy';
@@ -24,7 +25,7 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs'>('verify');
+  const [tab, setTab] = useState<'stats' | 'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs'>('stats');
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -45,19 +46,17 @@ export default function AdminScreen() {
     <>
       <Stack.Screen options={{ title: '운영자' }} />
       <Screen>
-        <Segmented
-          value={tab}
-          onChange={setTab}
-          options={[
-            { value: 'verify', label: `인증 ${(list.data ?? []).length}` },
-            { value: 'reports', label: `신고 ${(reports.data ?? []).length}` },
-            { value: 'appeals', label: `이의 ${(appeals.data ?? []).length}` },
-            { value: 'mock', label: '모의' },
-            { value: 'academy', label: '강의' },
-            { value: 'jobs', label: '제보' },
-          ]}
-        />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+          <Chip label={'통계'} selected={tab === 'stats'} onPress={() => setTab('stats')} />
+          <Chip label={`인증 ${(list.data ?? []).length}`} selected={tab === 'verify'} onPress={() => setTab('verify')} />
+          <Chip label={`신고 ${(reports.data ?? []).length}`} selected={tab === 'reports'} onPress={() => setTab('reports')} />
+          <Chip label={`이의 ${(appeals.data ?? []).length}`} selected={tab === 'appeals'} onPress={() => setTab('appeals')} />
+          <Chip label={'모의'} selected={tab === 'mock'} onPress={() => setTab('mock')} />
+          <Chip label={'강의'} selected={tab === 'academy'} onPress={() => setTab('academy')} />
+          <Chip label={'제보'} selected={tab === 'jobs'} onPress={() => setTab('jobs')} />
+        </View>
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
+        {tab === 'stats' && <StatsAdmin />}
         {tab === 'verify' && (
           <>
             <Txt variant="sub">승인하거나 거절하면 사진은 저장소에서 바로 지워지고, 결과(라벨)만 남아요.</Txt>
