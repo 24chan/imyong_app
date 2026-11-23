@@ -122,7 +122,7 @@ def split_units(text, subject, era):
         if cm and sec in ('성취기준', '앞부분', '내용 체계'):
             flush()
             sec = '성취기준'
-            code = cm.group(0).replace(' ', '')
+            code = f'[{cm.group(1)}{cm.group(2)}{cm.group(3)}-{cm.group(4)}]'
             units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': code, 'text': s[cm.start():]})
             continue
         if units and units[-1]['code'] and not buf and sec == '성취기준' and len(units[-1]['text']) < 400 and not s.startswith(('(', '[', '①')):
@@ -136,10 +136,10 @@ def split_units(text, subject, era):
 
 
 # ---------- 기출 문항 나누기 ----------
-Q_RE = re.compile(r'^\s{0,6}(\d{1,2})\s*\.\s+\S')
+Q_RE = re.compile(r'^\s{0,10}(\d{1,2})\s*[.．]\s*(?=\S)')
 
 
-INSTR = re.compile(r'문답지|시험이 시작|감독관|수험\s*번호|유의\s*사항')
+INSTR = re.compile(r'문답지|시험이 시작되면|감독관|수험\s*번호|답안 작성용')
 
 
 def _parse_from(lines, start):
