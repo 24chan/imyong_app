@@ -22,8 +22,10 @@ TODAY = dt.datetime.now(KST).date()
 
 # level: None = 초등·중등 모두 다루는 곳(글에 초등/중등 말이 없으면 둘 다로)
 SITES = [
-    {'code': 'hackers', 'name': '해커스임용', 'home': 'https://teacher.hackers.com/', 'level': None},
-    {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://www.g-school.co.kr/', 'level': 'secondary'},
+    {'code': 'hackers', 'name': '해커스임용', 'home': 'https://teacher.hackers.com/', 'level': None,
+     'extra': ['https://mteacher.hackers.com/bbs/notice/main/notice_main_list', 'https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_list']},
+    {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://www.g-school.co.kr/', 'level': 'secondary',
+     'extra': ['https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC5', 'https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC4']},
     {'code': 'ssamplus', 'name': 'KG에듀원 희소·쌤플러스', 'home': 'https://www.ssamplus.com/', 'level': None},
     {'code': 'pmg', 'name': '박문각임용', 'home': 'https://www.pmg.co.kr/', 'level': None},
     {'code': 'imyongcom', 'name': '임용닷컴', 'home': 'https://www.imyong.com/', 'level': None},
@@ -59,6 +61,11 @@ def texts(html, base):
     for m in re.finditer(r'<a\b([^>]*)>(.*?)</a>', html, re.S | re.I):
         attrs, inner = m.group(1), m.group(2)
         href = re.search(r'href\s*=\s*["\']([^"\']+)', attrs)
+        if href:
+            hv = htmllib.unescape(href.group(1))
+            if hv.startswith('//'):
+                hv = 'https:' + hv
+            href = re.match(r'(.*)', hv)
         url = urllib.parse.urljoin(base, href.group(1)) if href and not href.group(1).startswith(('javascript', '#', 'mailto')) else base
         bits = [clean(inner)]
         bits += [clean(x) for x in re.findall(r'alt\s*=\s*["\']([^"\']{6,})', inner)]
@@ -72,10 +79,13 @@ def texts(html, base):
 
 
 def pick_date(s):
-    """요일이 맞는 날짜(또는 'N월 N일')를 오늘 기준 -7~+300일 안에서 고름"""
+    """요일이 맞는 날짜(또는 'N월 N일')를 오늘 기준 -7~+300일 안에서 고름.
+    여러 개면 요일 있는 것 → 종류 말(개강·설명회…)에 가까운 것"""
+    kpos = [m.start() for _, rx in KIND for m in rx.finditer(s)]
+    cands = []
     for m in DATE.finditer(s):
         y, mo, d, w = m.group(1), int(m.group(2)), int(m.group(3)), m.group(4)
-        korean = '월' in m.group(0)
+        korean = '월' in m.group(0) and '일' in m.group(0)
         if not (1 <= mo <= 12 and 1 <= d <= 31) or not (w or korean):
             continue
         years = [int(y)] if y else [TODAY.year - 1, TODAY.year, TODAY.year + 1]
@@ -87,11 +97,21 @@ def pick_date(s):
             if w and WD[day.weekday()] != w:
                 continue
             if -7 <= (day - TODAY).days <= 300:
-                return day, m
-    return None, None
+                dist = min((abs(k - m.end()) for k in kpos), default=999)
+                cands.append((0 if w else 1, dist, day, m))
+                break
+    if not cands:
+        return None, None
+    cands.sort(key=lambda c: (c[0], c[1]))
+    return cands[0][2], cands[0][3]
+
+
+SKIP = re.compile(r'유아|유치원|공무원|소방|경찰|간호|노무|감평|세무|공인중개|7급|9급|편입|마감\s*임박|당첨|후기\s*이벤트')
 
 
 def classify(title, site):
+    if SKIP.search(title):
+        return None
     kind = next((k for k, rx in KIND if rx.search(title)), None)
     if not kind:
         return None
@@ -119,7 +139,7 @@ def tidy(title, m):
 
 
 def collect():
-    found, pages_log = {}, []
+    found, pages_log, cands = {}, [], []
     for site in SITES:
         try:
             base, html = crawl.get(site['home'])
@@ -132,15 +152,18 @@ def collect():
         for t, u in texts(html, base):
             if FOLLOW.search(t) and host in u and u not in follow and u != base:
                 follow.append(u)
-        for u in follow[:12]:
+        for u in site.get('extra', []) + follow[:12]:
             try:
                 pages.append(crawl.get(u, referer=base))
             except Exception as e:  # noqa: BLE001
                 pages_log.append({'site': site['code'], 'url': u, 'error': str(e)[:200]})
         for purl, phtml in pages:
             items = texts(phtml, purl)
+            ptitle = clean((re.search(r'<title[^>]*>(.*?)</title>', phtml, re.S | re.I) or re.match(r'()', '')).group(1))[:60]
             pages_log.append({'site': site['code'], 'url': purl, 'links': len(items)})
             for t, u in items:
+                if any(rx.search(t) for _, rx in KIND) and not SKIP.search(t):
+                    cands.append({'site': site['code'], 'text': t, 'url': u})
                 day, m = pick_date(t)
                 if not day:
                     continue
@@ -149,6 +172,9 @@ def collect():
                     continue
                 kind, levels, subject = c
                 title = tidy(t, m)
+                core = re.sub(r'[\d/.()월화수목금토일\s]|개강|설명회|신청|하기|바로가기|모의고사|특강', '', title)
+                if len(core) < 6 and ptitle:
+                    title = (ptitle + ' · ' + title)[:80]
                 for lv in levels:
                     key = f"{site['code']}|{day}|{kind}|{lv}|{re.sub(r'[^가-힣A-Za-z0-9]', '', title)[:40]}"
                     found.setdefault(key, {
@@ -156,7 +182,7 @@ def collect():
                         'starts_on': day.isoformat(), 'level': lv, 'area': 'second' if SECOND.search(t) else None,
                         'subject_code': subject, 'url': u, 'raw': t,
                     })
-    return list(found.values()), pages_log
+    return list(found.values()), pages_log, cands
 
 
 def apply(events):
@@ -187,9 +213,9 @@ def apply(events):
 def main():
     out = sys.argv[1]
     os.makedirs(out, exist_ok=True)
-    events, log = collect()
+    events, log, cands = collect()
     events.sort(key=lambda e: (e['starts_on'], e['academy']))
-    json.dump({'built': dt.datetime.now(KST).isoformat(timespec='seconds'), 'events': events, 'pages': log},
+    json.dump({'built': dt.datetime.now(KST).isoformat(timespec='seconds'), 'events': events, 'pages': log, 'candidates': cands[:600]},
               open(os.path.join(out, 'academy_events.json'), 'w'), ensure_ascii=False, indent=1)
     for p in log:
         print('[쪽]', p)
