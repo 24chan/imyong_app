@@ -22,6 +22,7 @@ import {
   toggleScrap,
 } from '../../data/community';
 import { AuthorMode, useMyNickname } from '../../features/community/AuthorMode';
+import { useAuth } from '../../store/Auth';
 import { LabelBadge, LabelChooser, needWriterAlert, ReportSheet, Sheet, useWriterLabels } from '../../features/community/parts';
 import { radius, space } from '../../theme/tokens';
 import type { CatKey } from '../../theme/tokens';
@@ -34,6 +35,7 @@ export default function PostScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const postId = Number(id);
   const { uid, labels } = useWriterLabels();
+  const { isAdmin } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -305,6 +307,7 @@ export default function PostScreen() {
             <>
               <MenuItem icon="mail-outline" label="쪽지 보내기" onPress={() => dm('post', post.id)} />
               <MenuItem icon="alert-circle-outline" label="신고 · 차단" danger onPress={() => { setMenu(null); if (!uid) return needWriterAlert(uid, labels); setReport({ type: 'post', id: post.id }); }} />
+              {isAdmin && <MenuItem icon="shield-outline" label="작성자 확인 (운영자)" onPress={() => { setMenu(null); router.push({ pathname: '/admin', params: { tab: 'reveal', type: 'post', id: String(post.id) } }); }} />}
             </>
           ))}
         {menu?.kind === 'comment' &&
@@ -323,6 +326,7 @@ export default function PostScreen() {
             <>
               <MenuItem icon="mail-outline" label="쪽지 보내기" onPress={() => dm('comment', menu.c.id)} />
               <MenuItem icon="alert-circle-outline" label="신고 · 차단" danger onPress={() => { const cid = menu.c.id; setMenu(null); if (!uid) return needWriterAlert(uid, labels); setReport({ type: 'comment', id: cid }); }} />
+              {isAdmin && <MenuItem icon="shield-outline" label="작성자 확인 (운영자)" onPress={() => { const cid = menu.c.id; setMenu(null); router.push({ pathname: '/admin', params: { tab: 'reveal', type: 'comment', id: String(cid) } }); }} />}
             </>
           ))}
       </Sheet>

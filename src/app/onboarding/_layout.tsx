@@ -6,13 +6,13 @@ export default function OnboardingLayout() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
+        headerStyle: { backgroundColor: colors.canvas },
         headerTintColor: colors.text,
         headerShadowVisible: false,
         headerTitleStyle: { fontFamily: 'Pretendard-Bold' },
         headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
         headerBackTitle: '이전',
-        contentStyle: { backgroundColor: colors.background },
+        contentStyle: { backgroundColor: colors.canvas },
       }}
     >
       <Stack.Screen name="index" options={{ title: '임용몽땅 시작하기' }} />

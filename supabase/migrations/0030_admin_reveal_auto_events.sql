@@ -11,7 +11,7 @@ on conflict do nothing;
 /* 2) 작성자 확인 + 열람 기록 */
 create table if not exists public.admin_reveal_log (
   id bigint generated always as identity primary key,
-  admin_id uuid not null references auth.users(id) on delete set null,
+  admin_id uuid references auth.users(id) on delete set null,
   target_type text not null,
   target_id text not null,
   target_user uuid,
@@ -40,6 +40,9 @@ begin
     v_users := array[public.author_of(p_type, p_id::bigint)];
   end if;
   if v_users is null or v_users[1] is null then raise exception '대상을 찾을 수 없어요'; end if;
+
+  /* 열람 기록은 3년 보관 */
+  delete from public.admin_reveal_log where created_at < now() - interval '3 years';
 
   foreach v_u in array v_users loop
     insert into public.admin_reveal_log (admin_id, target_type, target_id, target_user, reason)

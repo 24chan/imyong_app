@@ -35,7 +35,7 @@ export function HomeHotPosts() {
       icon="flame"
       action={
         <Pressable onPress={() => router.navigate('/community')} hitSlop={8} accessibilityRole="button">
-          <Txt variant="sub" color="brand" style={{ fontWeight: '700' }}>
+          <Txt variant="sub" style={{ fontWeight: '600' }}>
             커뮤니티 ›
           </Txt>
         </Pressable>
@@ -46,7 +46,7 @@ export function HomeHotPosts() {
           아직 글이 없어요. 인증하고 첫 글을 남겨 보세요.
         </Txt>
       ) : (
-        (posts ?? []).map((p) => <PostRow key={p.id} post={p} showBoard />)
+        (posts ?? []).map((p) => <PostRow key={p.id} post={p} showBoard flat />)
       )}
     </NoticeBoard>
   );

@@ -2,7 +2,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { openLink } from '../../lib/openLink';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../store/Auth';
 import { EventTipButton } from '../../features/schedule/EventTipButton';
 import { PracticeTipButton } from '../../features/practice/PracticeTipButton';
 import { ViewModeBanner } from '../../components/ModeToggle';
@@ -25,6 +27,9 @@ type Item = { key: string; date: string; endsOn?: string | null; kind: Kind; tit
 const KIND_LABEL: Record<Kind, string> = { official: '임용 일정', ...EVENT_KIND };
 const KIND_CAT: Record<Kind, CatKey> = { official: 'teal', open: 'blue', special: 'purple', mock: 'coral', briefing: 'pink', online: 'green', etc: 'gray' };
 const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+/** 달력 칸용 짧은 제목: [강사·과목], 학년도, '안내' 같은 말을 뺌 */
+const shortTitle = (t: string) =>
+  t.replace(/\[[^\]]*\]|\([^)]*\)|20\d\d학년도|20\d\d|대비|안내|★|☆/g, ' ').replace(/\s+/g, ' ').trim() || t;
 const ym = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 
 export default function ScheduleScreen() {
@@ -38,6 +43,7 @@ export default function ScheduleScreen() {
   const [kinds, setKinds] = useState<Set<Kind>>(new Set(Object.keys(KIND_LABEL) as Kind[]));
   const [month, setMonth] = useState(() => new Date(`${today}T00:00:00`));
   const [day, setDay] = useState<string | null>(null);
+  const { isAdmin } = useAuth();
   const [official, setOfficial] = useState<Item[] | null>(null);
   const [academy, setAcademy] = useState<Item[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -86,22 +92,36 @@ export default function ScheduleScreen() {
     setKinds(n.size ? n : new Set([k]));
   };
 
+  // 운영자: 학원 일정 길게 눌러 숨기기 (잘못 읽힌 자동 수집 일정, 0030)
+  const hideEvent = (i: Item) =>
+    Alert.alert('이 일정을 숨길까요?', `${i.title}\n자동 수집으로 다시 들어와도 계속 숨겨져요.`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '숨기기',
+        style: 'destructive',
+        onPress: async () => {
+          const { error: e } = await supabase.rpc('admin_hide_event', { p_id: Number(i.key.slice(2)) });
+          if (e) return Alert.alert('숨기지 못했어요', e.message.includes('admin_hide_event') ? '0030 SQL을 먼저 실행해 주세요' : e.message);
+          setAcademy((a) => (a ?? []).filter((x) => x.key !== i.key));
+        },
+      },
+    ]);
   const Badge = ({ k }: { k: Kind }) => (
-    <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: colors.cat[KIND_CAT[k]].bg }}>
-      <Txt style={{ fontSize: 12, fontWeight: '800', color: colors.cat[KIND_CAT[k]].fg }}>{KIND_LABEL[k]}</Txt>
+    <View style={{ paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, backgroundColor: colors.cat[KIND_CAT[k]].bg }}>
+      <Txt style={{ fontSize: 11.5, fontWeight: '700', color: colors.cat[KIND_CAT[k]].fg }}>{KIND_LABEL[k]}</Txt>
     </View>
   );
   const Row = ({ i, first }: { i: Item; first: boolean }) => {
     const past = i.date < today;
     return (
       <Pressable
-        disabled={!i.url}
+        disabled={!i.url && !(isAdmin && i.key.startsWith('a-'))}
         onPress={() => openLink(i.url, i.title)}
-        style={{ flexDirection: 'row', gap: space.md, padding: space.md, borderTopWidth: first ? 0 : 1, borderTopColor: colors.line, opacity: past ? 0.5 : 1 }}
+        onLongPress={isAdmin && i.key.startsWith('a-') ? () => hideEvent(i) : undefined}
+        style={{ flexDirection: 'row', gap: space.md, paddingVertical: space.md, marginHorizontal: space.lg, borderTopWidth: first ? 0 : 1, borderTopColor: colors.line, opacity: past ? 0.5 : 1 }}
       >
-        <View style={{ width: 4, borderRadius: 2, backgroundColor: colors.cat[KIND_CAT[i.kind]].fg }} />
-        <View style={{ width: 46, alignItems: 'center' }}>
-          <Txt style={{ fontWeight: '800', fontSize: 19 }}>{Number(i.date.slice(8))}</Txt>
+        <View style={{ width: 40, alignItems: 'center' }}>
+          <Txt style={{ fontWeight: '700', fontSize: 20 }}>{Number(i.date.slice(8))}</Txt>
           <Txt variant="sub" style={{ fontSize: 12 }}>
             {Number(i.date.slice(5, 7))}월 {WEEK[new Date(`${i.date}T00:00:00`).getDay()]}
           </Txt>
@@ -109,9 +129,9 @@ export default function ScheduleScreen() {
         <View style={{ flex: 1, gap: 3 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Badge k={i.kind} />
-            {!past && <Txt variant="sub" style={{ fontWeight: '800' }}>{dDayLabel(i.date, today)}</Txt>}
+            {!past && <Txt variant="sub" style={{ fontWeight: '600', fontSize: 12.5 }}>{dDayLabel(i.date, today)}</Txt>}
           </View>
-          <Txt style={{ fontWeight: '700' }}>{i.title}</Txt>
+          <Txt style={{ fontWeight: '600', fontSize: 15 }}>{i.title}</Txt>
           {(i.sub || i.endsOn) && (
             <Txt variant="sub">
               {[i.sub, i.endsOn ? `~ ${i.endsOn.slice(5).replace('-', '.')}` : null].filter(Boolean).join(' · ')}
@@ -135,16 +155,31 @@ export default function ScheduleScreen() {
     );
   };
 
-  const List = ({ list }: { list: Item[] }) =>
-    list.length === 0 ? (
-      <Txt variant="sub">일정이 없어요.</Txt>
-    ) : (
-      <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
-        {list.map((i, n) => (
-          <Row key={i.key} i={i} first={n === 0} />
+  // 시안 A: 달마다 묶어 흰 카드, 묶음 이름은 카드 위 작은 회색 글씨
+  const List = ({ list, grouped = true }: { list: Item[]; grouped?: boolean }) => {
+    if (list.length === 0) return <Txt variant="sub">일정이 없어요.</Txt>;
+    const groups: { label: string; items: Item[] }[] = [];
+    list.forEach((i) => {
+      const label = grouped ? `${Number(i.date.slice(0, 4))}년 ${Number(i.date.slice(5, 7))}월` : '';
+      const g = groups[groups.length - 1];
+      if (g && g.label === label) g.items.push(i);
+      else groups.push({ label, items: [i] });
+    });
+    return (
+      <View style={{ gap: space.sm }}>
+        {groups.map((g) => (
+          <View key={g.label || 'all'} style={{ gap: 6 }}>
+            {!!g.label && <Txt variant="sub" style={{ fontSize: 13, fontWeight: '600', paddingHorizontal: 6 }}>{g.label}</Txt>}
+            <View style={{ borderRadius: radius.xl, backgroundColor: colors.background, overflow: 'hidden', paddingVertical: 2 }}>
+              {g.items.map((i, n) => (
+                <Row key={i.key} i={i} first={n === 0} />
+              ))}
+            </View>
+          </View>
         ))}
       </View>
     );
+  };
 
   // 목록: 오늘 이후 먼저, 지난 일정은 아래 접어서
   const upcoming = items.filter((i) => (i.endsOn ?? i.date) >= today);
@@ -260,7 +295,7 @@ export default function ScheduleScreen() {
               <Ionicons name="chevron-forward" size={22} color={colors.text} />
             </Pressable>
           </View>
-          <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, padding: space.sm }}>
+          <View style={{ borderRadius: radius.xl, backgroundColor: colors.background, padding: 6 }}>
             <View style={{ flexDirection: 'row' }}>
               {WEEK.map((w, i) => (
                 <Txt key={w} variant="sub" style={{ flex: 1, textAlign: 'center', fontWeight: '700', color: i === 0 ? colors.down : colors.textSub }}>
@@ -279,29 +314,33 @@ export default function ScheduleScreen() {
                       key={i}
                       disabled={!d}
                       onPress={() => d && setDay(sel ? null : d)}
-                      style={{ flex: 1, aspectRatio: 0.9, alignItems: 'center', paddingTop: 6, gap: 3, borderRadius: radius.md, backgroundColor: sel ? colors.cat.teal.bg : 'transparent' }}
+                      style={{ flex: 1, minHeight: 78, alignItems: 'stretch', paddingTop: 4, paddingHorizontal: 1, gap: 2, borderRadius: radius.md, backgroundColor: sel ? colors.cat.teal.bg : 'transparent' }}
                     >
                       {d && (
-                        <View style={{ width: 26, height: 26, borderRadius: 13, alignItems: 'center', justifyContent: 'center', backgroundColor: isToday ? colors.brand : 'transparent' }}>
-                          <Txt style={{ fontSize: 14, fontWeight: isToday ? '800' : '500', color: isToday ? colors.background : i === 0 ? colors.down : colors.text }}>{Number(d.slice(8))}</Txt>
+                        <View style={{ alignSelf: 'center', width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: isToday ? colors.brand : 'transparent' }}>
+                          <Txt style={{ fontSize: 13.5, fontWeight: isToday ? '700' : '500', color: isToday ? colors.background : i === 0 ? colors.down : colors.text }}>{Number(d.slice(8))}</Txt>
                         </View>
                       )}
-                      <View style={{ flexDirection: 'row', gap: 2 }}>
-                        {[...new Set(list.map((x) => x.kind))].slice(0, 4).map((k) => (
-                          <View key={k} style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.cat[KIND_CAT[k]].fg }} />
-                        ))}
-                      </View>
+                      {/* 2026-11-23: 점 대신 짧은 제목 (칸마다 2개 + 나머지 수) */}
+                      {list.slice(0, 2).map((x) => (
+                        <View key={x.key} style={{ borderRadius: 4, paddingHorizontal: 2, paddingVertical: 1, backgroundColor: colors.cat[KIND_CAT[x.kind]].bg }}>
+                          <Txt numberOfLines={1} style={{ fontSize: 9.5, lineHeight: 12, fontWeight: '600', color: colors.cat[KIND_CAT[x.kind]].fg }}>
+                            {shortTitle(x.title)}
+                          </Txt>
+                        </View>
+                      ))}
+                      {list.length > 2 && <Txt style={{ fontSize: 9.5, lineHeight: 12, textAlign: 'center', color: colors.textSub }}>+{list.length - 2}</Txt>}
                     </Pressable>
                   );
                 })}
               </View>
             ))}
           </View>
-          <List list={day ? byDate.get(day) ?? [] : items.filter((i) => i.date.startsWith(ym(month)))} />
+          <List grouped={false} list={day ? byDate.get(day) ?? [] : items.filter((i) => i.date.startsWith(ym(month)))} />
         </>
       )}
       <Txt variant="sub" style={{ fontSize: 12 }}>
-        임용 일정은 교육청 시행계획 공고 기준이에요. 학원 일정은 운영자나 이용자 제보를 운영자가 확인해 올려요(광고 아님).
+        임용 일정은 교육청 시행계획 공고 기준이에요. 학원 일정은 학원 누리집 공지에서 매일 자동으로 모으고, 이용자 제보는 운영자가 확인해 올려요(광고 아님). 날짜는 학원 사정으로 바뀔 수 있으니 눌러서 원문을 확인해 주세요.
       </Txt>
     </Screen>
   );

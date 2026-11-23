@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Linking, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
@@ -9,6 +9,7 @@ import { useAsync } from '../data/useAsync';
 import { getPendingVerifications, getUnivs, METHOD_LABEL, reviewVerification, signedDocUrls, Verification } from '../data/verify';
 import { useAuth } from '../store/Auth';
 import { StatsAdmin } from '../features/admin/StatsAdmin';
+import { RevealAdmin } from '../features/admin/RevealAdmin';
 import { PracticeTipsAdmin } from '../features/admin/PracticeTipsAdmin';
 import { SubjectPicker } from '../components/pickers';
 import { adminAddMockExam, adminDeleteMockExam, listMockExams } from '../data/study';
@@ -26,7 +27,11 @@ export default function AdminScreen() {
   const { colors } = useTheme();
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
-  const [tab, setTab] = useState<'stats' | 'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs'>('stats');
+  const params = useLocalSearchParams<{ tab?: string; type?: string; id?: string }>();
+  const [tab, setTab] = useState<'stats' | 'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs' | 'reveal'>(params.tab === 'reveal' ? 'reveal' : 'stats');
+  useEffect(() => {
+    if (params.tab === 'reveal') setTab('reveal');
+  }, [params.tab, params.id]);
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
   const appeals = useAsync(() => (isAdmin ? adminAppeals() : Promise.resolve([])), [isAdmin, reload]);
@@ -55,9 +60,11 @@ export default function AdminScreen() {
           <Chip label={'모의'} selected={tab === 'mock'} onPress={() => setTab('mock')} />
           <Chip label={'강의'} selected={tab === 'academy'} onPress={() => setTab('academy')} />
           <Chip label={'제보'} selected={tab === 'jobs'} onPress={() => setTab('jobs')} />
+          <Chip label={'작성자 확인'} selected={tab === 'reveal'} onPress={() => setTab('reveal')} />
         </View>
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
         {tab === 'stats' && <StatsAdmin />}
+        {tab === 'reveal' && <RevealAdmin key={`${params.type}-${params.id}`} initialType={params.type} initialId={params.id} />}
         {tab === 'verify' && (
           <>
             <Txt variant="sub">승인하거나 거절하면 사진은 저장소에서 바로 지워지고, 결과(라벨)만 남아요.</Txt>
@@ -241,6 +248,7 @@ function ReportCard({ r, onDone }: { r: ReportGroup; onDone: () => void }) {
           {r.targetType === 'post' && <PrimaryButton label="임시조치 30일 가리기" variant="ghost" onPress={() => act('hide', 30)} />}
           {r.targetType !== 'message' && <PrimaryButton label="가리기" variant="ghost" onPress={() => act('hide')} />}
           <PrimaryButton label="삭제" onPress={() => act('delete')} />
+          <PrimaryButton label="작성자 확인 (수사 협조용)" variant="ghost" onPress={() => router.setParams({ tab: 'reveal', type: r.targetType, id: String(r.targetId) })} />
         </View>
       )}
     </Card>

@@ -122,22 +122,9 @@ export function NoticeRow({
 export function NoticeBoard({ title, action, children, icon = 'megaphone' }: { title: string; action?: ReactNode; children: ReactNode; icon?: keyof typeof Ionicons.glyphMap }) {
   const { colors } = useTheme();
   return (
-    <View style={{ borderWidth: 1, borderColor: colors.line, borderRadius: radius.xl, backgroundColor: colors.background, overflow: 'hidden' }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: space.sm,
-          paddingHorizontal: space.lg,
-          paddingVertical: space.md,
-          backgroundColor: tint(colors.brand, '14'),
-          borderBottomWidth: 1,
-          borderBottomColor: colors.line,
-        }}
-      >
-        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.brand, alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name={icon} size={15} color={colors.background} />
-        </View>
+    <View style={{ borderRadius: radius.xl, backgroundColor: colors.background, overflow: 'hidden' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingTop: space.lg, paddingBottom: space.xs }}>
+        <Ionicons name={icon} size={18} color={colors.brand} />
         <Txt variant="heading" style={{ flex: 1 }}>
           {title}
         </Txt>

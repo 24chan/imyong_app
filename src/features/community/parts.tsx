@@ -29,7 +29,7 @@ export function LabelBadge({ label, small }: { label: string; small?: boolean })
 /** 말머리 이름 (중등 과목 / 지역) */
 export const tagName = (p: Post) => (p.tagSubject ? subjectByCode(p.tagSubject)?.name ?? null : p.tagRegion ? regionByCode(p.tagRegion)?.shortName ?? null : null);
 
-export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }) {
+export function PostRow({ post, showBoard, flat }: { post: Post; showBoard?: boolean; flat?: boolean }) {
   const { colors } = useTheme();
   const hot = post.likeCount >= 10;
   return (
@@ -37,12 +37,16 @@ export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }
       onPress={() => router.push({ pathname: '/community/[id]', params: { id: String(post.id) } })}
       accessibilityRole="button"
       style={({ pressed }) => ({
-        paddingVertical: space.md,
-        paddingHorizontal: space.md,
+        // 시안 A: 글마다 흰 카드 (flat = 흰 카드 안 목록: 줄로 나눔)
+        paddingVertical: flat ? space.md : 14,
+        paddingHorizontal: space.lg,
+        marginHorizontal: flat ? 0 : space.md,
+        marginBottom: flat ? 0 : space.sm,
+        borderRadius: flat ? 0 : radius.lg,
+        borderTopWidth: flat ? 1 : 0,
+        borderTopColor: colors.line,
         gap: 4,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.line,
-        backgroundColor: pressed ? colors.surface : 'transparent',
+        backgroundColor: pressed ? colors.surface : colors.background,
       })}
     >
       {showBoard && (
@@ -56,9 +60,9 @@ export function PostRow({ post, showBoard }: { post: Post; showBoard?: boolean }
             <Txt style={{ fontSize: 11, fontWeight: '800', color: colors.cat.coral.fg }}>HOT</Txt>
           </View>
         )}
-        <Txt style={{ fontWeight: '800', fontSize: 16, flex: 1 }} numberOfLines={1}>
+        <Txt style={{ fontWeight: '600', fontSize: 15.5, flex: 1 }} numberOfLines={1}>
           {post.status === 'hidden' ? '🔒 ' : ''}
-          {tagName(post) ? <Txt style={{ fontWeight: '800', fontSize: 16, color: colors.cat.blue.fg }}>[{tagName(post)}] </Txt> : null}
+          {tagName(post) ? <Txt style={{ fontWeight: '600', fontSize: 15.5, color: colors.cat.blue.fg }}>[{tagName(post)}] </Txt> : null}
           {post.title}
         </Txt>
       </View>

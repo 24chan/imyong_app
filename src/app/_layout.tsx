@@ -47,19 +47,19 @@ function RootStack() {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
 
-  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.background }} />;
+  if (!ready) return <View style={{ flex: 1, backgroundColor: colors.canvas }} />;
 
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: colors.background },
+          headerStyle: { backgroundColor: colors.canvas },
           headerTintColor: colors.text,
           headerTitleStyle: { fontFamily: 'Pretendard-Bold' },
           headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
           headerShadowVisible: false,
-          contentStyle: { backgroundColor: colors.background },
+          contentStyle: { backgroundColor: colors.canvas },
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

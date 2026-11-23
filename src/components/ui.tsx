@@ -22,22 +22,22 @@ export function Txt({ variant = 'body', color, style, ...rest }: TxtProps) {
 }
 
 const textStyles = StyleSheet.create({
-  title: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
-  heading: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
+  title: { fontSize: 24, fontWeight: '700', letterSpacing: -0.5 },
+  heading: { fontSize: 17, fontWeight: '700', letterSpacing: -0.3 },
   body: { fontSize: 15.5, lineHeight: 23 },
   sub: { fontSize: 13.5, lineHeight: 20 },
-  number: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
+  number: { fontSize: 28, fontWeight: '700', letterSpacing: -0.5 },
 });
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {
   const { colors } = useTheme();
   if (!scroll) {
-    return <View style={{ flex: 1, backgroundColor: colors.background, padding: space.lg }}>{children}</View>;
+    return <View style={{ flex: 1, backgroundColor: colors.canvas, padding: space.lg }}>{children}</View>;
   }
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: space.lg, gap: space.lg, paddingBottom: space.xl * 2 }}
+      style={{ flex: 1, backgroundColor: colors.canvas }}
+      contentContainerStyle={{ padding: space.md, gap: space.md, paddingBottom: space.xl * 2 }}
     >
       {children}
     </ScrollView>
@@ -49,8 +49,8 @@ export function Card({ children, style }: { children: ReactNode; style?: ViewSty
   return (
     <View
       style={[
-        // 흰 카드 + 얇은 테두리 (2026-11-21 디자인 개편: 가시성)
-        { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: radius.xl, padding: 18, gap: space.sm },
+        // 시안 A (2026-11-23): 연회색 바탕 위 흰 카드, 테두리 없음
+        { backgroundColor: colors.background, borderRadius: radius.xl, padding: space.lg, gap: space.sm },
         style,
       ]}
     >
@@ -79,11 +79,11 @@ export function Chip({
         paddingVertical: 9,
         borderRadius: radius.pill,
         borderWidth: 1,
-        borderColor: selected ? colors.brand : colors.line,
-        backgroundColor: selected ? colors.brand : colors.background,
+        borderColor: selected ? colors.text : colors.line,
+        backgroundColor: selected ? colors.text : colors.background,
       }}
     >
-      <Txt style={{ fontWeight: '600' }} color={selected ? 'background' : 'text'}>
+      <Txt style={{ fontWeight: selected ? '700' : '500', color: selected ? colors.canvas : colors.textSub }}>
         {label}
       </Txt>
     </Pressable>

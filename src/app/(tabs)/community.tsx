@@ -109,17 +109,17 @@ export default function CommunityScreen() {
           paddingHorizontal: 14,
           paddingVertical: 8,
           borderRadius: radius.pill,
-          backgroundColor: on ? colors.brand : colors.surface,
+          backgroundColor: on ? colors.text : colors.background,
           borderWidth: 1,
-          borderColor: on ? colors.brand : colors.line,
+          borderColor: on ? colors.text : colors.line,
           flexDirection: 'row',
           alignItems: 'center',
           gap: 4,
         }}
       >
-        {id === 'hot' && <Ionicons name="flame" size={14} color={on ? colors.background : colors.down} />}
-        {id === 'study' && <Ionicons name="people" size={14} color={on ? colors.background : colors.cat.green.fg} />}
-        <Txt style={{ fontWeight: '700', fontSize: 14 }} color={on ? 'background' : 'text'}>
+        {id === 'hot' && <Ionicons name="flame" size={14} color={on ? colors.canvas : colors.down} />}
+        {id === 'study' && <Ionicons name="people" size={14} color={on ? colors.canvas : colors.cat.green.fg} />}
+        <Txt style={{ fontWeight: on ? '700' : '500', fontSize: 14, color: on ? colors.canvas : colors.textSub }}>
           {nameOf(id)}
         </Txt>
       </Pressable>
@@ -169,7 +169,7 @@ export default function CommunityScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <FlatList
         data={posts}
         keyExtractor={(p) => String(p.id)}

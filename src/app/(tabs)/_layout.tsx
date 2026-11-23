@@ -26,7 +26,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.background },
+        headerStyle: { backgroundColor: colors.canvas },
         headerTintColor: colors.text,
         headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold', fontSize: 21 },
         headerTitleAlign: 'left',
@@ -49,7 +49,7 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.textSub,
         tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.line },
-        sceneStyle: { backgroundColor: colors.background },
+        sceneStyle: { backgroundColor: colors.canvas },
       }}
     >
       {TABS.map((t) => (

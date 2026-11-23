@@ -17,7 +17,7 @@ export default function ScrapsScreen() {
     }, []),
   );
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <Stack.Screen options={{ title: '내 스크랩' }} />
       {list === null && !error ? (
         <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />

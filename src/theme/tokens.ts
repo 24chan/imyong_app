@@ -1,6 +1,8 @@
 // SPEC.md 5. 디자인 — 색 토큰. 화면 코드에서는 이 값만 사용하고 색을 직접 쓰지 않습니다.
 export type ColorTokens = {
-  background: string;
+  /** 화면 바탕 (2026-11-23 시안 A: 연회색 바탕 + 흰 카드) */
+  canvas: string;
+  background: string; // 카드·입력칸 바탕 (다크에서는 바탕보다 밝음)
   surface: string; // 카드
   text: string;
   textSub: string;
@@ -16,6 +18,7 @@ export type ColorTokens = {
 export type CatKey = 'teal' | 'blue' | 'purple' | 'coral' | 'amber' | 'pink' | 'green' | 'gray';
 
 export const lightColors: ColorTokens = {
+  canvas: '#F2F4F7',
   background: '#FFFFFF',
   surface: '#F6F8FA',
   text: '#1B2A3A',
@@ -38,8 +41,9 @@ export const lightColors: ColorTokens = {
 };
 
 export const darkColors: ColorTokens = {
-  background: '#0F1514',
-  surface: '#18201F',
+  canvas: '#0F1514',
+  background: '#18201F',
+  surface: '#202A28',
   text: '#E8EEED',
   textSub: '#93A3A1',
   line: '#26302F',

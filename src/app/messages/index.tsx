@@ -24,7 +24,7 @@ export default function MessagesScreen() {
   useFocusEffect(load);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.canvas }}>
       <Stack.Screen options={{ title: '쪽지함' }} />
       {list === null && !error ? (
         <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />

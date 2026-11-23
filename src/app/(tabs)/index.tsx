@@ -87,7 +87,6 @@ export default function HomeScreen() {
   const onBrand = colors.background; // 브랜드색 위 글자 (라이트: 흰색, 다크: 아주 어두운 색)
   const nextAfter = nextKey ? upcoming.find((e) => e !== nextKey && KEY_EVENTS.includes(e.event)) : undefined;
   const receipt = getReceiptInfo(regionEvents, today);
-  const card = { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: 20, overflow: 'hidden' as const };
   // 색 아이콘 메뉴 (에브리타임 참고, 2026-11-21 시안 승인)
   const menu: { icon: keyof typeof Ionicons.glyphMap; label: string; cat: CatKey; go: () => void; badge?: number }[] = [
     { icon: 'school-outline', label: '학교 지도', cat: 'teal', go: () => router.push('/school-map') },
@@ -101,10 +100,10 @@ export default function HomeScreen() {
   ];
   const SectionHead = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 }}>
-      <Txt style={{ fontSize: 18, fontWeight: '800' }}>{title}</Txt>
+      <Txt style={{ fontSize: 17, fontWeight: '700' }}>{title}</Txt>
       {action && (
         <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
-          <Txt variant="sub" style={{ fontWeight: '700' }}>
+          <Txt variant="sub" style={{ fontWeight: '600' }}>
             {action} ›
           </Txt>
         </Pressable>
@@ -113,7 +112,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ paddingBottom: space.xl * 2 }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.canvas }} contentContainerStyle={{ paddingBottom: space.xl * 2 }}>
       {focused && <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />}
 
       {/* 머리: 앱 이름 + 초등/중등 + 검색·설정 */}
@@ -145,7 +144,8 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      <View style={{ paddingHorizontal: space.lg, gap: 22, paddingTop: space.sm }}>
+      {/* 시안 A (2026-11-23): 연회색 바탕 + 흰 카드, 섹션 제목은 카드 안 */}
+      <View style={{ paddingHorizontal: space.md, gap: space.md - 2, paddingTop: space.xs }}>
         {/* D-day 카드 */}
         <View style={{ backgroundColor: colors.brand, borderRadius: 22, padding: 20, gap: 6 }}>
           {nextKey ? (
@@ -175,7 +175,7 @@ export default function HomeScreen() {
         </View>
 
         {/* 색 아이콘 메뉴 */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 16 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 16, backgroundColor: colors.background, borderRadius: radius.xl, paddingVertical: 18 }}>
           {menu.map((b) => (
             <Pressable key={b.label} onPress={b.go} accessibilityRole="button" accessibilityLabel={b.label} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
               <View style={{ width: 54, height: 54, borderRadius: 18, backgroundColor: colors.cat[b.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -186,7 +186,7 @@ export default function HomeScreen() {
                   </View>
                 )}
               </View>
-              <Txt style={{ fontSize: 13, fontWeight: '600' }}>{b.label}</Txt>
+              <Txt style={{ fontSize: 13, fontWeight: '500' }}>{b.label}</Txt>
             </Pressable>
           ))}
         </View>
@@ -195,7 +195,7 @@ export default function HomeScreen() {
         <SampleBadge sourceIds={(rows.data ?? []).map((r) => r.source?.id)} />
 
         {/* 관심 지역: 정사각형 칸 */}
-        <View style={{ gap: space.sm + 2 }}>
+        <View style={{ gap: space.md, backgroundColor: colors.background, borderRadius: radius.xl, padding: space.lg }}>
           <SectionHead title={`관심 지역 ${f.isSecondary ? `× ${subjectByCode(f.subject)?.name ?? ''} ` : ''}선발 인원`} action="편집" onAction={() => router.push('/settings')} />
           {subjectNote && (
             <Txt variant="sub" color="accent">
@@ -203,7 +203,7 @@ export default function HomeScreen() {
             </Txt>
           )}
           {interest.length === 0 ? (
-            <Pressable onPress={() => router.push('/settings')} accessibilityRole="button" style={{ backgroundColor: colors.surface, borderRadius: 18, padding: space.lg, gap: space.xs }}>
+            <Pressable onPress={() => router.push('/settings')} accessibilityRole="button" style={{ backgroundColor: colors.surface, borderRadius: radius.lg, padding: space.lg, gap: space.xs }}>
               <Txt>관심 지역을 고르면 선발 인원과 증감을 바로 볼 수 있어요.</Txt>
               <Txt color="brand" style={{ fontWeight: '800' }}>
                 관심 지역 고르기 ›
@@ -221,10 +221,10 @@ export default function HomeScreen() {
                     onPress={() => openDetail(r.region)}
                     accessibilityRole="button"
                     accessibilityLabel={`${regionByCode(r.region)?.shortName} 선발 ${r.selection ?? '자료 없음'}명`}
-                    style={{ width: '48.5%', minHeight: 112, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.line, borderRadius: 18, padding: 14, justifyContent: 'space-between' }}
+                    style={{ width: '48.5%', minHeight: 108, backgroundColor: colors.surface, borderRadius: radius.lg, padding: 14, justifyContent: 'space-between' }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <Txt style={{ fontSize: 15, fontWeight: '800' }}>{regionByCode(r.region)?.shortName}</Txt>
+                      <Txt style={{ fontSize: 14.5, fontWeight: '600' }}>{regionByCode(r.region)?.shortName}</Txt>
                       <Ionicons name="chevron-forward" size={14} color={colors.textSub} />
                     </View>
                     <View style={{ gap: 2 }}>
@@ -232,7 +232,7 @@ export default function HomeScreen() {
                         {r.selection?.toLocaleString() ?? '—'}
                         <Txt variant="sub"> 명</Txt>
                       </Txt>
-                      <Txt style={{ fontSize: 13.5, fontWeight: '800', color: tone }} numberOfLines={1}>
+                      <Txt style={{ fontSize: 13, fontWeight: '700', color: tone }} numberOfLines={1}>
                         {r.change == null ? '전년 자료 없음' : `${sign}${Math.abs(r.change).toLocaleString()}`}
                       </Txt>
                       {info?.status === 'open' && (
@@ -249,11 +249,9 @@ export default function HomeScreen() {
         </View>
 
         {/* 전국 학교 지도: 초등 = 초등학교, 중등 = 중·고등학교 */}
-        <View style={{ gap: space.sm + 2 }}>
+        <View style={{ gap: space.md, backgroundColor: colors.background, borderRadius: radius.xl, padding: space.lg }}>
           <SectionHead title={`전국 ${viewLevel === 'elementary' ? '초등학교' : '중·고등학교'} 지도`} action="크게 보기" onAction={() => router.push('/school-map')} />
-          <View style={[card, { padding: space.md, gap: space.sm }]}>
-            <NationalSchoolMap level={viewLevel} maxHeight={420} />
-          </View>
+          <NationalSchoolMap level={viewLevel} maxHeight={420} />
         </View>
 
         {/* 임용 소식 */}
@@ -261,8 +259,8 @@ export default function HomeScreen() {
           title="임용 소식"
           action={
             <Pressable onPress={() => router.push('/news')} hitSlop={8} accessibilityRole="button">
-              <Txt variant="sub" color="brand" style={{ fontWeight: '800' }}>
-                전체
+              <Txt variant="sub" style={{ fontWeight: '600' }}>
+                전체 ›
               </Txt>
             </Pressable>
           }
