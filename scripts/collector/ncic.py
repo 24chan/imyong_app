@@ -98,36 +98,54 @@ def main():
 def run(out):
     start()
     root = nodes({'invDepth': 1})
-    print('1단계', len(root), [n.get('title') for n in root][:30])
-    print('예시 노드', json.dumps(root[0], ensure_ascii=False)[:600])
-    result = []
-    # 2022 개정 가지만 내려감 (깊이 6까지)
-    stack = [(n, 1) for n in root if '2022' in str(n.get('title', ''))]
+    print('1단계', [n.get('title') for n in root])
+    sample = '--sample' in sys.argv
+    stack = [(dict(n, _path=[n['title']]), 1) for n in root if re.match(r'20(22|15) 개정', str(n.get('title', '')))]
+    sections, files_by = {}, {}
     seen = 0
-    LIMIT = 40 if '--sample' in sys.argv else 4000
+    LIMIT = 60 if sample else 6000
     while stack and seen < LIMIT:
-        n, depth = stack.pop() if '--sample' in sys.argv else stack.pop(0)
+        n, depth = stack.pop() if sample else stack.pop(0)
         seen += 1
-        d = n.get('data', n)
         title = re.sub(r'<[^>]+>', '', str(n.get('title', '')))
+        path = n['_path']
+        if path[0].startswith('2015') and len(path) >= 2 and '특수' in path[1]:
+            continue
         if n.get('lazy') or n.get('folder'):
-            kids = nodes({'invDepth': d.get('invDepth') or 1, 'degreeCode': d.get('degreeCode'),
-                          'classCode': d.get('classCode'), 'subjectCode': d.get('subjectCode'), 'subjectDefCode': d.get('subjectDefCode'),
-                          'openYear': d.get('openYear'), 'openMonth': d.get('openMonth'), 'ref': d.get('ref')})
+            kids = nodes({'invDepth': n.get('invDepth') or 1, 'degreeCode': n.get('degreeCode'), 'classCode': n.get('classCode'),
+                          'subjectCode': n.get('subjectCode'), 'subjectDefCode': n.get('subjectDefCode'),
+                          'openYear': n.get('openYear'), 'openMonth': n.get('openMonth'), 'ref': n.get('ref')})
             print('  ' * depth + f'[{title}] → {len(kids)}')
             for k in kids:
-                k.setdefault('_path', (n.get('_path') or []) + [title])
+                k['_path'] = path + [re.sub(r'<[^>]+>', '', str(k.get('title', '')))]
                 stack.append((k, depth + 1))
-        else:
+            continue
+        # 잎(장·절): 교과 단위(앞 3단계)로 묶어 파일 목록은 교과마다 한 번만
+        subj_key = ' > '.join(path[:3])
+        sections.setdefault(subj_key, []).append({'title': title, 'path': path[3:], 'seq': n.get('rootIdx') or n.get('ref')})
+        if subj_key not in files_by:
             fl = files(n)
-            if '--sample' in sys.argv and len(result) < 3:
-                html = view(d)
-                open(os.path.join(out, f'view_{d.get("rootIdx")}.html'), 'w').write(html)
-                print('    본문 쪽', len(html))
-            print('  ' * depth + f'· {title} 파일 {len(fl)}')
-            result.append({'path': (n.get('_path') or []) + [title], 'node': {k: v for k, v in n.items() if k != '_path'}, 'files': fl})
-    json.dump(result, open(os.path.join(out, 'curriculum.json'), 'w'), ensure_ascii=False, indent=1)
-    print('문서', len(result), '파일', sum(len(r['files']) for r in result))
+            files_by[subj_key] = [{'name': f['fileOrg'], 'ext': (f.get('fileExt') or '').lower(), 'seq': f['orgAttNo'], 'year': f['openYear'],
+                                   'url': f"{BASE}/inv/org/download.do?year={f['openYear']}&seq={f['orgAttNo']}&orgType=ogi4"} for f in fl]
+            print('  ' * depth + f'· {subj_key} 파일 {len(fl)}')
+    docs = []
+    for key, secs in sections.items():
+        p = key.split(' > ')
+        docs.append({'era': p[0], 'school': p[1] if len(p) > 1 else '', 'subject': p[2] if len(p) > 2 else '', 'sections': secs, 'files': files_by.get(key, [])})
+    # 받기 주소가 쿠키 없이 열리는지 시험
+    probe = next((f for d in docs for f in d['files'] if f['ext'] == 'pdf'), None)
+    check = None
+    if probe:
+        try:
+            r = urllib.request.urlopen(urllib.request.Request(probe['url'], headers={'User-Agent': UA}), timeout=60)
+            body = r.read(2000)
+            check = {'url': probe['url'], 'status': r.status, 'type': r.headers.get('Content-Type'), 'disp': r.headers.get('Content-Disposition'), 'pdf': body[:4] == b'%PDF'}
+        except Exception as e:  # noqa: BLE001
+            check = {'url': probe['url'], 'error': str(e)[:200]}
+        print('받기 시험', check)
+    json.dump({'source': '국가교육과정정보센터(NCIC) 원문 인벤토리', 'page': BASE + '/inv/org/list.do', 'download_check': check, 'docs': docs},
+              open(os.path.join(out, 'curriculum.json'), 'w'), ensure_ascii=False, indent=1)
+    print('교과 문서', len(docs), '파일', sum(len(d['files']) for d in docs))
 
 
 if __name__ == '__main__':
