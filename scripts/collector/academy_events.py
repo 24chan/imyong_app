@@ -11,6 +11,7 @@ import os
 import re
 import sys
 import urllib.parse
+import urllib.error
 import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +24,7 @@ TODAY = dt.datetime.now(KST).date()
 # level: None = 초등·중등 모두 다루는 곳(글에 초등/중등 말이 없으면 둘 다로)
 SITES = [
     {'code': 'hackers', 'name': '해커스임용', 'home': 'https://teacher.hackers.com/', 'level': None,
-     'extra': ['https://mteacher.hackers.com/bbs/notice/main/notice_main_list', 'https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_list']},
+     'extra': ['https://mteacher.hackers.com/board/?r=teacher&m=bbs&bid=lec_plan', 'https://mteacher.hackers.com/board/?r=teacher&m=bbs&bid=notice']},
     {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://www.g-school.co.kr/', 'level': 'secondary',
      'extra': ['https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC5', 'https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC4']},
     {'code': 'ssamplus', 'name': 'KG에듀원 희소·쌤플러스', 'home': 'https://www.ssamplus.com/', 'level': None},
@@ -157,6 +158,14 @@ def tidy(title, m):
     return t[:80]
 
 
+def fetch(url, referer=None):
+    """느린 곳이 있어 한 번 더 시도"""
+    try:
+        return crawl.get(url, timeout=50, referer=referer)
+    except Exception:  # noqa: BLE001
+        return crawl.get(url, timeout=70, referer=referer)
+
+
 def collect():
     found, pages_log, cands = {}, [], []
 
@@ -177,7 +186,7 @@ def collect():
             })
     for site in SITES:
         try:
-            base, html = crawl.get(site['home'])
+            base, html = fetch(site['home'])
         except Exception as e:  # noqa: BLE001
             pages_log.append({'site': site['code'], 'url': site['home'], 'error': str(e)[:200]})
             continue
@@ -189,7 +198,7 @@ def collect():
                 follow.append(u)
         for u in site.get('extra', []) + follow[:12]:
             try:
-                pages.append(crawl.get(u, referer=base))
+                pages.append(fetch(u, referer=base))
             except Exception as e:  # noqa: BLE001
                 pages_log.append({'site': site['code'], 'url': u, 'error': str(e)[:200]})
         undated = []
@@ -260,7 +269,11 @@ def main():
         print('[일정]', e['starts_on'], e['academy'], e['kind'], e['level'], e['subject_code'] or '-', '|', e['title'])
     print(f'일정 {len(events)}건')
     if '--apply' in sys.argv and events:
-        apply(events)
+        try:
+            apply(events)
+        except urllib.error.HTTPError as e:
+            print('DB 반영 실패:', e.code, e.read().decode()[:300])
+            print('→ Supabase에서 0030 SQL을 실행했는지 확인해 주세요 (source_key 칸 필요)')
 
 
 if __name__ == '__main__':
