@@ -12,12 +12,12 @@ import crawl  # noqa: E402
 crawl.DELAY[0] = 1.0
 out = sys.argv[1]
 os.makedirs(out, exist_ok=True)
-START = ['https://ncic.go.kr', 'https://ncic.go.kr/inv/org/list.do', 'https://www.ncic.go.kr/mobile.dwn.ogf.inventoryList.do']
+START = ['https://ncic.re.kr/js/ncic/inv_list.js', 'https://ncic.re.kr/js/ncic/menu_tree.js', 'https://ncic.re.kr/js/core/dc_ajax.js', 'https://ncic.re.kr/js/common.js', 'https://ncic.re.kr/bbs/raw/list.do', 'https://ncic.re.kr/bbs/standard/list.do']
 KEY = re.compile(r'교육과정|고시|원문|문서|총론|각론|2022|자료|inventory|org/|dwn|file|down', re.I)
 FILE = re.compile(r'\.pdf|\.hwp|fileDown|download|dwn|attach|FileDown|fn_?[a-zA-Z]*[Dd]own', re.I)
 seen, queue, found, log = set(), list(START), [], []
 n = 0
-while queue and n < 40:
+while queue and n < 12:
     url = queue.pop(0)
     if url in seen:
         continue
@@ -28,7 +28,7 @@ while queue and n < 40:
         log.append({'url': url, 'error': str(e)[:200]})
         continue
     n += 1
-    fn = f'{n:02d}.html'
+    fn = f'{n:02d}' + ('.js' if url.endswith('.js') else '.html')
     open(os.path.join(out, fn), 'w').write(html)
     log.append({'url': url, 'final': final, 'file': fn, 'len': len(html)})
     host = urllib.parse.urlparse(final).netloc
@@ -37,7 +37,7 @@ while queue and n < 40:
         a = json.dumps(a, ensure_ascii=False)
         if FILE.search(blob):
             found.append({'page': final, 'text': t[:80], 'href': h[:300], 'attrs': a[:300]})
-        if host.split(':')[0].endswith('ncic.go.kr') and urllib.parse.urlparse(h).netloc.endswith('ncic.go.kr') and KEY.search(t + ' ' + h) and h not in seen and len(queue) < 120:
+        if re.search(r'ncic\.(go|re)\.kr$', host.split(':')[0]) and re.search(r'ncic\.(go|re)\.kr$', urllib.parse.urlparse(h).netloc) and KEY.search(t + ' ' + h) and h not in seen and len(queue) < 120:
             queue.append(h)
     for m in re.finditer(r'(?:onclick|href)\s*=\s*"(javascript:)?\s*([A-Za-z_]+\([^"]{0,200}\))"', html):
         if FILE.search(m.group(2)):
