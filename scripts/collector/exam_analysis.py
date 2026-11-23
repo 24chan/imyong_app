@@ -35,15 +35,15 @@ def subj_name(s):
     return {'창의적체험활동': '창체'}.get(s, s)
 
 
-def download(url, path):
+def download(url, path, magic=b'%PDF'):
     if os.path.exists(path) and os.path.getsize(path) > 1000:
         return True
     for i in range(3):
         try:
             r = urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': UA}), timeout=120)
             data = r.read()
-            if data[:4] != b'%PDF':
-                log('PDF 아님', url[:120], data[:60])
+            if data[:len(magic)] != magic:
+                log('파일 형식 다름', url[:120], data[:20])
                 return False
             open(path, 'wb').write(data)
             time.sleep(0.8)
@@ -75,6 +75,21 @@ SEC_RE = [
     ('평가', re.compile(r'^\s*(?:나\.|4\.|5\.)?\s*평\s*가\s*$')),
 ]
 CODE_RE = re.compile(r'\[(\d{1,2})([가-힣]{1,3})(\d{2})\s*-\s*(\d{2})\]')
+
+
+def hwp_text(path):
+    try:
+        out = subprocess.run(['hwp5txt', path], capture_output=True, timeout=300, check=True).stdout
+        return out.decode('utf-8', 'ignore')
+    except Exception as e:  # noqa: BLE001
+        log('한글 글자 뽑기 실패', path, str(e)[:100])
+        return ''
+
+
+def broken(t):
+    """글꼴 문제로 깨진 글자(한글 아닌 기호가 대부분)"""
+    ko = len(re.findall(r'[가-힣]', t))
+    return ko < len(t) * 0.25
 
 
 def split_units(text, subject, era):
@@ -129,6 +144,8 @@ def split_questions(text):
     qs, cur, want = {}, None, 1
     for ln in text.splitlines():
         m = Q_RE.match(ln)
+        if m and int(m.group(1)) == 1 and cur and re.search(r'문답지|시험이 시작|감독관|수험\s*번호', qs.get(1, '')):
+            qs, cur, want = {}, None, 1  # 앞의 '수험자 유의 사항' 번호 목록은 버림
         if m and int(m.group(1)) == want:
             cur = want
             want += 1
@@ -142,6 +159,14 @@ def split_questions(text):
 # ---------- 말 나누기 (형태소 분석기 없이: 한글 덩어리에서 조사 떼기) ----------
 JOSA = re.compile(r'(으로서|으로써|에서는|에게서|으로는|이라는|라는|에서|에게|으로|까지|부터|처럼|보다|하고|이며|이고|이다|과의|와의|으로|을|를|이|가|은|는|에|의|와|과|도|로|만|며|고|다)$')
 STOP = set('그리고 그러나 다음 다음은 위의 아래 것을 것은 경우 대한 대하여 관련 내용 활동 학생 학생들 교사 학습 수업 지도 제시 설명 쓰시오 서술하시오 고르시오 무엇 어떤 각각 하나 이를 이와 같은 또는 및 등을 등 해당 바탕 통해 위해 따라 있는 있다 한다 하는 하여 한다 점수 점 자료 가 나 다 라 마 바 사 아 자 차 카 타 파 하 ㉠ ㉡ ㉢ ㉣'.split())
+
+
+EXAM_WORDS = set('초등학교 교육과정 들어갈 고려하여 어떻게 활용하여 해당하 나타난 아니라 작성한 만들어 있도록 지도할 파악하 학년 학년군 교과서 수업 교사 학생 다음 내용 자료 활동 협의 협의회 대화 일부 계획 설명 근거 제시 의미 방법 목적 이유 개정 성취기준 단원 차시 지도 계획안 교수 학습 평가'.split())
+VERBISH = re.compile(r'(하|한|할|함|하여|하는|하고|되|된|될|되는|되어|있는|없는|도록|어|아|여|고|며|면|지|게|서|라|려|던|든|인|적|으로|에서)$')
+
+
+def nounish(w):
+    return w not in EXAM_WORDS and not VERBISH.search(w)
 
 
 def words(t):
@@ -177,6 +202,26 @@ def shared_phrases(q, unit_text, n_min=5):
     return sorted(spans)
 
 
+CUES = [('국어', r'국어'), ('수학', r'수학'), ('사회', r'사회과|사회\s*수업|사회\s*교과'), ('과학', r'과학'), ('도덕', r'도덕'), ('실과', r'실과'),
+        ('체육', r'체육'), ('음악', r'음악'), ('미술', r'미술'), ('영어', r'영어'), ('통합교과', r'바른\s*생활|슬기로운\s*생활|즐거운\s*생활|통합\s*교과'),
+        ('창체', r'창의적\s*체험\s*활동|동아리\s*활동|자율\s*활동'), ('총론', r'총론|학교\s*교육과정|편성[·ㆍ]?\s*운영')]
+CODE_LET = {'국': '국어', '수': '수학', '사': '사회', '과': '과학', '도': '도덕', '실': '실과', '체': '체육', '음': '음악', '미': '미술', '영': '영어', '바': '통합교과', '슬': '통합교과', '즐': '통합교과'}
+
+
+def cue_subject(t):
+    """문항 속 성취기준 코드·교과 이름으로 교과 정하기(가장 많이 나온 것)"""
+    c = collections.Counter()
+    for m in CODE_RE.finditer(t):
+        if m.group(2)[0] in CODE_LET:
+            c[CODE_LET[m.group(2)[0]]] += 5
+    for name, rx in CUES:
+        c[name] += len(re.findall(rx, t)) * (1 if name not in ('총론', '창체') else 0.6)
+    if not c:
+        return None
+    (best, n), = c.most_common(1)
+    return best if n >= 1 else None
+
+
 def main():
     raw, out = sys.argv[1], sys.argv[2]
     os.makedirs(out, exist_ok=True)
@@ -193,10 +238,11 @@ def main():
         era = '2022' if d['era'].startswith('2022') else '2015' if d['era'].startswith('2015') else None
         if not era:
             continue
+        hwps = [f for f in d['files'] if f['ext'] == 'hwp']
         pdfs = [f for f in d['files'] if f['ext'] == 'pdf']
-        if not pdfs:
+        if not (hwps or pdfs):
             continue
-        docs.append((era, school, subj_name(d['subject']), pdfs[0]))
+        docs.append((era, school, subj_name(d['subject']), {'hwp': hwps[0] if hwps else None, 'pdf': pdfs[0] if pdfs else None}))
     # 같은 교과에 개정판이 여럿이면 가장 앞(처음 고시) 것 + 최신 것 모두 받지 말고, 학교급 이름의 날짜가 가장 늦은 것 하나
     pick = {}
     for era, school, subj, f in docs:
@@ -204,16 +250,42 @@ def main():
         if k not in pick or school > pick[k][0]:
             pick[k] = (school, f)
     units = []
-    for (era, subj), (school, f) in sorted(pick.items()):
-        p = os.path.join(work, f'cur_{f["seq"]}.pdf')
-        if not download(f['url'], p):
+    for (era, subj), (school, ff) in sorted(pick.items()):
+        t, f = '', None
+        if ff['hwp']:
+            p = os.path.join(work, f'cur_{ff["hwp"]["seq"]}.hwp')
+            if download(ff['hwp']['url'], p, magic=b'\xd0\xcf\x11\xe0'):
+                t, f = hwp_text(p), ff['hwp']
+        if (not t or broken(t)) and ff['pdf']:
+            p = os.path.join(work, f'cur_{ff["pdf"]["seq"]}.pdf')
+            if download(ff['pdf']['url'], p):
+                t, f = pdf_text(p), ff['pdf']
+        if not t or broken(t):
+            log(f'원문 {era} {subj}: 글자를 못 읽음')
             continue
-        t = pdf_text(p)
+        if ff['pdf']:
+            f = ff['pdf']  # 앱에서 여는 파일은 PDF
         us = split_units(t, subj, era)
         for u in us:
             u['file'] = {'name': f['name'], 'url': f['url']}
         log(f'원문 {era} {school} {subj}: 글자 {len(t)} 칸 {len(us)} (성취기준 {sum(1 for u in us if u["code"])})')
         units.extend(us)
+    CODE_SUBJ = {'국': '국어', '수': '수학', '사': '사회', '과': '과학', '도': '도덕', '실': '실과', '체': '체육', '음': '음악', '미': '미술', '영': '영어', '바': '통합교과', '슬': '통합교과', '즐': '통합교과'}
+    fixed = 0
+    for u in units:
+        m = CODE_RE.match(u['code']) if u['code'] else None
+        if m and m.group(2)[0] in CODE_SUBJ and CODE_SUBJ[m.group(2)[0]] != u['subject']:
+            u['subject'] = CODE_SUBJ[m.group(2)[0]]
+            fixed += 1
+    log('성취기준 코드로 교과 바로잡음', fixed)
+    # 같은 글이 두 번 들어간 칸(통합교과 두 파일 등) 하나만
+    seen_t, uniq = set(), []
+    for u in units:
+        k = (u['era'], u['subject'], u['text'][:120])
+        if k not in seen_t:
+            seen_t.add(k)
+            uniq.append(u)
+    units = [u for u in uniq if not (u['section'] == '앞부분' and len(u['text']) < 40)]
     for i, u in enumerate(units):
         u['id'] = i
 
@@ -236,6 +308,9 @@ def main():
             continue
         qs = split_questions(pdf_text(p, layout=False))  # 두 단 문제지는 읽는 차례대로
         log(f'기출 {year} {paper}: 문항 {len(qs)} (1번 앞부분: {qs.get(1, "")[:25]})')
+        if not qs:
+            raw_t = pdf_text(p, layout=False)
+            log('   글자 수', len(raw_t), '번호 같은 줄', [ln[:15] for ln in raw_t.splitlines() if re.match(r'^\s*\d{1,2}\s*[.)]', ln)][:6])
         for n, t in qs.items():
             questions.append({'year': year, 'paper': paper, 'no': n, 'text': t})
 
@@ -265,7 +340,7 @@ def main():
         if not scored or scored[0][0] < 0.08:
             q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': None})
             continue
-        subj = collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05).most_common(1)[0][0]
+        subj = cue_subject(q['text']) or collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05).most_common(1)[0][0]
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
         for s, i in scored:
             if units[i]['subject'] != subj or s < 0.12:
@@ -291,7 +366,7 @@ def main():
         if not x['subject']:
             continue
         for w in set(words(q['text'])):
-            if w in cur_vocab[x['subject']] and len(w) >= 3:
+            if w in cur_vocab[x['subject']] and len(w) >= 2 and nounish(w):
                 term_years[x['subject']][w][q['year']] += 1
     top_terms = {}
     for subj, tw in term_years.items():
@@ -317,20 +392,33 @@ def main():
             if len(w) >= 4 and w not in v15 and w not in seen_terms and w not in new_terms[u['subject']]:
                 new_terms[u['subject']].append(w)
 
+    subjects = sorted({u['subject'] for u in units}, key=lambda x: -sum(len(hits.get(u['id'], [])) for u in units if u['subject'] == x))
+    files = {}
+    os.makedirs(os.path.join(out, 'elementary'), exist_ok=True)
+    for k, subj in enumerate(subjects):
+        su = [u for u in units if u['subject'] == subj]
+        fn = f's{k}.json'
+        files[subj] = fn
+        json.dump({'subject': subj,
+                   'units': [{kk: u[kk] for kk in ('id', 'subject', 'era', 'section', 'area', 'code', 'text')} | {'file': u.get('file')} for u in su],
+                   'hits': {str(u['id']): hits[u['id']] for u in su if u['id'] in hits}},
+                  open(os.path.join(out, 'elementary', fn), 'w'), ensure_ascii=False)
+    def snippet(i):
+        return re.sub(r'\s+', ' ', units[i]['text'].replace(units[i]['code'], '')).strip()[:100]
     result = {
         'level': 'elementary',
         'built': time.strftime('%Y-%m-%d'),
         'note': '자동 분석(참고용). 교육과정 원문은 NCIC 고시문, 기출은 평가원 공개 문제지. 문항 글은 담지 않음.',
         'years': years,
-        'units': [{k: u[k] for k in ('id', 'subject', 'era', 'section', 'area', 'code', 'text')} | {'file': u.get('file')} for u in units],
-        'hits': {str(i): hs for i, hs in hits.items()},
+        'subjects': [{'name': s_, 'file': files[s_], 'units': sum(1 for u in units if u['subject'] == s_),
+                      'hit_units': sum(1 for u in units if u['subject'] == s_ and u['id'] in hits)} for s_ in subjects],
         'questions': q_subject,
         'stats': {
-            'subject_year': {s: dict(sorted(c.items())) for s, c in by_subject_year.items()},
-            'section_share': {s: dict(c) for s, c in sec_share.items()},
+            'subject_year': {s_: dict(sorted(c.items())) for s_, c in by_subject_year.items()},
+            'section_share': {s_: dict(c) for s_, c in sec_share.items()},
             'top_terms': top_terms,
-            'untouched_recent5': dict(untouched),
-            'new_terms_2022': {s: v[:60] for s, v in new_terms.items()},
+            'untouched_recent5': {s_: [x | {'text': snippet(x['id'])} for x in v] for s_, v in untouched.items()},
+            'new_terms_2022': {s_: v[:60] for s_, v in new_terms.items()},
         },
     }
     json.dump(result, open(os.path.join(out, 'elementary.json'), 'w'), ensure_ascii=False)
