@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       urls: { description: '공백으로 구분한 주소', required: true }
+permissions:
+  contents: write
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -25,5 +27,9 @@ jobs:
           PY
             n=$((n+1)); cp /tmp/shot.png /tmp/shots/shot$n.png
           done
-      - uses: actions/upload-artifact@v4
-        with: { name: shots, path: /tmp/shots }
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - run: |
+          mkdir -p raw/debug && cp /tmp/shots/*.png raw/debug/
+          git config user.name "imyong-collector"; git config user.email "actions@users.noreply.github.com"
+          git add raw/debug && git commit -qm "조사 캡처" && git push -q origin HEAD:raw-files || true
