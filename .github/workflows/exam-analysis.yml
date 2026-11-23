@@ -1,0 +1,29 @@
+name: exam-analysis
+# 기출 분석(초등 교육과정 A·B): 교육과정 원문 칸 ↔ 기출 문항 연결 + 통계 → raw-files/raw/analysis (문항 글은 저장 안 함)
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '17 21 * * 1'   # 매주 화 06:17 KST (교육과정 목록 갱신 다음 날)
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: sudo apt-get install -y -qq poppler-utils >/dev/null
+      - run: python -I -u app/scripts/collector/exam_analysis.py raw raw/analysis
+      - name: raw-files 브랜치에 저장
+        if: always()
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/analysis || exit 0
+          git commit -qm "기출 분석 $(date +%F)" || exit 0
+          for i in 1 2 3 4 5; do git pull -q --rebase origin raw-files && git push -q origin HEAD:raw-files && break; sleep $((i*5)); done
