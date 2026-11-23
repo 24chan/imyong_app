@@ -1,7 +1,9 @@
 name: ncic
 # 교육과정 원문 목록(NCIC) → raw-files/raw/ncic (앱 '교육과정 원문' 화면). 매주 월 04:47 KST
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode: { description: '--sample 이면 조금만', required: false, default: '' }
   schedule:
     - cron: '47 19 * * 0'
 permissions:
@@ -17,7 +19,7 @@ jobs:
         with: { path: app }
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: python -I -u app/scripts/collector/ncic.py raw/ncic
+      - run: python -I -u app/scripts/collector/ncic.py raw/ncic ${{ github.event.inputs.mode }}
       - name: raw-files 브랜치에 저장
         if: always()
         run: |

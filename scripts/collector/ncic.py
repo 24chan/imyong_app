@@ -68,7 +68,7 @@ def nodes(params):
 
 def files(node):
     d = node.get('data', node)
-    p = {'invSeq': d.get('seq') or d.get('invSeq') or node.get('key', ''), 'invYear': d.get('openYear', ''), 'orgType': 'ogi4',
+    p = {'invSeq': d.get('rootIdx') or d.get('ref') or '', 'invYear': d.get('openYear', ''), 'orgType': 'ogi4',
          'degreeCode': d.get('degreeCode', ''), 'classCode': d.get('classCode', ''), 'openYear': d.get('openYear', ''),
          'openMonth': d.get('openMonth', ''), 'subjectCode': d.get('subjectCode', ''), 'nationCode': '', 'type': 'org'}
     txt = req('/api/inv/invFileList.do', p)
@@ -78,6 +78,12 @@ def files(node):
         return (j.get('data') or {}).get('invFiles') or []
     except ValueError:
         return []
+
+
+def view(node):
+    """본문보기 쪽(HTML) — 고시문 본문"""
+    p = {'openYear': node.get('openYear', ''), 'seq': node.get('rootIdx') or node.get('ref'), 'location': '', 'orgType': 'ogi4', 'menuType': '1', 'nationCd': ''}
+    return req('/inv/org/view.do', p, accept='text/html')
 
 
 def main():
@@ -98,7 +104,8 @@ def run(out):
     # 2022 개정 가지만 내려감 (깊이 6까지)
     stack = [(n, 1) for n in root if '2022' in str(n.get('title', ''))]
     seen = 0
-    while stack and seen < 400:
+    LIMIT = 40 if '--sample' in sys.argv else 4000
+    while stack and seen < LIMIT:
         n, depth = stack.pop(0)
         seen += 1
         d = n.get('data', n)
@@ -113,6 +120,10 @@ def run(out):
                 stack.append((k, depth + 1))
         else:
             fl = files(n)
+            if '--sample' in sys.argv and len(result) < 3:
+                html = view(d)
+                open(os.path.join(out, f'view_{d.get("rootIdx")}.html'), 'w').write(html)
+                print('    본문 쪽', len(html))
             print('  ' * depth + f'· {title} 파일 {len(fl)}')
             result.append({'path': (n.get('_path') or []) + [title], 'node': {k: v for k, v in n.items() if k != '_path'}, 'files': fl})
     json.dump(result, open(os.path.join(out, 'curriculum.json'), 'w'), ensure_ascii=False, indent=1)
