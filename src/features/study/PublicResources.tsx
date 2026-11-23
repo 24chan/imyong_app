@@ -35,6 +35,12 @@ export function PublicResources() {
           org: '한국교육과정평가원',
         },
         {
+          title: '기출 분석 (초등 교육과정 A·B)',
+          desc: '기출이 교육과정 원문 어디서 나왔는지 형광펜으로 표시하고, 칸별 비율·연도별 교과·출제 지도·핵심어·안 나온 곳을 보여줘요. 자동 분석·참고용.',
+          go: () => router.push('/exam-analysis'),
+          org: '임용몽땅 분석',
+        },
+        {
           title: '2차 문제 (면접·수업실연)',
           desc: '지역마다 방식이 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.',
           go: () => router.push('/second-exam'),

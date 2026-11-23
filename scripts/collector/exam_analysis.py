@@ -26,6 +26,15 @@ def log(*a):
     LOG.append(s)
 
 
+def subj_name(s):
+    s = s.replace(' ', '')
+    if s.startswith('실과'):
+        return '실과'
+    if '바른생활' in s or '슬기로운' in s:
+        return '통합교과'
+    return {'창의적체험활동': '창체'}.get(s, s)
+
+
 def download(url, path):
     if os.path.exists(path) and os.path.getsize(path) > 1000:
         return True
@@ -45,9 +54,9 @@ def download(url, path):
     return False
 
 
-def pdf_text(path):
+def pdf_text(path, layout=True):
     try:
-        out = subprocess.run(['pdftotext', '-layout', '-enc', 'UTF-8', path, '-'], capture_output=True, timeout=180, check=True).stdout
+        out = subprocess.run(['pdftotext'] + (['-layout'] if layout else []) + ['-enc', 'UTF-8', path, '-'], capture_output=True, timeout=180, check=True).stdout
         return out.decode('utf-8', 'ignore')
     except Exception as e:  # noqa: BLE001
         log('글자 뽑기 실패', path, e)
@@ -179,7 +188,7 @@ def main():
     docs = []
     for d in cur['docs']:
         school = d['school']
-        if not school.startswith('초등학교'):
+        if not school.startswith('초등학교') or '한국어' in d['subject']:
             continue
         era = '2022' if d['era'].startswith('2022') else '2015' if d['era'].startswith('2015') else None
         if not era:
@@ -187,7 +196,7 @@ def main():
         pdfs = [f for f in d['files'] if f['ext'] == 'pdf']
         if not pdfs:
             continue
-        docs.append((era, school, d['subject'], pdfs[0]))
+        docs.append((era, school, subj_name(d['subject']), pdfs[0]))
     # 같은 교과에 개정판이 여럿이면 가장 앞(처음 고시) 것 + 최신 것 모두 받지 말고, 학교급 이름의 날짜가 가장 늦은 것 하나
     pick = {}
     for era, school, subj, f in docs:
@@ -225,8 +234,8 @@ def main():
         p = os.path.join(work, f'exam_{year}_{paper}.pdf')
         if not download(url, p):
             continue
-        qs = split_questions(pdf_text(p))
-        log(f'기출 {year} {paper}: 문항 {len(qs)}')
+        qs = split_questions(pdf_text(p, layout=False))  # 두 단 문제지는 읽는 차례대로
+        log(f'기출 {year} {paper}: 문항 {len(qs)} (1번 앞부분: {qs.get(1, "")[:25]})')
         for n, t in qs.items():
             questions.append({'year': year, 'paper': paper, 'no': n, 'text': t})
 
