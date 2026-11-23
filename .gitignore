@@ -41,3 +41,4 @@ yarn-error.*
 /android
 docs/.plan_upload.md
 site/
+__pycache__/

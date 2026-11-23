@@ -30,7 +30,7 @@ def subj_name(s):
     s = s.replace(' ', '')
     if s.startswith('실과'):
         return '실과'
-    if '바른생활' in s or '슬기로운' in s:
+    if '바른생활' in s or '슬기로운' in s or '즐거운생활' in s or s == '통합교과':
         return '통합교과'
     return {'창의적체험활동': '창체'}.get(s, s)
 
@@ -70,8 +70,8 @@ SEC_RE = [
     ('성격·목표', re.compile(r'^\s*1\.\s*성격\s*및\s*목표')),
     ('내용 체계', re.compile(r'^\s*(?:가\.|3\.)?\s*내용\s*체계')),
     ('성취기준', re.compile(r'^\s*(?:나\.|2\.)?\s*성취\s*기준')),
-    ('교수·학습', re.compile(r'^\s*(?:가\.|3\.|4\.)?\s*교수\s*[·ㆍ\.]?\s*학습(?!\s*및\s*평가\s*$)')),
-    ('교수·학습 및 평가', re.compile(r'^\s*3\.\s*교수\s*[·ㆍ]?\s*학습\s*및\s*평가')),
+    ('교수·학습', re.compile(r'^\s*(?:가\.|3\.|4\.)?\s*교수\s*[·ㆍ⋅∙・\.]?\s*학습(?!\s*및\s*평가\s*$)')),
+    ('교수·학습 및 평가', re.compile(r'^\s*3\.\s*교수\s*[·ㆍ⋅∙・]?\s*학습\s*및\s*평가')),
     ('평가', re.compile(r'^\s*(?:나\.|4\.|5\.)?\s*평\s*가\s*$')),
 ]
 CODE_RE = re.compile(r'\[\s*(\d{1,2})\s*([가-힣]{1,3})\s*(\d{2})\s*[-‐‑–−~]\s*(\d{2})\s*\]')
@@ -92,26 +92,44 @@ def broken(t):
     return ko < len(t) * 0.25
 
 
+BAND_RE = re.compile(r'^\[?\s*(초등학교|중학교|고등학교)\s*\d')
+
+
 def split_units(text, subject, era):
-    """원문 글 → 칸 목록. 성취기준은 코드 하나가 한 칸, 나머지는 문단 묶음(최대 600자)"""
+    """원문 글 → 칸 목록. 성취기준은 코드 하나가 한 칸, 나머지는 문단 묶음(최대 600자)
+    한 파일에 중학교·고등학교 과목이 같이 들어 있어서(국어과 교육과정 등) 초등 부분만 남김:
+    - '성격'이 새로 나올 때마다 묶음(block)을 나누고, 초등 성취기준 코드(학년 6 이하)가 있는 묶음만 남김
+    - 묶음 안에서도 [중학교 1~3학년] 부분, 학년 7 이상 코드는 뺌"""
     units, sec, buf = [], '앞부분', []
     area = ''
+    block = 0
+    band = ''
 
     def flush():
         t = re.sub(r'\s+', ' ', ' '.join(buf)).strip()
-        if len(t) >= 20:
-            units.append({'subject': subject, 'era': era, 'section': sec, 'area': area, 'code': '', 'text': t})
+        if len(t) >= 20 and band not in ('중학교', '고등학교'):
+            units.append({'subject': subject, 'era': era, 'section': sec, 'area': area, 'code': '', 'text': t, 'block': block})
         buf.clear()
 
-    lines = [ln.rstrip() for ln in text.splitlines()]
-    for ln in lines:
-        s = ln.strip()
+    lines = []
+    for ln in text.splitlines():
+        # 그림·표 자리표시 뒤에 제목이 같은 줄로 붙어 나오는 경우가 있어 나눔
+        lines.extend(x.strip() for x in re.split(r'<그림>|<표>', ln))
+    for s in lines:
         if not s or re.fullmatch(r'[-\d\s]+', s):
             continue
         hit = next((name for name, rx in SEC_RE if rx.match(s) and len(s) < 30), None)
         if hit:
             flush()
+            if hit == '성격' and any(u['section'] != '앞부분' for u in units if u['block'] == block):
+                block += 1
             sec = '교수·학습 및 평가' if hit == '교수·학습 및 평가' else hit
+            band = ''
+            continue
+        bm = BAND_RE.match(s) if sec == '성취기준' and len(s) < 25 else None
+        if bm:
+            flush()
+            band = bm.group(1)
             continue
         am = re.match(r'^\s*\(\d+\)\s*([가-힣·ㆍ\s]{2,20})$', s)
         if am and sec in ('성취기준', '내용 체계'):
@@ -122,9 +140,14 @@ def split_units(text, subject, era):
         if cm and sec in ('성취기준', '앞부분', '내용 체계'):
             flush()
             sec = '성취기준'
+            if int(cm.group(1)) > 6:  # 중·고등 성취기준
+                units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': '', 'text': '', 'block': block, 'drop': True})
+                continue
             code = f'[{cm.group(1)}{cm.group(2)}{cm.group(3)}-{cm.group(4)}]'
-            units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': code, 'text': s[cm.start():]})
+            units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': code, 'text': s[cm.start():], 'block': block})
             continue
+        if units and units[-1].get('drop') and not buf and sec == '성취기준' and not s.startswith(('(', '[', '①')):
+            continue  # 뺀 코드 문장의 이어지는 줄
         if units and units[-1]['code'] and not buf and sec == '성취기준' and len(units[-1]['text']) < 400 and not s.startswith(('(', '[', '①')):
             units[-1]['text'] += ' ' + s  # 성취기준 문장이 줄바꿈으로 이어짐
             continue
@@ -132,6 +155,13 @@ def split_units(text, subject, era):
         if sum(len(b) for b in buf) > 600:
             flush()
     flush()
+    elem_blocks = {u['block'] for u in units if u['code']}
+    if elem_blocks:
+        units = [u for u in units if u['block'] in elem_blocks and not u.get('drop')]
+    else:
+        units = [u for u in units if not u.get('drop')]
+    for u in units:
+        u.pop('block', None)
     return units
 
 
@@ -149,7 +179,7 @@ def _parse_from(lines, start):
         if m and int(m.group(1)) == want:
             cur = want
             want += 1
-            qs[cur] = ln[m.end() - 1:]
+            qs[cur] = ln[m.end():]
             continue
         if cur:
             qs[cur] += '\n' + ln
@@ -193,11 +223,12 @@ STOP = set('그리고 그러나 다음 다음은 위의 아래 것을 것은 경
 
 
 EXAM_WORDS = set('초등학교 교육과정 들어갈 고려하여 어떻게 활용하여 해당하 나타난 아니라 작성한 만들어 있도록 지도할 파악하 학년 학년군 교과서 수업 교사 학생 다음 내용 자료 활동 협의 협의회 대화 일부 계획 설명 근거 제시 의미 방법 목적 이유 개정 성취기준 단원 차시 지도 계획안 교수 학습 평가'.split())
-VERBISH = re.compile(r'(하|한|할|함|하여|하는|하고|되|된|될|되는|되어|있는|없는|도록|어|아|여|고|며|면|지|게|서|라|려|던|든|인|적|으로|에서)$')
+EXAM_WORDS |= set('우리 시간 자신 그리 다른 여러 같이 서로 대해 것이 물음 있습니 선생님 이야기 생각 친구 사람 모습 경험 상황 과정 문제 결과 내용을 다양 다양한 중심 관계 특징 특성 바르게 알맞은 적절 적절한 무엇인 무엇을 이것 그것 자기 스스로 함께 모두 각자 이번 오늘 지금 처음 마지막 정도 부분 전체 가지 여기 거기 이때 그때 때문 하기 보기 위한 위하 대한 통한 따른 관한 같은 어떤 모든 이러 그러 저러 활용 이해 탐구 표현 참여 실천 태도 능력 역량 기능 학습자 교수학습 지도안 수업안 다음은 다음과 학급 모둠'.split())
+VERBISH = re.compile(r'(하|한|할|함|하여|하는|하고|되|된|될|되는|되어|있는|없는|도록|어|아|여|고|며|면|지|게|서|라|려|던|든|인|으로|에서|였|었|았|겠|습니|니다|하되|되도록|면서|으며|에는|로는|과는|와는|기도|거나|는데|은데|지만|어서|아서|해서|하며|에게|부터)$')
 
 
 def nounish(w):
-    return w not in EXAM_WORDS and not VERBISH.search(w)
+    return len(w) >= 2 and w not in EXAM_WORDS and w not in STOP and not VERBISH.search(w)
 
 
 def words(t):
@@ -393,14 +424,22 @@ def main():
         u = units[i]
         sec_share[u['subject']][u['section']] += len(hs)
     term_years = collections.defaultdict(lambda: collections.defaultdict(collections.Counter))
-    cur_vocab = collections.defaultdict(set)
+    # 교과다운 말만: 그 교과 원문에서 다른 교과보다 두드러지게 많이 쓰는 말(비중 25% 이상) — '우리·시간' 같은 흔한 말 빼기
+    cur_tf = collections.defaultdict(collections.Counter)
     for u in units:
-        cur_vocab[u['subject']].update(words(u['text']))
+        cur_tf[u['subject']].update(words(u['text']))
+    all_tf = collections.Counter()
+    for c in cur_tf.values():
+        all_tf.update(c)
+
+    def subject_term(subj, w):
+        n = cur_tf[subj][w]
+        return n >= 2 and nounish(w) and n / all_tf[w] >= 0.25
     for q, x in zip(questions, q_subject):
         if not x['subject']:
             continue
         for w in set(words(q['text'])):
-            if w in cur_vocab[x['subject']] and len(w) >= 2 and nounish(w):
+            if subject_term(x['subject'], w):
                 term_years[x['subject']][w][q['year']] += 1
     top_terms = {}
     for subj, tw in term_years.items():
@@ -419,12 +458,14 @@ def main():
     seen_terms = set()
     for q in questions:
         seen_terms.update(words(q['text']))
+    tf22 = collections.defaultdict(collections.Counter)
     for u in units:
-        if u['era'] != '2022':
-            continue
-        for w in set(words(u['text'])):
-            if len(w) >= 4 and w not in v15 and w not in seen_terms and w not in new_terms[u['subject']]:
-                new_terms[u['subject']].append(w)
+        if u['era'] == '2022':
+            tf22[u['subject']].update(words(u['text']))
+    for subj, c in tf22.items():
+        # 2015에 없던 말 중 2022 원문에 2번 이상 나오고, 그 교과다운 말(많이 나온 순)
+        cand = [w for w, n in c.most_common() if n >= 2 and len(w) >= 3 and w not in v15 and w not in seen_terms and subject_term(subj, w)]
+        new_terms[subj] = cand
 
     subjects = sorted({u['subject'] for u in units}, key=lambda x: -sum(len(hits.get(u['id'], [])) for u in units if u['subject'] == x))
     files = {}
