@@ -13,14 +13,13 @@ export type Analysis = {
   built: string;
   note: string;
   years: number[];
-  units: Unit[];
-  hits: Record<string, Hit[]>;
+  subjects: { name: string; file: string; units: number; hit_units: number }[];
   questions: { year: number; paper: string; no: number; subject: string | null }[];
   stats: {
     subject_year: Record<string, Record<string, number>>;
     section_share: Record<string, Record<string, number>>;
     top_terms: Record<string, { term: string; total: number; years: Record<string, number> }[]>;
-    untouched_recent5: Record<string, { code: string; area: string; id: number }[]>;
+    untouched_recent5: Record<string, { code: string; area: string; id: number; text: string }[]>;
     new_terms_2022: Record<string, string[]>;
   };
 };
@@ -31,6 +30,16 @@ export function getAnalysis(level: Level): Promise<Analysis | null> {
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`기출 분석을 불러오지 못했어요 (${res.status})`);
     return (await res.json()) as Analysis;
+  });
+}
+
+/** 교과 하나의 원문 칸 + 출제 기록 (요약과 따로 받음: 크기 줄이기) */
+export type SubjectData = { subject: string; units: Unit[]; hits: Record<string, Hit[]> };
+export function getAnalysisSubject(level: Level, file: string): Promise<SubjectData | null> {
+  return cached(`analysis:${level}:${file}`, async () => {
+    const res = await fetch(`${BASE}/${level}/${file}`);
+    if (!res.ok) return null;
+    return (await res.json()) as SubjectData;
   });
 }
 

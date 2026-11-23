@@ -17,7 +17,7 @@ jobs:
         with: { path: app }
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
-      - run: sudo apt-get install -y -qq poppler-utils >/dev/null && pip install -q pyhwp lxml six
+      - run: sudo apt-get install -y -qq poppler-utils >/dev/null && pip install -q pyhwp lxml six && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-kor >/dev/null
       - run: python -I -u app/scripts/collector/exam_analysis.py raw raw/analysis
       - name: raw-files 브랜치에 저장
         if: always()

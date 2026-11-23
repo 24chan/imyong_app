@@ -74,7 +74,7 @@ SEC_RE = [
     ('교수·학습 및 평가', re.compile(r'^\s*3\.\s*교수\s*[·ㆍ]?\s*학습\s*및\s*평가')),
     ('평가', re.compile(r'^\s*(?:나\.|4\.|5\.)?\s*평\s*가\s*$')),
 ]
-CODE_RE = re.compile(r'\[(\d{1,2})([가-힣]{1,3})(\d{2})\s*-\s*(\d{2})\]')
+CODE_RE = re.compile(r'\[\s*(\d{1,2})\s*([가-힣]{1,3})\s*(\d{2})\s*[-‐‑–−~]\s*(\d{2})\s*\]')
 
 
 def hwp_text(path):
@@ -139,13 +139,13 @@ def split_units(text, subject, era):
 Q_RE = re.compile(r'^\s{0,6}(\d{1,2})\s*\.\s+\S')
 
 
-def split_questions(text):
-    """기출 글 → {번호: 글}. 1번부터 차례로 나오는 번호만 문항 시작으로 봄"""
+INSTR = re.compile(r'문답지|시험이 시작|감독관|수험\s*번호|유의\s*사항')
+
+
+def _parse_from(lines, start):
     qs, cur, want = {}, None, 1
-    for ln in text.splitlines():
+    for ln in lines[start:]:
         m = Q_RE.match(ln)
-        if m and int(m.group(1)) == 1 and cur and re.search(r'문답지|시험이 시작|감독관|수험\s*번호', qs.get(1, '')):
-            qs, cur, want = {}, None, 1  # 앞의 '수험자 유의 사항' 번호 목록은 버림
         if m and int(m.group(1)) == want:
             cur = want
             want += 1
@@ -153,7 +153,38 @@ def split_questions(text):
             continue
         if cur:
             qs[cur] += '\n' + ln
-    return {k: re.sub(r'\s+', ' ', v) for k, v in qs.items()}
+    return qs
+
+
+def split_questions(text):
+    """기출 글 → {번호: 글}. '1.'로 시작하는 줄마다 거기서부터 차례 번호를 세 보고, 안내문이 아닌 가장 긴 결과를 씀"""
+    lines = text.splitlines()
+    best = {}
+    for i, ln in enumerate(lines):
+        m = Q_RE.match(ln)
+        if not (m and m.group(1) == '1'):
+            continue
+        qs = _parse_from(lines, i)
+        if INSTR.search(qs.get(1, '')[:300]):
+            continue
+        if len(qs) > len(best):
+            best = qs
+    return {k: re.sub(r'\s+', ' ', v) for k, v in best.items()}
+
+
+def ocr_pdf(path):
+    """그림만 있는 옛 문제지: 쪽마다 그림으로 바꿔 글자 읽기(tesseract 한국어)"""
+    d = tempfile.mkdtemp()
+    try:
+        subprocess.run(['pdftoppm', '-r', '200', '-gray', '-png', path, os.path.join(d, 'p')], check=True, timeout=300, capture_output=True)
+        out = []
+        for f in sorted(os.listdir(d)):
+            r = subprocess.run(['tesseract', os.path.join(d, f), '-', '-l', 'kor', '--psm', '4'], capture_output=True, timeout=180)
+            out.append(r.stdout.decode('utf-8', 'ignore'))
+        return '\n'.join(out)
+    except Exception as e:  # noqa: BLE001
+        log('글자 읽기(OCR) 실패', path, str(e)[:100])
+        return ''
 
 
 # ---------- 말 나누기 (형태소 분석기 없이: 한글 덩어리에서 조사 떼기) ----------
@@ -306,11 +337,14 @@ def main():
         p = os.path.join(work, f'exam_{year}_{paper}.pdf')
         if not download(url, p):
             continue
-        qs = split_questions(pdf_text(p, layout=False))  # 두 단 문제지는 읽는 차례대로
+        txt = pdf_text(p, layout=False)  # 두 단 문제지는 읽는 차례대로
+        if len(re.findall(r'[가-힣]', txt)) < 2000:
+            txt = ocr_pdf(p)
+            log(f'   {year} {paper}: 그림 문제지 → 글자 읽기 {len(txt)}자')
+        qs = split_questions(txt)
         log(f'기출 {year} {paper}: 문항 {len(qs)} (1번 앞부분: {qs.get(1, "")[:25]})')
         if not qs:
-            raw_t = pdf_text(p, layout=False)
-            log('   글자 수', len(raw_t), '번호 같은 줄', [ln[:15] for ln in raw_t.splitlines() if re.match(r'^\s*\d{1,2}\s*[.)]', ln)][:6])
+            log('   번호 같은 줄', [ln[:15] for ln in txt.splitlines() if re.match(r'^\s*\d{1,2}\s*[.)]', ln)][:6])
         for n, t in qs.items():
             questions.append({'year': year, 'paper': paper, 'no': n, 'text': t})
 

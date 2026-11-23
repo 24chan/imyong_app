@@ -2,7 +2,7 @@ import { router, Stack } from 'expo-router';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
 import { Chip, Screen, Segmented, Txt } from '../components/ui';
-import { examPdf, getAnalysis, highlight, Hit, Unit } from '../data/analysis';
+import { examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
 import { useAppSettings } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
@@ -20,14 +20,12 @@ export default function ExamAnalysisScreen() {
   const data = useAsync(() => getAnalysis(level), []);
   const a = data.data;
   const [tab, setTab] = useState<Tab>('text');
-  const subjects = useMemo(() => {
-    if (!a) return [];
-    const c = new Map<string, number>();
-    a.units.forEach((u) => c.set(u.subject, (c.get(u.subject) ?? 0) + (a.hits[String(u.id)]?.length ?? 0)));
-    return [...c.entries()].sort((x, y) => y[1] - x[1]).map(([s]) => s);
-  }, [a]);
+  const subjects = useMemo(() => (a?.subjects ?? []).map((x) => x.name), [a]);
   const [subject, setSubject] = useState<string | null>(null);
   const subj = subject ?? subjects[0] ?? null;
+  const subjFile = a?.subjects.find((x) => x.name === subj)?.file ?? null;
+  const sd = useAsync(async () => (subjFile ? getAnalysisSubject(level, subjFile) : null), [subjFile]);
+  const hitsOf = (id: number) => sd.data?.hits[String(id)] ?? [];
   const [era, setEra] = useState<'2022' | '2015'>('2022');
   const [openId, setOpenId] = useState<number | null>(null);
   useEffect(() => setOpenId(null), [subj, era, tab]);
@@ -56,7 +54,7 @@ export default function ExamAnalysisScreen() {
   );
 
   const UnitCard = ({ u }: { u: Unit }) => {
-    const hs = a!.hits[String(u.id)] ?? [];
+    const hs = hitsOf(u.id);
     const open = openId === u.id;
     return (
       <Pressable onPress={() => setOpenId(open ? null : u.id)} style={{ paddingVertical: space.md, paddingHorizontal: space.lg, gap: 6, borderTopWidth: 1, borderTopColor: colors.line }}>
@@ -97,7 +95,9 @@ export default function ExamAnalysisScreen() {
 
   const body = () => {
     if (!a || !subj) return null;
-    const units = a.units.filter((u) => u.subject === subj && u.era === era);
+    const needUnits = tab === 'text' || tab === 'map';
+    if (needUnits && sd.loading && !sd.data) return <ActivityIndicator color={colors.brand} />;
+    const units = (sd.data?.units ?? []).filter((u) => u.era === era);
     if (tab === 'text') {
       const bySec = new Map<string, Unit[]>();
       units.forEach((u) => bySec.set(u.section, [...(bySec.get(u.section) ?? []), u]));
@@ -111,7 +111,7 @@ export default function ExamAnalysisScreen() {
           {secs.map((s) => (
             <View key={s} style={{ gap: 6 }}>
               <Txt variant="sub" style={{ fontSize: 13, fontWeight: '600', paddingHorizontal: 6 }}>
-                {s} · {bySec.get(s)!.reduce((n, u) => n + (a.hits[String(u.id)]?.length ? 1 : 0), 0)}/{bySec.get(s)!.length}칸 출제
+                {s} · {bySec.get(s)!.reduce((n, u) => n + (hitsOf(u.id).length ? 1 : 0), 0)}/{bySec.get(s)!.length}칸 출제
               </Txt>
               <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, overflow: 'hidden', marginTop: -1 }}>
                 {bySec.get(s)!.map((u) => <UnitCard key={u.id} u={u} />)}
@@ -176,7 +176,7 @@ export default function ExamAnalysisScreen() {
     if (tab === 'map') {
       const std = units.filter((u) => u.code);
       const areas = [...new Set(std.map((u) => u.area || '영역'))];
-      const cnt = (u: Unit) => new Set((a.hits[String(u.id)] ?? []).map((h) => `${h.y}${h.p}${h.n}`)).size;
+      const cnt = (u: Unit) => new Set(hitsOf(u.id).map((h) => `${h.y}${h.p}${h.n}`)).size;
       const max = Math.max(1, ...std.map(cnt));
       const sel = std.find((u) => u.id === openId);
       return (
@@ -206,7 +206,7 @@ export default function ExamAnalysisScreen() {
           {sel && (
             <Card title={`${sel.code} · ${cnt(sel)}회`}>
               <Txt style={{ fontSize: 14.5, lineHeight: 22 }}>{sel.text}</Txt>
-              <HitChips hs={a.hits[String(sel.id)] ?? []} />
+              <HitChips hs={hitsOf(sel.id)} />
             </Card>
           )}
         </>
@@ -241,15 +241,12 @@ export default function ExamAnalysisScreen() {
       <>
         <Card title={`최근 5년 안 나온 성취기준 (2022 개정) · ${un.length}개`}>
           {un.length === 0 && <Txt variant="sub">없어요.</Txt>}
-          {un.slice(0, 80).map((x) => {
-            const u = a.units.find((v) => v.id === x.id);
-            return (
-              <Txt key={x.id} style={{ fontSize: 13.5, lineHeight: 20 }}>
-                <Txt style={{ fontSize: 13.5, fontWeight: '700', color: colors.cat.blue.fg }}>{x.code} </Txt>
-                {u?.text.replace(x.code, '').trim().slice(0, 90)}
-              </Txt>
-            );
-          })}
+          {un.slice(0, 80).map((x) => (
+            <Txt key={x.id} style={{ fontSize: 13.5, lineHeight: 20 }}>
+              <Txt style={{ fontSize: 13.5, fontWeight: '700', color: colors.cat.blue.fg }}>{x.code} </Txt>
+              {x.text}
+            </Txt>
+          ))}
         </Card>
         <Card title={`2022 개정에서 새로 생겼고 아직 기출에 안 나온 말 · ${nt.length}개`}>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
