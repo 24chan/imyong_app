@@ -24,8 +24,8 @@ TODAY = dt.datetime.now(KST).date()
 # level: None = 초등·중등 모두 다루는 곳(글에 초등/중등 말이 없으면 둘 다로)
 SITES = [
     {'code': 'hackers', 'name': '해커스임용', 'home': 'https://teacher.hackers.com/', 'level': None,
-     'extra': ['https://mteacher.hackers.com/board/?r=teacher&m=bbs&bid=lec_plan', 'https://mteacher.hackers.com/board/?r=teacher&m=bbs&bid=notice']},
-    {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://www.g-school.co.kr/', 'level': 'secondary',
+     'extra': []},
+    {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://m.g-school.co.kr/', 'level': 'secondary',
      'extra': ['https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC5', 'https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC4']},
     {'code': 'ssamplus', 'name': 'KG에듀원 희소·쌤플러스', 'home': 'https://www.ssamplus.com/', 'level': None},
     {'code': 'pmg', 'name': '박문각임용', 'home': 'https://www.pmg.co.kr/', 'level': None, 'mixed': True},
