@@ -83,9 +83,17 @@ def files(node):
 def main():
     out = sys.argv[1]
     os.makedirs(out, exist_ok=True)
+    try:
+        run(out)
+    finally:
+        json.dump(LOG[:400], open(os.path.join(out, 'log.json'), 'w'), ensure_ascii=False, indent=1)
+
+
+def run(out):
     start()
     root = nodes({'invDepth': 1})
     print('1단계', len(root), [n.get('title') for n in root][:30])
+    print('예시 노드', json.dumps(root[0], ensure_ascii=False)[:600])
     result = []
     # 2022 개정 가지만 내려감 (깊이 6까지)
     stack = [(n, 1) for n in root if '2022' in str(n.get('title', ''))]
@@ -96,7 +104,7 @@ def main():
         d = n.get('data', n)
         title = re.sub(r'<[^>]+>', '', str(n.get('title', '')))
         if n.get('lazy') or n.get('folder'):
-            kids = nodes({'invDepth': (d.get('invDepth') or depth) + (0 if d.get('invDepth') else 1), 'degreeCode': d.get('degreeCode'),
+            kids = nodes({'invDepth': d.get('invDepth') or 1, 'degreeCode': d.get('degreeCode'),
                           'classCode': d.get('classCode'), 'subjectCode': d.get('subjectCode'), 'subjectDefCode': d.get('subjectDefCode'),
                           'openYear': d.get('openYear'), 'openMonth': d.get('openMonth'), 'ref': d.get('ref')})
             print('  ' * depth + f'[{title}] → {len(kids)}')
@@ -108,7 +116,6 @@ def main():
             print('  ' * depth + f'· {title} 파일 {len(fl)}')
             result.append({'path': (n.get('_path') or []) + [title], 'node': {k: v for k, v in n.items() if k != '_path'}, 'files': fl})
     json.dump(result, open(os.path.join(out, 'curriculum.json'), 'w'), ensure_ascii=False, indent=1)
-    json.dump(LOG[:300], open(os.path.join(out, 'log.json'), 'w'), ensure_ascii=False, indent=1)
     print('문서', len(result), '파일', sum(len(r['files']) for r in result))
 
 
