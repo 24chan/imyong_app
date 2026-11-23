@@ -10,6 +10,7 @@ import { useAsync } from '../data/useAsync';
 import { useAppSettings } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
+import { openLink } from '../lib/openLink';
 
 // 기출문제 (2026-11-22 승인): 목록은 앱 안, 파일은 평가원 서버에서 바로 열어 앱 안에서 미리보기
 export default function PastExamsScreen() {
@@ -97,7 +98,7 @@ export default function PastExamsScreen() {
                 ))}
               </View>
             )}
-            <Pressable onPress={() => Linking.openURL(list.data!.page)}>
+            <Pressable onPress={() => openLink(list.data!.page, '평가원 기출문제')}>
               <Txt variant="sub" color="brand" style={{ textDecorationLine: 'underline' }}>
                 출처: 한국교육과정평가원 기출문제 게시판 (목록 갱신 {list.data.updated})
               </Txt>

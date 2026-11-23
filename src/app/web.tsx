@@ -7,8 +7,18 @@ import { OFFICIAL_HOSTS, webview } from '../lib/webview';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
-// 공식 기관 페이지를 앱 안에서 보기 (법령·교육과정·교과서 등). 위에 '브라우저로 열기' 링크.
-// 공식 사이트(go.kr 등) 밖으로 나가는 링크는 바깥 브라우저로 넘김.
+// 웹 페이지를 앱 안에서 보기 (공식 기관·학교·학원). 위에 출처와 '브라우저로 열기'.
+// 공식 사이트가 아니면 '바깥 사이트(학원·학교 등)' 표시. 처음 연 사이트와 공식 사이트 안에서만 움직이고, 그 밖 링크는 바깥 브라우저로.
+/** 처음 연 사이트와 같은 곳(www. 차이 무시) */
+const sameSite = (a: string, b: string) => {
+  try {
+    const h = (u: string) => new URL(u).host.replace(/^www\./, '').replace(/^m\./, '');
+    return h(a) === h(b);
+  } catch {
+    return false;
+  }
+};
+
 export default function WebScreen() {
   const { colors } = useTheme();
   const { url, title } = useLocalSearchParams<{ url: string; title?: string }>();
@@ -28,7 +38,7 @@ export default function WebScreen() {
       <Stack.Screen options={{ title: title ?? '자료 보기' }} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.md, paddingVertical: space.sm, borderBottomWidth: 1, borderBottomColor: colors.line }}>
         <Txt variant="sub" style={{ flex: 1 }} numberOfLines={1}>
-          출처: {host}
+          {OFFICIAL_HOSTS.test(url) ? '출처' : '바깥 사이트'}: {host}
         </Txt>
         <Pressable
           onPress={() => Linking.openURL(url)}
@@ -51,7 +61,7 @@ export default function WebScreen() {
             onLoadEnd={() => setLoading(false)}
             onError={() => setFailed(true)}
             onShouldStartLoadWithRequest={(r) => {
-              if (OFFICIAL_HOSTS.test(r.url) || r.url.startsWith('about:')) return true;
+              if (OFFICIAL_HOSTS.test(r.url) || r.url.startsWith('about:') || sameSite(r.url, url)) return true;
               Linking.openURL(r.url).catch(() => {});
               return false;
             }}

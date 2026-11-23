@@ -103,7 +103,7 @@ export type Notice = {
   docType: NoticeType;
   title: string;
   postedAt: string | null; // YYYY-MM-DD
-  files: { name: string; url: string }[];
+  files: { name: string; url: string; view?: string }[];
   images: string[]; // 첨부 PDF 앞쪽을 그린 그림 주소 (앱에서 바로 보기)
 };
 

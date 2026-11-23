@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { openLink } from '../lib/openLink';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Pressable, View } from 'react-native';
 import { PrimaryButton, Screen, Txt } from '../components/ui';
@@ -47,7 +47,7 @@ export default function NoticeScreen() {
     return (
       <Screen>
         <Txt>공고를 찾지 못했어요.</Txt>
-        {url ? <PrimaryButton label="원문 열기" onPress={() => Linking.openURL(url)} /> : null}
+        {url ? <PrimaryButton label="원문 열기" onPress={() => openLink(url, '교육청 원문')} /> : null}
       </Screen>
     );
   }
@@ -64,10 +64,10 @@ export default function NoticeScreen() {
           {item.images.map((u, i) => (
             <PageImage key={u} uri={u} index={i} />
           ))}
-          <Txt variant="sub">첨부 PDF 앞쪽만 보여줘요. 전체 내용과 한글·엑셀 파일은 아래 원문에서 확인하세요.</Txt>
+          <Txt variant="sub">첨부 파일 앞쪽만 보여줘요. 전체는 아래 첨부 파일을 누르면 앱 안에서 볼 수 있어요.</Txt>
         </View>
       ) : (
-        <Txt variant="sub">이 공고는 바로 볼 수 있는 그림이 없어요 (한글·엑셀 첨부). 아래 원문에서 확인하세요.</Txt>
+        <Txt variant="sub">이 공고는 바로 볼 수 있는 그림이 없어요. 아래 첨부 파일을 누르면 앱 안에서 볼 수 있어요(엑셀은 바깥 앱).</Txt>
       )}
 
       {item.docType === 'private' && <PrivateLink region={item.region} />}
@@ -78,7 +78,11 @@ export default function NoticeScreen() {
           {item.files.map((f) => (
             <Pressable
               key={f.url}
-              onPress={() => openLink(f.url, f.name)}
+              onPress={() =>
+                f.view
+                  ? router.push({ pathname: '/pdf', params: { url: f.view, title: f.name, page: f.url, pageLabel: '원본 한글 파일' } })
+                  : openLink(f.url, f.name)
+              }
               accessibilityRole="link"
               style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.line }}
             >

@@ -103,7 +103,7 @@ export default function ThreadScreen() {
               style={{ alignSelf: m.isMine ? 'flex-end' : 'flex-start', maxWidth: '78%', gap: 2, alignItems: m.isMine ? 'flex-end' : 'flex-start' }}
             >
               {m.imagePath && urls[m.imagePath] && (
-                <Pressable onPress={() => Linking.openURL(urls[m.imagePath as string])}>
+                <Pressable onPress={() => router.push({ pathname: '/image', params: { url: urls[m.imagePath as string] } })}>
                   <Image source={{ uri: urls[m.imagePath] }} style={{ width: 200, height: 200, borderRadius: radius.md, backgroundColor: colors.line }} />
                 </Pressable>
               )}

@@ -11,6 +11,7 @@ import { subjectByCode } from '../../data/subjects';
 import { LabelBadge, needWriterAlert, ReportSheet, useWriterLabels } from '../../features/community/parts';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
+import { openLink } from '../../lib/openLink';
 
 function Stars({ value, onChange, size = 14 }: { value: number; onChange?: (n: number) => void; size?: number }) {
   const { colors } = useTheme();
@@ -111,7 +112,7 @@ export default function LectureScreen() {
       <Txt variant="title">
         {lec.instructor} · {lec.title}
       </Txt>
-      {lec.url && <PrimaryButton label="강의 안내 열기" variant="ghost" onPress={() => Linking.openURL(lec.url as string)} />}
+      {lec.url && <PrimaryButton label="강의 안내 열기" variant="ghost" onPress={() => openLink(lec.url, '강의 안내')} />}
 
       <Card>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>

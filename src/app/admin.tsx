@@ -173,7 +173,7 @@ function ReviewCard({ v, univ, onDone }: { v: Verification; univ?: { name: strin
       ) : (
         <View style={{ gap: space.sm }}>
           {urls.map((u, i) => (
-            <Pressable key={u} onPress={() => Linking.openURL(u)} accessibilityLabel={`서류 사진 ${i + 1} 크게 보기`}>
+            <Pressable key={u} onPress={() => router.push({ pathname: '/image', params: { url: u, title: '서류 사진' } })} accessibilityLabel={`서류 사진 ${i + 1} 크게 보기`}>
               <Image source={{ uri: u }} style={{ width: '100%', aspectRatio: 1.4, borderRadius: radius.md, backgroundColor: colors.line }} resizeMode="contain" />
             </Pressable>
           ))}
@@ -333,7 +333,7 @@ function EnrollCard({ e, onDone }: { e: PendingEnrollment; onDone: () => void })
         {e.instructor} · {e.lectureTitle}
       </Txt>
       {(urls ?? []).map((u) => (
-        <Pressable key={u} onPress={() => Linking.openURL(u)}>
+        <Pressable key={u} onPress={() => router.push({ pathname: '/image', params: { url: u, title: '수강 인증 사진' } })}>
           <Image source={{ uri: u }} style={{ width: '100%', aspectRatio: 1, borderRadius: radius.md, backgroundColor: colors.line }} resizeMode="contain" />
         </Pressable>
       ))}

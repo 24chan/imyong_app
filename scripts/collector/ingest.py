@@ -66,13 +66,21 @@ def notices(raw):
         manifest = json.load(open(mf)) if os.path.exists(mf) else []
         for url, p in json.load(open(f)).items():
             # 이 공고의 PDF 첨부를 그린 그림 (공고문을 먼저, 최대 6장)
-            pdfs = [m for m in manifest if m['post_url'] == url and m['path'].endswith('.pdf')]
+            def conv(m):  # 한글 첨부를 바꾼 PDF (docs_to_pdf.py)
+                return os.path.join(region_dir, 'pdf', m['sha1'] + '.pdf')
+            pdfs = [m for m in manifest if m['post_url'] == url and (m['path'].endswith('.pdf') or (m['path'].lower().endswith(('.hwp', '.hwpx')) and os.path.exists(conv(m))))]
             pdfs.sort(key=lambda m: (0 if re.search(r'공고|결과|현황|합격', m['file_name']) else 1, m['file_name']))
             images = []
             for m in pdfs:
                 for img in sorted(glob.glob(os.path.join(region_dir, 'img', m['sha1'] + '_p*.jpg'))):
                     images.append(base + os.path.relpath(img, os.path.dirname(os.path.abspath(raw))).replace(os.sep, '/'))
             files = [{**x} for x in p.get('files', [])]
+            # 한글 첨부는 바꾼 PDF 주소(view)를 붙여 앱 안에서 보게
+            by_url = {m.get('file_url'): m for m in manifest if m['post_url'] == url}
+            for x in files:
+                m = by_url.get(x.get('url'))
+                if m and m['path'].lower().endswith(('.hwp', '.hwpx')) and os.path.exists(conv(m)):
+                    x['view'] = base + os.path.relpath(conv(m), os.path.dirname(os.path.abspath(raw))).replace(os.sep, '/')
             rows.append({'url': url, 'region': p['region'], 'level': p['level'], 'year': p['year'], 'doc_type': p['type'],
                          'title': p['title'][:300], 'posted_at': p.get('posted_at'),
                          'files': files + ([{'images': images[:6]}] if images else [])})

@@ -4,6 +4,7 @@ import { getSchoolInfo } from '../../data/repository';
 import { useAsync } from '../../data/useAsync';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
+import { openLink } from '../../lib/openLink';
 
 /** 학교 정보 (학교알리미 공시): 학생·교원 수와 남녀, 학급 수, 설립연도 */
 export function SchoolInfoBox({ region, name, kind }: { region: string; name: string; kind: 'e' | 'm' | 'h' }) {
@@ -51,7 +52,7 @@ export function SchoolInfoBox({ region, name, kind }: { region: string; name: st
         {[i.coed, i.est ? `${i.est}년 개교` : null].filter(Boolean).join(' · ')}
         {i.hp ? ' · ' : ''}
         {i.hp && (
-          <Txt variant="sub" color="brand" style={{ fontSize: 12, fontWeight: '700' }} onPress={() => Linking.openURL(i.hp!.startsWith('http') ? i.hp! : `http://${i.hp}`)}>
+          <Txt variant="sub" color="brand" style={{ fontSize: 12, fontWeight: '700' }} onPress={() => openLink(i.hp!.startsWith('http') ? i.hp! : `http://${i.hp}`, '학교 홈페이지')}>
             홈페이지
           </Txt>
         )}

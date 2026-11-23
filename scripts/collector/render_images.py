@@ -18,9 +18,12 @@ def main(raw):
         img_dir = os.path.join(region_dir, 'img')
         os.makedirs(img_dir, exist_ok=True)
         for m in json.load(open(mf)):
-            if not m['path'].endswith('.pdf'):
+            if m['path'].endswith('.pdf'):
+                src = os.path.join(raw, m['path'])
+            elif m['path'].lower().endswith(('.hwp', '.hwpx')):  # docs_to_pdf.py가 만든 PDF
+                src = os.path.join(region_dir, 'pdf', m['sha1'] + '.pdf')
+            else:
                 continue
-            src = os.path.join(raw, m['path'])
             out = os.path.join(img_dir, m['sha1'])
             if glob.glob(out + '_p*.jpg') or not os.path.exists(src):
                 continue

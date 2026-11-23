@@ -14,6 +14,7 @@ import { useAppSettings } from '../../store/AppSettings';
 import { useAuth } from '../../store/Auth';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
+import { openLink } from '../../lib/openLink';
 
 type Tab = 'lectures' | 'mock' | 'public';
 const TAB_CAT = { lectures: 'pink', mock: 'coral', public: 'teal' } as const;
@@ -117,7 +118,7 @@ export default function AcademyScreen() {
           {ads.map((a) => (
             <Pressable
               key={a.id}
-              onPress={() => a.url && Linking.openURL(a.url)}
+              onPress={() => openLink(a.url, a.academyName ?? '광고')}
               style={{ backgroundColor: colors.surface, borderRadius: radius.xl, padding: 18, gap: 2 }}
             >
               <Txt variant="sub" style={{ fontWeight: '800' }}>

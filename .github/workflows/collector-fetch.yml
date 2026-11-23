@@ -76,7 +76,8 @@ jobs:
           for d in /tmp/new/raw-*; do [ -d "$d" ] || continue; r=${d#/tmp/new/raw-}; mkdir -p /tmp/raw/$r; cp -r $d/. /tmp/raw/$r/; done
           pip install -q pyhwp lxml six
           (cd /tmp && bash $GITHUB_WORKSPACE/scripts/collector/convert_hwp.sh) || true
-          sudo apt-get install -y -qq poppler-utils >/dev/null
+          sudo apt-get install -y -qq poppler-utils fonts-noto-cjk >/dev/null
+          python -I scripts/collector/docs_to_pdf.py /tmp/raw || true
           python -I scripts/collector/render_images.py /tmp/raw || true
       - name: 사립 위탁 채용 표 뽑기
         run: |
