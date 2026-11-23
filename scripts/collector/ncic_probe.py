@@ -34,6 +34,7 @@ while queue and n < 40:
     host = urllib.parse.urlparse(final).netloc
     for t, h, a in crawl.anchors(html, final):
         blob = f'{t} {h} {a}'
+        a = json.dumps(a, ensure_ascii=False)
         if FILE.search(blob):
             found.append({'page': final, 'text': t[:80], 'href': h[:300], 'attrs': a[:300]})
         if host.split(':')[0].endswith('ncic.go.kr') and urllib.parse.urlparse(h).netloc.endswith('ncic.go.kr') and KEY.search(t + ' ' + h) and h not in seen and len(queue) < 120:
