@@ -49,20 +49,10 @@ export function PublicResources() {
       cat: 'teal',
       items: [
         {
-          title: elem ? '2022 개정 초등학교 교육과정 원문 (총론·창체·교과별 각론)' : `2022 개정 ${subj ? `${subj} ` : ''}교육과정 각론·총론 원문`,
-          desc: elem
-            ? '1차 교육과정 A·B의 출제 범위예요(교육부 고시 제2022-33호, 국가교육위원회 고시 제2024-3호 일부개정). 교과별 각론마다 성격·목표·내용 체계·성취기준과 교수·학습 및 평가(교육론)가 들어 있어요.'
-            : '전공의 교과교육학(25~35%)에서 쓰는 기본 문서예요(교육부 고시 제2022-33호, 국가교육위원회 고시 제2024-3호 일부개정). 내용 체계·성취기준·교수·학습 및 평가가 들어 있어요.',
-          url: 'https://ncic.go.kr',
+          title: elem ? '초등 교육과정 총론·교과별 각론' : `${subj ? `${subj} ` : ''}교육과정 각론·총론`,
+          desc: '내용 체계표와 성취기준은 교과별 각론 안에 있어요. 출제 범위가 되는 고시 번호는 시행계획 공고에서 확인해요.',
+          url: 'https://ncic.go.kr/inv/org/list.do',
           org: '국가교육과정정보센터',
-        },
-        {
-          title: '출제 범위·평가 영역 (임용시험 안내)',
-          desc: elem
-            ? '교직논술(초등학교 교직·교양 전 영역)과 교육과정(초등학교 교육과정 전 영역)의 출제 범위·문항 형식 안내.'
-            : '교육학 출제 범위와 표시과목별 평가 영역·평가 내용 요소(교과교육학·교과내용학) 안내.',
-          url: 'https://www.kice.re.kr',
-          org: '한국교육과정평가원',
         },
         {
           title: '교과서·지도서 찾기',
@@ -109,9 +99,6 @@ export function PublicResources() {
   return (
     <View style={{ gap: space.lg }}>
       <Txt variant="sub">공식 기관이 공개한 자료만 모았어요. 앱 안에서 바로 보고, 위의 버튼으로 원문을 열거나 파일을 받을 수 있어요.</Txt>
-      <Txt variant="sub" style={{ fontSize: 12 }}>
-        교사용 지도서·교과서 본문·학원 교재·강의 자료는 저작권이 있어 앱에 올리지 않아요. 교과서·지도서는 아래 '교과서·지도서 찾기'에서 발행처를 확인해 주세요.
-      </Txt>
       {sections.map((s) => (
         <View key={s.key} style={{ gap: space.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -120,18 +107,18 @@ export function PublicResources() {
             </View>
             <Txt variant="heading">{s.title}</Txt>
           </View>
-          <View style={{ borderRadius: radius.xl, backgroundColor: colors.background, overflow: 'hidden' }}>
+          <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
             {s.items.map((it, i) => (
               <Pressable
                 key={it.title}
                 onPress={() => (it.go ? it.go() : it.url && router.push({ pathname: '/web', params: { url: it.url, title: it.title } }))}
                 accessibilityRole={it.url ? 'link' : 'button'}
-                style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.lg, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
+                style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
               >
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Txt style={{ fontWeight: '600' }}>{it.title}</Txt>
+                  <Txt style={{ fontWeight: '700' }}>{it.title}</Txt>
                   <Txt variant="sub">{it.desc}</Txt>
-                  <Txt variant="sub" style={{ fontSize: 12, color: colors.cat[s.cat].fg, fontWeight: '600' }}>
+                  <Txt variant="sub" style={{ fontSize: 12, color: colors.cat[s.cat].fg, fontWeight: '700' }}>
                     {it.org}
                   </Txt>
                 </View>
