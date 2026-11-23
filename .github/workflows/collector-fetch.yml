@@ -87,6 +87,14 @@ jobs:
         run: |
           git config user.name "imyong-collector"
           git config user.email "actions@users.noreply.github.com"
+          # 다른 작업(교육과정 목록·기출 분석·학원 일정 등)이 이 작업 도중 올린 것을 덮어쓰지 않게, 마지막 raw-files를 다시 받아 지역 폴더 밖은 최신으로
+          if git fetch -q origin raw-files; then
+            rm -rf /tmp/latest && mkdir -p /tmp/latest && git archive FETCH_HEAD raw | tar -x -C /tmp/latest
+            for d in /tmp/latest/raw/*; do
+              n=$(basename "$d"); [ -d "/tmp/new/raw-$n" ] && continue
+              rm -rf "/tmp/raw/$n" && cp -r "$d" "/tmp/raw/$n"
+            done
+          fi
           git checkout -q --orphan raw-files-new
           git rm -rq --cached . || true
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
