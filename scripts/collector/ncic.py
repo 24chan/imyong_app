@@ -106,7 +106,7 @@ def run(out):
     seen = 0
     LIMIT = 40 if '--sample' in sys.argv else 4000
     while stack and seen < LIMIT:
-        n, depth = stack.pop(0)
+        n, depth = stack.pop() if '--sample' in sys.argv else stack.pop(0)
         seen += 1
         d = n.get('data', n)
         title = re.sub(r'<[^>]+>', '', str(n.get('title', '')))
