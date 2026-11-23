@@ -99,35 +99,48 @@ def run(out):
     start()
     root = nodes({'invDepth': 1})
     print('1단계', [n.get('title') for n in root])
-    sample = '--sample' in sys.argv
-    stack = [(dict(n, _path=[n['title']]), 1) for n in root if re.match(r'20(22|15) 개정', str(n.get('title', '')))]
+
+    def kids_of(n):
+        ks = nodes({'invDepth': n.get('invDepth') or 1, 'degreeCode': n.get('degreeCode'), 'classCode': n.get('classCode'),
+                    'subjectCode': n.get('subjectCode'), 'subjectDefCode': n.get('subjectDefCode'),
+                    'openYear': n.get('openYear'), 'openMonth': n.get('openMonth'), 'ref': n.get('ref')})
+        for k in ks:
+            k['title'] = re.sub(r'<[^>]+>', '', str(k.get('title', '')))
+        return ks
+
+    def first_leaf(n, depth=0):
+        if not (n.get('lazy') or n.get('folder')):
+            return n
+        if depth > 5:
+            return None
+        for k in kids_of(n):
+            leaf = first_leaf(k, depth + 1)
+            if leaf:
+                return leaf
+        return None
+
     sections, files_by = {}, {}
-    seen = 0
-    LIMIT = 60 if sample else 6000
-    while stack and seen < LIMIT:
-        n, depth = stack.pop() if sample else stack.pop(0)
-        seen += 1
-        title = re.sub(r'<[^>]+>', '', str(n.get('title', '')))
-        path = n['_path']
-        if path[0].startswith('2015') and len(path) >= 2 and '특수' in path[1]:
-            continue
-        if n.get('lazy') or n.get('folder'):
-            kids = nodes({'invDepth': n.get('invDepth') or 1, 'degreeCode': n.get('degreeCode'), 'classCode': n.get('classCode'),
-                          'subjectCode': n.get('subjectCode'), 'subjectDefCode': n.get('subjectDefCode'),
-                          'openYear': n.get('openYear'), 'openMonth': n.get('openMonth'), 'ref': n.get('ref')})
-            print('  ' * depth + f'[{title}] → {len(kids)}')
-            for k in kids:
-                k['_path'] = path + [re.sub(r'<[^>]+>', '', str(k.get('title', '')))]
-                stack.append((k, depth + 1))
-            continue
-        # 잎(장·절): 교과 단위(앞 3단계)로 묶어 파일 목록은 교과마다 한 번만
-        subj_key = ' > '.join(path[:3])
-        sections.setdefault(subj_key, []).append({'title': title, 'path': path[3:], 'seq': n.get('rootIdx') or n.get('ref')})
-        if subj_key not in files_by:
-            fl = files(n)
-            files_by[subj_key] = [{'name': f['fileOrg'], 'ext': (f.get('fileExt') or '').lower(), 'seq': f['orgAttNo'], 'year': f['openYear'],
-                                   'url': f"{BASE}/inv/org/download.do?year={f['openYear']}&seq={f['orgAttNo']}&orgType=ogi4"} for f in fl]
-            print('  ' * depth + f'· {subj_key} 파일 {len(fl)}')
+    for era in [n for n in root if re.match(r'20(22|15) 개정', str(n.get('title', '')))]:
+        for school in kids_of(era):
+            if era['title'].startswith('2015') and '특수' in school['title']:
+                continue
+            for subj in kids_of(school):
+                key = ' > '.join([era['title'], school['title'], subj['title']])
+                if not (subj.get('lazy') or subj.get('folder')):
+                    secs, leaf = [], subj
+                else:
+                    chapters = kids_of(subj)
+                    secs = [{'title': c['title'], 'seq': c.get('rootIdx') or c.get('ref')} for c in chapters]
+                    leaf = None
+                    for c in chapters:
+                        leaf = first_leaf(c)
+                        if leaf:
+                            break
+                fl = files(leaf) if leaf else []
+                sections[key] = secs
+                files_by[key] = [{'name': f['fileOrg'], 'ext': (f.get('fileExt') or '').lower(), 'seq': f['orgAttNo'], 'year': f['openYear'],
+                                  'url': f"{BASE}/inv/org/download.do?year={f['openYear']}&seq={f['orgAttNo']}&orgType=ogi4"} for f in fl]
+                print(f'{key}: 장 {len(secs)} 파일 {len(fl)}')
     docs = []
     for key, secs in sections.items():
         p = key.split(' > ')
