@@ -12,6 +12,7 @@ jobs:
           URLS: ${{ github.event.inputs.urls }}
         run: |
           pip install -q pillow
+          mkdir -p /tmp/shots; n=0
           for u in $URLS; do
             echo "== $u"; curl -s -D - -o /tmp/f -r 0-1000 -A "Mozilla/5.0" "$u" | grep -iE "^(HTTP|content-type|content-disposition|content-length)"; head -c 8 /tmp/f | od -c | head -1
             g="https://docs.google.com/gview?embedded=1&url=$(python3 -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1],safe=""))' "$u")"
@@ -22,4 +23,7 @@ jobs:
           px = list(im.getdata()); dark = sum(1 for p in px if p < 200)
           print('캡처 어두운 점 비율', round(dark / len(px), 4))
           PY
+            n=$((n+1)); cp /tmp/shot.png /tmp/shots/shot$n.png
           done
+      - uses: actions/upload-artifact@v4
+        with: { name: shots, path: /tmp/shots }
