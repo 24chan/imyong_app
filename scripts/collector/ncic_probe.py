@@ -12,12 +12,12 @@ import crawl  # noqa: E402
 crawl.DELAY[0] = 1.0
 out = sys.argv[1]
 os.makedirs(out, exist_ok=True)
-START = ['https://ncic.re.kr/js/ncic/inv_list.js', 'https://ncic.re.kr/js/ncic/menu_tree.js', 'https://ncic.re.kr/js/core/dc_ajax.js', 'https://ncic.re.kr/js/common.js', 'https://ncic.re.kr/bbs/raw/list.do', 'https://ncic.re.kr/bbs/standard/list.do']
-KEY = re.compile(r'교육과정|고시|원문|문서|총론|각론|2022|자료|inventory|org/|dwn|file|down', re.I)
-FILE = re.compile(r'\.pdf|\.hwp|fileDown|download|dwn|attach|FileDown|fn_?[a-zA-Z]*[Dd]own', re.I)
+START = ['https://www.law.go.kr/행정규칙/초ㆍ중등학교 교육과정', 'https://www.law.go.kr/행정규칙/초ㆍ중등학교교육과정', 'https://www.law.go.kr/admRulSc.do?menuId=5&query=' + urllib.parse.quote('초ㆍ중등학교 교육과정')]
+KEY = re.compile(r'admRulInfoP|admRulLsInfoP|lsBylInfo|bylList|별책|별표|교육과정|고시|원문|문서|총론|각론|2022|자료|inventory|org/|dwn|file|down', re.I)
+FILE = re.compile(r'flDownload|bylFl|\.pdf|\.hwp|fileDown|download|dwn|attach|FileDown|fn_?[a-zA-Z]*[Dd]own', re.I)
 seen, queue, found, log = set(), list(START), [], []
 n = 0
-while queue and n < 12:
+while queue and n < 20:
     url = queue.pop(0)
     if url in seen:
         continue
@@ -37,7 +37,7 @@ while queue and n < 12:
         a = json.dumps(a, ensure_ascii=False)
         if FILE.search(blob):
             found.append({'page': final, 'text': t[:80], 'href': h[:300], 'attrs': a[:300]})
-        if re.search(r'ncic\.(go|re)\.kr$', host.split(':')[0]) and re.search(r'ncic\.(go|re)\.kr$', urllib.parse.urlparse(h).netloc) and KEY.search(t + ' ' + h) and h not in seen and len(queue) < 120:
+        if re.search(r'(ncic\.(go|re)|law\.go)\.kr$', host.split(':')[0]) and re.search(r'(ncic\.(go|re)|law\.go)\.kr$', urllib.parse.urlparse(h).netloc) and KEY.search(t + ' ' + h) and h not in seen and len(queue) < 120:
             queue.append(h)
     for m in re.finditer(r'(?:onclick|href)\s*=\s*"(javascript:)?\s*([A-Za-z_]+\([^"]{0,200}\))"', html):
         if FILE.search(m.group(2)):
