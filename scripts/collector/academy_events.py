@@ -27,7 +27,7 @@ SITES = [
     {'code': 'gschool', 'name': 'G스쿨', 'home': 'https://www.g-school.co.kr/', 'level': 'secondary',
      'extra': ['https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC5', 'https://m.g-school.co.kr/customer/list.jsp?board_cate_code=GBC4']},
     {'code': 'ssamplus', 'name': 'KG에듀원 희소·쌤플러스', 'home': 'https://www.ssamplus.com/', 'level': None},
-    {'code': 'pmg', 'name': '박문각임용', 'home': 'https://www.pmg.co.kr/', 'level': None},
+    {'code': 'pmg', 'name': '박문각임용', 'home': 'https://www.pmg.co.kr/', 'level': None, 'mixed': True},
     {'code': 'imyongcom', 'name': '임용닷컴', 'home': 'https://www.imyong.com/', 'level': None},
 ]
 FOLLOW = re.compile(r'공지|이벤트|설명회|개강|강의\s*일정|모의고사|특강|notice|event', re.I)
@@ -35,8 +35,9 @@ KIND = [  # 앞에 있는 것이 먼저
     ('mock', re.compile(r'모의고사|모의평가|전국\s*모의')),
     ('briefing', re.compile(r'설명회')),
     ('online', re.compile(r'인강\s*오픈|온라인\s*오픈|강의\s*오픈|OPEN', re.I)),
+    ('open', re.compile(r'개강')),
     ('special', re.compile(r'특강|클리닉|캠프')),
-    ('open', re.compile(r'개강|대비반|모집|직강|합격반')),
+    ('open', re.compile(r'대비반|모집|직강|합격반')),
 ]
 SECOND = re.compile(r'2차|면접|수업\s*실연|수업\s*나눔|지도안|심층')
 SUBJECTS = [('korean', '국어'), ('english', '영어'), ('math', '수학'), ('social', '일반사회'), ('history', '역사'),
@@ -78,7 +79,7 @@ def texts(html, base):
     return out
 
 
-def pick_date(s):
+def pick_date(s, first=False):
     """요일이 맞는 날짜(또는 'N월 N일')를 오늘 기준 -7~+300일 안에서 고름.
     여러 개면 요일 있는 것 → 종류 말(개강·설명회…)에 가까운 것"""
     kpos = [m.start() for _, rx in KIND for m in rx.finditer(s)]
@@ -86,7 +87,8 @@ def pick_date(s):
     for m in DATE.finditer(s):
         y, mo, d, w = m.group(1), int(m.group(2)), int(m.group(3)), m.group(4)
         korean = '월' in m.group(0) and '일' in m.group(0)
-        if not (1 <= mo <= 12 and 1 <= d <= 31) or not (w or korean):
+        near = re.match(r'\s*(?:\)|일)?\s*(?:[-~]\s*)?(?:개강|진행|시행|오픈|OPEN|시작|설명회|특강|모의고사)', s[m.end():m.end() + 12], re.I)
+        if not (1 <= mo <= 12 and 1 <= d <= 31) or not (w or korean or near):
             continue
         years = [int(y)] if y else [TODAY.year - 1, TODAY.year, TODAY.year + 1]
         for yy in years:
@@ -102,16 +104,19 @@ def pick_date(s):
                 break
     if not cands:
         return None, None
-    cands.sort(key=lambda c: (c[0], c[1]))
+    cands.sort(key=(lambda c: c[3].start()) if first else (lambda c: (c[0], c[1])))
     return cands[0][2], cands[0][3]
 
 
-SKIP = re.compile(r'유아|유치원|공무원|소방|경찰|간호|노무|감평|세무|공인중개|7급|9급|편입|마감\s*임박|당첨|후기\s*이벤트')
+SKIP = re.compile(r'유아|유치원|공무원|소방|경찰|간호|노무|감평|세무|중개사|주택관리|법원|등기|7급|9급|편입|마감\s*임박|당첨|후기\s*이벤트|성적|순위|정오|발송|배송|OMR|장학생|강사\s*모집|적중|결제|내\s*강의실|이용\s*방법|FAQ|사이트', re.I)
+TEACH = re.compile(r'임용|초등|중등|교육학|전공|교원|교사|2차|수업\s*실연|면접')
 
 
-def classify(title, site):
+def classify(title, site, url=''):
     if SKIP.search(title):
         return None
+    if site.get('mixed') and not (TEACH.search(title) or '/pta/' in url.lower()):
+        return None  # 여러 시험을 같이 다루는 곳(박문각): 임용 글만
     kind = next((k for k, rx in KIND if rx.search(title)), None)
     if not kind:
         return None
@@ -131,6 +136,20 @@ def classify(title, site):
     return kind, levels, subject
 
 
+BODY_KEY = re.compile(r'개강일?|일\s*시|일\s*정|진행일?|시행일?|날\s*짜|기\s*간|오픈|시작')
+
+
+def body_date(html):
+    """글 본문에서 '개강일: 11월 30일(월)'처럼 열쇠말 가까이 있는 날짜"""
+    text = clean(re.sub(r'<(script|style)\b.*?</\1>', ' ', html, flags=re.S | re.I))
+    for km in BODY_KEY.finditer(text):
+        seg = text[km.start():km.start() + 40]
+        day, _ = pick_date(seg, first=True)
+        if day:
+            return day
+    return None
+
+
 def tidy(title, m):
     t = NOISE.sub(' ', title)
     t = re.sub(r'\s*[-–~:]\s*$', '', t)
@@ -140,6 +159,22 @@ def tidy(title, m):
 
 def collect():
     found, pages_log, cands = {}, [], []
+
+    def add(site, t, u, day, m, c, ptitle):
+        if not c:
+            return
+        kind, levels, subject = c
+        title = tidy(t, m)
+        core = re.sub(r'[\d/.()월화수목금토일\s]|개강|설명회|신청|하기|바로가기|모의고사|특강', '', title)
+        if len(core) < 6 and ptitle:
+            title = (ptitle + ' · ' + title)[:80]
+        for lv in levels:
+            key = f"{site['code']}|{day}|{kind}|{lv}|{re.sub(r'[^가-힣A-Za-z0-9]', '', title)[:40]}"
+            found.setdefault(key, {
+                'source_key': key, 'academy': site['name'], 'kind': kind, 'title': title,
+                'starts_on': day.isoformat(), 'level': lv, 'area': 'second' if SECOND.search(t) else None,
+                'subject_code': subject, 'url': u, 'raw': t,
+            })
     for site in SITES:
         try:
             base, html = crawl.get(site['home'])
@@ -157,6 +192,7 @@ def collect():
                 pages.append(crawl.get(u, referer=base))
             except Exception as e:  # noqa: BLE001
                 pages_log.append({'site': site['code'], 'url': u, 'error': str(e)[:200]})
+        undated = []
         for purl, phtml in pages:
             items = texts(phtml, purl)
             ptitle = clean((re.search(r'<title[^>]*>(.*?)</title>', phtml, re.S | re.I) or re.match(r'()', '')).group(1))[:60]
@@ -165,23 +201,24 @@ def collect():
                 if any(rx.search(t) for _, rx in KIND) and not SKIP.search(t):
                     cands.append({'site': site['code'], 'text': t, 'url': u})
                 day, m = pick_date(t)
+                c = classify(t, site, u)
                 if not day:
+                    if c and host in u and u != purl and re.search(r'2028|2차|설명회|개강', t) and u not in [x[1] for x in undated]:
+                        undated.append((t, u))
                     continue
-                c = classify(t, site)
                 if not c:
                     continue
-                kind, levels, subject = c
-                title = tidy(t, m)
-                core = re.sub(r'[\d/.()월화수목금토일\s]|개강|설명회|신청|하기|바로가기|모의고사|특강', '', title)
-                if len(core) < 6 and ptitle:
-                    title = (ptitle + ' · ' + title)[:80]
-                for lv in levels:
-                    key = f"{site['code']}|{day}|{kind}|{lv}|{re.sub(r'[^가-힣A-Za-z0-9]', '', title)[:40]}"
-                    found.setdefault(key, {
-                        'source_key': key, 'academy': site['name'], 'kind': kind, 'title': title,
-                        'starts_on': day.isoformat(), 'level': lv, 'area': 'second' if SECOND.search(t) else None,
-                        'subject_code': subject, 'url': u, 'raw': t,
-                    })
+                add(site, t, u, day, m, c, ptitle)
+        for t, u in undated[:20]:  # 제목에 날짜가 없는 글: 본문에서 찾기
+            try:
+                _, bh = crawl.get(u, referer=base)
+            except Exception as e:  # noqa: BLE001
+                pages_log.append({'site': site['code'], 'url': u, 'error': str(e)[:200]})
+                continue
+            day = body_date(bh)
+            pages_log.append({'site': site['code'], 'url': u, 'body_date': str(day) if day else None})
+            if day:
+                add(site, t, u, day, None, classify(t, site, u), '')
     return list(found.values()), pages_log, cands
 
 
