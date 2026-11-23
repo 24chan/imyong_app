@@ -12,12 +12,12 @@ import crawl  # noqa: E402
 crawl.DELAY[0] = 1.0
 out = sys.argv[1]
 os.makedirs(out, exist_ok=True)
-START = ['https://www.law.go.kr/행정규칙/초ㆍ중등학교 교육과정', 'https://www.law.go.kr/행정규칙/초ㆍ중등학교교육과정', 'https://www.law.go.kr/admRulSc.do?menuId=5&query=' + urllib.parse.quote('초ㆍ중등학교 교육과정')]
+START = ['https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000273516', 'https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000273516', 'https://www.law.go.kr/LSW/admRulBylInfoPLinkR.do?admRulSeq=2100000273516']
 KEY = re.compile(r'admRulInfoP|admRulLsInfoP|lsBylInfo|bylList|별책|별표|교육과정|고시|원문|문서|총론|각론|2022|자료|inventory|org/|dwn|file|down', re.I)
 FILE = re.compile(r'flDownload|bylFl|\.pdf|\.hwp|fileDown|download|dwn|attach|FileDown|fn_?[a-zA-Z]*[Dd]own', re.I)
 seen, queue, found, log = set(), list(START), [], []
 n = 0
-while queue and n < 20:
+while queue and n < 6:
     url = queue.pop(0)
     if url in seen:
         continue
