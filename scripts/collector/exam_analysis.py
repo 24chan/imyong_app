@@ -227,8 +227,16 @@ EXAM_WORDS |= set('우리 시간 자신 그리 다른 여러 같이 서로 대�
 VERBISH = re.compile(r'(하|한|할|함|하여|하는|하고|되|된|될|되는|되어|있는|없는|도록|어|아|여|고|며|면|지|게|서|라|려|던|든|인|으로|에서|였|었|았|겠|습니|니다|하되|되도록|면서|으며|에는|로는|과는|와는|기도|거나|는데|은데|지만|어서|아서|해서|하며|에게|부터)$')
 
 
+EXAM_WORDS |= set('그런 이런 저런 때는 때에 가장 사실 다시 라는 있을 같다 경우에 안의 년간 합니 이해에 점을 글에 개를 다음 각각 모든 위의 아래 처음 정도 이상 이하 이외 사이 동안 경우 필요 여부 해당 관련 중요 대상 요소'.split())
+VERBISH2 = re.compile(r'(나|이나|했|해|으|고자|킬|니|에|었으|였으)$')
+
+
 def nounish(w):
-    return len(w) >= 2 and w not in EXAM_WORDS and w not in STOP and not VERBISH.search(w)
+    if len(w) < 2 or w in EXAM_WORDS or w in STOP or VERBISH.search(w) or VERBISH2.search(w):
+        return False
+    if len(w) == 2 and w[1] in '을를의에은는이가도와과로':  # 한 글자 말 + 조사(물을, 글에)
+        return False
+    return True
 
 
 def words(t):
