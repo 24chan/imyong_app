@@ -1,6 +1,6 @@
 /* 0030 (2026-11-23)
    1) 운영자 추가: imyonghelp@gmail.com (그 메일로 한 번이라도 로그인한 뒤에 실행해야 들어가요. 다시 실행해도 됨)
-   2) 작성자 확인(수사기관 협조용): 운영자만, 사유를 꼭 적고, 누가 언제 왜 봤는지 기록이 남음
+   2) 작성자 확인(수사기관 협조용): 운영자만
    3) 학원 일정 자동 수집용 칸: source('auto'), source_key(같은 글 한 번만), hidden(운영자가 숨긴 자동 일정은 다시 안 보임) */
 
 /* 1) 운영자 추가 */
@@ -8,20 +8,13 @@ insert into public.admins (user_id)
 select id from auth.users where lower(email) = 'imyonghelp@gmail.com'
 on conflict do nothing;
 
-/* 2) 작성자 확인 + 열람 기록 */
-create table if not exists public.admin_reveal_log (
-  id bigint generated always as identity primary key,
-  admin_id uuid references auth.users(id) on delete set null,
-  target_type text not null,
-  target_id text not null,
-  target_user uuid,
-  reason text not null,
-  created_at timestamptz not null default now()
-);
-alter table public.admin_reveal_log enable row level security;
-/* 앱에서 직접 읽기·쓰기 불가. 아래 함수로만 */
+/* 2) 작성자 확인(수사기관 협조용): 운영자만 (2026-11-23 사용자 결정: 사유 입력·열람 기록 없음)
+   예전 판(사유·기록 있는 것)을 이미 실행했어도 이 파일을 다시 실행하면 바뀜 */
+drop function if exists public.admin_reveal_author(text, text, text);
+drop function if exists public.admin_reveal_history();
+drop table if exists public.admin_reveal_log;
 
-create or replace function public.admin_reveal_author(p_type text, p_id text, p_reason text) returns jsonb
+create or replace function public.admin_reveal_author(p_type text, p_id text) returns jsonb
 language plpgsql security definer set search_path = public, auth as $$
 declare
   v_users uuid[];
@@ -30,7 +23,6 @@ declare
   v_logins jsonb;
 begin
   if not public.is_admin() then raise exception '운영자만 할 수 있어요'; end if;
-  if length(trim(coalesce(p_reason, ''))) < 5 then raise exception '확인 사유를 5자 이상 적어 주세요 (예: ○○경찰서 공문 2026-123)'; end if;
 
   if p_type = 'conversation' then
     select array[a_id, b_id] into v_users from public.conversations where id = p_id::uuid;
@@ -41,13 +33,7 @@ begin
   end if;
   if v_users is null or v_users[1] is null then raise exception '대상을 찾을 수 없어요'; end if;
 
-  /* 열람 기록은 3년 보관 */
-  delete from public.admin_reveal_log where created_at < now() - interval '3 years';
-
   foreach v_u in array v_users loop
-    insert into public.admin_reveal_log (admin_id, target_type, target_id, target_user, reason)
-    values (auth.uid(), p_type, p_id, v_u, trim(p_reason));
-
     /* 최근 로그인 기록(IP 포함): Supabase가 남기는 기록이 있을 때만, 최대 10개 */
     v_logins := '[]'::jsonb;
     if to_regclass('auth.audit_log_entries') is not null then
@@ -75,19 +61,8 @@ begin
   end loop;
   return v_out;
 end $$;
-revoke all on function public.admin_reveal_author(text, text, text) from public, anon;
-grant execute on function public.admin_reveal_author(text, text, text) to authenticated;
-
-/* 운영자: 열람 기록 보기 (최근 200개) */
-create or replace function public.admin_reveal_history() returns table (created_at timestamptz, admin_email text, target_type text, target_id text, reason text)
-language sql stable security definer set search_path = public, auth as $$
-  select l.created_at, (select email from auth.users where id = l.admin_id), l.target_type, l.target_id, l.reason
-    from public.admin_reveal_log l
-   where public.is_admin()
-   order by l.created_at desc limit 200;
-$$;
-revoke all on function public.admin_reveal_history() from public, anon;
-grant execute on function public.admin_reveal_history() to authenticated;
+revoke all on function public.admin_reveal_author(text, text) from public, anon;
+grant execute on function public.admin_reveal_author(text, text) to authenticated;
 
 /* 3) 학원 일정 자동 수집 */
 alter table public.academy_events add column if not exists source text not null default 'manual';
