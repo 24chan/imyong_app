@@ -49,9 +49,9 @@ export function PublicResources() {
       cat: 'teal',
       items: [
         {
-          title: elem ? '초등 교육과정 총론·교과별 각론' : `${subj ? `${subj} ` : ''}교육과정 각론·총론`,
-          desc: '내용 체계표와 성취기준은 교과별 각론 안에 있어요. 출제 범위가 되는 고시 번호는 시행계획 공고에서 확인해요.',
-          url: 'https://ncic.go.kr/inv/org/list.do',
+          title: elem ? '초등 교육과정 총론·교과별 각론 원문' : `${subj ? `${subj} ` : ''}교육과정 각론·총론 원문`,
+          desc: '2022·2015 개정 고시문을 교과별로 앱 안에서 바로 봐요. 성격·목표, 내용 체계·성취기준, 교수·학습 및 평가(교육론)가 들어 있어요.',
+          go: () => router.push('/curriculum'),
           org: '국가교육과정정보센터',
         },
         {
