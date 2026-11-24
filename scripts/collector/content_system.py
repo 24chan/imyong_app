@@ -36,7 +36,10 @@ def download(url, path):
 
 def to_xhtml(hwp, outdir):
     os.makedirs(outdir, exist_ok=True)
-    r = subprocess.run(['hwp5html', '--output', outdir, hwp], timeout=900, capture_output=True)
+    # 스타일 이름 글자가 깨진 파일(과학 등)에서 pyhwp가 멈추지 않게: 깨진 글자는 바꿔 넣고 계속
+    code = ("import sys, hwp5.dataio as d; d.decode_utf16le_with_hypua = lambda b: b.decode('utf-16le', 'replace'); "
+            "sys.argv = ['hwp5html', '--output', sys.argv[1], sys.argv[2]]; from hwp5.hwp5html import main; main()")
+    r = subprocess.run([sys.executable, '-c', code, outdir, hwp], timeout=900, capture_output=True)
     if r.returncode:
         print('hwp5html 오류', r.returncode, r.stderr.decode('utf-8', 'ignore')[-600:])
     for root, _, files in os.walk(outdir):
