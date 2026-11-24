@@ -74,7 +74,7 @@ export default function NewStudyScreen() {
           </View>
         </Card>
         {labels && <LabelChooser labels={labels} value={label} onChange={setLabel} />}
-        <TextInput value={title} onChangeText={setTitle} placeholder="제목 (예: 서울 초등 1차 교육학 스터디)" placeholderTextColor={colors.textSub} maxLength={80} style={[input, { fontWeight: '700', fontSize: 16 }]} />
+        <TextInput value={title} onChangeText={setTitle} placeholder="제목 (예: 서울 초등 1차 교직논술 스터디)" placeholderTextColor={colors.textSub} maxLength={80} style={[input, { fontWeight: '700', fontSize: 16 }]} />
         <TextInput
           value={body}
           onChangeText={setBody}

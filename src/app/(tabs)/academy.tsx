@@ -82,7 +82,7 @@ export default function AcademyScreen() {
       </View>
       {tab === 'lectures' && (
         <Txt variant="sub">
-          {viewLevel === 'elementary' ? '교육학 + 초등' : `교육학 + ${subjectByCode(subject)?.name ?? '중등'} 전공`} 강의예요. 후기는 수강 인증을 받은 사람만 쓸 수 있어요.
+          {viewLevel === 'elementary' ? '교직논술(교육학) + 초등' : `교육학 + ${subjectByCode(subject)?.name ?? '중등'} 전공`} 강의예요. 후기는 수강 인증을 받은 사람만 쓸 수 있어요.
         </Txt>
       )}
       {error && <Txt color="down">{error}</Txt>}
