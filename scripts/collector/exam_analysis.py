@@ -95,7 +95,20 @@ def hwp_text_tables(path):
         if kind == 'p':
             lines.append(v)
         else:
-            for row in v:
+            # 2026-11-24 고침: 내용 체계표 등에서 중학교·고등학교 칸은 빼고 읽기
+            g = cs.grid(v)
+            drop_cols = {c for r in g[:5] for c, (t, _) in enumerate(r) if re.search(r'중학교|고등학교', t or '')}
+            seen_ids = set()
+            rows = []
+            for r in g:
+                cells = []
+                for c, (t, cid) in enumerate(r):
+                    if c in drop_cols or cid in seen_ids or cid == -1:
+                        continue
+                    seen_ids.add(cid)
+                    cells.append({'t': t})
+                rows.append(cells)
+            for row in rows:
                 for cell in row:
                     t = cell['t']
                     if not t:
@@ -122,6 +135,22 @@ def broken(t):
     """글꼴 문제로 깨진 글자(한글 아닌 기호가 대부분)"""
     ko = len(re.findall(r'[가-힣]', t))
     return ko < len(t) * 0.25
+
+
+CSS_RE = re.compile(r'\.Section-\d|position\s*:\s*absolute|font-family\s*:|\{[^{}]*:[^{}]*;[^{}]*\}|@page|text-align\s*:')
+ADMIN_RE = re.compile(r'부\s*칙|이\s*고시는|시행한다|게재|고시\s*제\s*\d|시행일|적용\s*시기|학년도부터\s*적용|고시문\s*전문')
+UPPER_RE = re.compile(r'중학교|고등학교|고교|학점|단위\s*배당|선택\s*과목|공통\s*과목|9\s*학년|[789]학년|1\s*[~∼～-]\s*3\s*학년')
+
+
+def keep_text(t):
+    """코드 없는 칸 거르기 (2026-11-24 이중 검토 지적): 스타일 코드, 행정 머리말(부칙·시행일·게재 안내), 중·고등만 다루는 글"""
+    if CSS_RE.search(t):
+        return False
+    if ADMIN_RE.search(t) and len(t) < 700:
+        return False
+    if UPPER_RE.search(t) and not re.search(r'초등|1\s*[~∼～-]\s*2\s*학년|3\s*[~∼～-]\s*4\s*학년|5\s*[~∼～-]\s*6\s*학년', t):
+        return False
+    return True
 
 
 BAND_RE = re.compile(r'^\[?\s*(초등학교|중학교|고등학교)\s*\d')
@@ -199,7 +228,7 @@ def split_units(text, subject, era):
                 continue
             by_code[u['code']] = u
         merged.append(u)
-    units = merged
+    units = [u for u in merged if u.get('drop') or u['code'] or keep_text(u['text'])]
     elem_blocks = {u['block'] for u in units if u['code']}
     if elem_blocks:
         units = [u for u in units if u['block'] in elem_blocks and not u.get('drop')]
@@ -495,6 +524,31 @@ def cue_counts(t):
     return dict(c)
 
 
+def decide_subject(t, vote):
+    """2026-11-24 이중 검토 반영: 성취기준 코드가 있으면 그 교과. 교과 이름은 3번 이상이거나(동점 없이),
+    2번이면서 원문 유사도도 그 교과를 2표 이상 줄 때만 믿음. 그 밖(1번 스침·동점)은 원문 유사도 다수결"""
+    codes = collections.Counter(CODE_LET[m.group(2)[0]] for m in CODE_RE.finditer(t) if m.group(2)[0] in CODE_LET)
+    if codes:
+        return codes.most_common(1)[0][0], 'code'
+    c = collections.Counter()
+    for name, rx in CUES:
+        n = len(re.findall(rx, t))
+        if n:
+            c[name] += n
+    top = c.most_common(2)
+    vtop = vote.most_common(1)[0][0] if vote else None
+    if top:
+        name, n = top[0]
+        tie = len(top) > 1 and top[1][1] == n
+        if not tie and (n >= 3 or (n >= 2 and vote.get(name, 0) >= 2)) and name not in ('총론', '창체'):
+            return name, 'cue'
+        if not tie and name in ('총론', '창체') and n >= 3 and vote.get(name, 0) >= 1:
+            return name, 'cue'
+    if vtop:
+        return vtop, 'vote'
+    return (top[0][0], 'cue') if top else (None, 'vote')
+
+
 def cue_subject(t):
     """문항 속 성취기준 코드·교과 이름으로 교과 정하기(가장 많이 나온 것)"""
     c = collections.Counter()
@@ -534,7 +588,9 @@ def main():
     pick = {}
     for era, school, subj, f in docs:
         k = (era, subj)
-        if k not in pick or school > pick[k][0]:
+        # 2026-11-24 고침: 2015는 처음 고시본(2015.09)을 씀 — 2018.07 일부개정본에 다른 교과(수학 측정 등) 글이 섞여 사회로 잘못 붙던 문제
+        newer = school > pick[k][0] if k in pick else True
+        if k not in pick or (newer if k[0] == '2022' else not newer):
             pick[k] = (school, f)
     units = []
     # 한글 → 표 글까지 바꾸기는 느려서(문서마다 1~3분) 먼저 받아 두고 4개씩 동시에
@@ -621,7 +677,7 @@ def main():
         if os.environ.get('DEBUG_BOXES') == str(year):  # 진단: 번호처럼 보이는 줄 머리만 (작업 기록에만)
             for pi, lines in enumerate(pl[:4]):
                 print('  쪽', pi + 1, [(round(ln[0], 3), round(ln[1], 3), ln[4][:6]) for ln in lines if re.match(r'^\W{0,2}\d{1,2}\W', ln[4])][:14])
-        if not scanned and len(qs) < len(bx) * 0.7:
+        if not scanned and len(qs) < len(bx):
             # 번호로 못 나눈 문제지(2014 등): 찾은 문항 자리 안의 글자로 문항 글을 만듦(작업 중에만 씀)
             W_, H_ = (float(x) for x in re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', subprocess.run(['pdfinfo', p], capture_output=True).stdout.decode()).groups())
             qs2 = {}
@@ -633,9 +689,14 @@ def main():
                     t = ''
                 if len(t.strip()) > 30:
                     qs2[n] = t
-            if len(qs2) > len(qs):
+            if len(qs) < len(bx) * 0.7 and len(qs2) > len(qs):
                 log(f'   {year} {paper}: 문항 자리로 나눔 {len(qs)} → {len(qs2)}')
                 qs = qs2
+            else:  # 빠진 번호만 자리 글로 채움(2023 B 10·11번처럼)
+                add = {n: t for n, t in qs2.items() if n not in qs}
+                if add:
+                    log(f'   {year} {paper}: 빠진 문항 자리로 채움 {sorted(add)}')
+                    qs = {**qs, **add}
         boxes[f'{year}{paper}'] = {str(k): v for k, v in bx.items()}
         log(f'기출 {year} {paper}: 문항 {len(qs)} 자리 {len(bx)}{" (OCR)" if scanned else ""} (1번 앞부분: {qs.get(1, "")[:25]})')
         if not qs:
@@ -673,11 +734,11 @@ def main():
         if not scored or scored[0][0] < 0.08:
             q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': None})
             continue
-        cue = cue_subject(q['text'])
         vote = collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05)
-        subj = cue or vote.most_common(1)[0][0]
+        subj, how = decide_subject(q['text'], vote)
+        cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
-        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': '문항 속 교과 이름·성취기준 코드' if cue else '원문과 비슷한 칸 다수결',
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결'}[how],
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)

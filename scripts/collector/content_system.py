@@ -71,9 +71,13 @@ class Doc(HTMLParser):
         self.rows = None
         self.cell = None
         self.buf = []
+        self.skip = 0
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        if tag in ('style', 'script', 'head', 'title'):
+            self.skip += 1  # 2026-11-24 고침: 스타일 코드(.Section-0 {position: absolute…})가 글로 섞이던 문제
+            return
         if tag == 'table':
             self.depth += 1
             if self.depth == 1:
@@ -89,6 +93,9 @@ class Doc(HTMLParser):
             self.flush()
 
     def handle_endtag(self, tag):
+        if tag in ('style', 'script', 'head', 'title'):
+            self.skip = max(0, self.skip - 1)
+            return
         if tag == 'table':
             if self.depth == 1 and self.rows is not None:
                 self.items.append(('table', [[{'t': clean(''.join(c['t'])), 'rs': c['rs'], 'cs': c['cs']} for c in r] for r in self.rows if r]))
@@ -101,6 +108,8 @@ class Doc(HTMLParser):
             self.flush()
 
     def handle_data(self, d):
+        if self.skip:
+            return
         if self.cell is not None:
             self.cell['t'].append(d)
         elif self.depth == 0:
