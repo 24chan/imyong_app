@@ -537,6 +537,14 @@ def decide_subject(t, vote):
             c[name] += n
     top = c.most_common(2)
     vtop = vote.most_common(1)[0][0] if vote else None
+    # 2026-11-24 영어 예외(이중 검토): 영어 문항은 지문이 영어라 한글 유사도가 국어·통합교과로 쏠림
+    #  - 알파벳 비율 30% 이상이면 영어 / '영어'가 한 번이라도 있고 알파벳 15% 이상이거나 다수결에서 영어가 1위와 동점이면 영어
+    alpha = len(re.findall(r'[A-Za-z]', t))
+    ko = len(re.findall(r'[가-힣]', t))
+    ratio = alpha / max(1, alpha + ko)
+    vmax = max(vote.values()) if vote else 0
+    if ratio >= 0.3 or (c.get('영어', 0) >= 1 and (ratio >= 0.15 or (vmax and vote.get('영어', 0) == vmax))):
+        return '영어', 'english'
     if top:
         name, n = top[0]
         tie = len(top) > 1 and top[1][1] == n
@@ -738,7 +746,7 @@ def main():
         subj, how = decide_subject(q['text'], vote)
         cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
-        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결'}[how],
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(알파벳 비율·영어 단서)'}[how],
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)
