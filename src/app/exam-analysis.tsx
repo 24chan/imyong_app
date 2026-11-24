@@ -285,12 +285,25 @@ export default function ExamAnalysisScreen() {
       const terms = a.stats.top_terms[subj] ?? [];
       const maxT = Math.max(1, ...terms.map((t) => t.total));
       return (
-        <Card title={`${subj} · 기출에 자주 나온 말 (원문에 있는 말만)`}>
+        <Card title={`${subj} · 기출에 나온 핵심 개념`}>
+          <Txt variant="sub" style={{ fontSize: 12 }}>
+            2022 개정 교육과정 내용 체계의 내용 요소(교육과정이 정한 핵심 개념)가 이 교과 문항에 몇 번 나왔는지예요. 상황을 설명하는 흔한 말은 뺐어요.
+          </Txt>
           {terms.length === 0 && <Txt variant="sub">아직 없어요.</Txt>}
           {terms.slice(0, 30).map((t, i) => (
             <View key={t.term} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Txt variant="sub" style={{ width: 20, fontSize: 12 }}>{i + 1}</Txt>
-              <Txt style={{ width: 96, fontSize: 14, fontWeight: '600' }} numberOfLines={1}>{t.term}</Txt>
+              <View style={{ width: 132 }}>
+                <Txt style={{ fontSize: 14, fontWeight: '600' }} numberOfLines={2}>
+                  {t.term}
+                </Txt>
+                {!!t.area && (
+                  <Txt variant="sub" style={{ fontSize: 11 }} numberOfLines={1}>
+                    {t.area}
+                    {t.cat ? ` · ${t.cat}` : ''}
+                  </Txt>
+                )}
+              </View>
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', gap: 2, height: 22 }}>
                 {a.years.map((y) => {
                   const n = t.years[String(y)] ?? 0;
