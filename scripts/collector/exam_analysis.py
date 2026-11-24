@@ -274,7 +274,10 @@ def boxes_from_lines(pages, src):
         two = sum(1 for ln in lines if ln[0] > 0.5) > 8 and sum(1 for ln in lines if ln[0] < 0.48 and ln[2] > 0.52) < len(lines) * 0.15
         info.append((pi + 1, lines, two))
     cands = []  # (쪽, 단, y, 번호)
+    cover = re.compile(r'문답지|감독관|수험번호|답안\s*작성|유의\s*사항|시험이\s*시작되면|필기구|부정행위')
     for pg, lines, two in info:
+        if any(_QSTART.match(ln[4]) and cover.search(ln[4]) for ln in lines):
+            continue  # 번호 붙은 유의 사항이 있는 쪽(표지)의 '1. 2. 3.'은 문항이 아님
         for x0, y0, x1, y1, t in lines:
             m = _QSTART.match(t)
             if not m or y0 > 0.95:
