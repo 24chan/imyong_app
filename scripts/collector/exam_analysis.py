@@ -203,46 +203,88 @@ def split_questions(text):
 
 
 # ---------- 문항 위치 (2026-11-24 사용자 승인 A안) ----------
-# 문항 그림은 저장하지 않고 '몇 쪽, 어디부터 어디까지'(쪽 크기에 대한 비율) 숫자만 남김.
-# 앱이 평가원 원본 PDF를 받아 그 부분만 잘라 보여 줌.
+# 문항 그림·글은 저장하지 않고 '몇 쪽, 어디부터 어디까지'(쪽 크기에 대한 비율 0~1) 숫자만 남김.
+# 앱이 평가원 원본 PDF를 받아 그 쪽 하나만 그려서 그 부분만 잘라 보여 줌.
+# 구조(모든 출처 공통): boxes['2019B']['6'] = {'p': 쪽(1부터), 'r': [x0, y0, x1, y1], 'src': 'text'|'ocr'|'manual'}
+#  - text: 글자 PDF의 글자 위치(pdftotext -bbox-layout)
+#  - ocr: 그림 PDF(2014·2015 등)를 글자 읽기(tesseract)한 줄 위치
+#  - manual: 사람이 넣은 값(data/exam_boxes_manual.json) — 자동 값보다 먼저
+MANUAL_BOXES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_boxes_manual.json')
 _LINE_RE = re.compile(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', re.S)
 _PAGE_RE = re.compile(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', re.S)
 _WORD_RE = re.compile(r'<word[^>]*>(.*?)</word>', re.S)
 _QSTART = re.compile(r'^(\d{1,2})\s*[.．]')
 
 
-def question_boxes(path):
-    """PDF 글자 위치(pdftotext -bbox-layout)로 문항 번호 줄을 찾아 문항마다 [쪽(1부터), x0, y0, x1, y1] (0~1 비율)"""
+def page_lines_text(path):
+    """글자 PDF → 쪽마다 줄 목록 [(x0, y0, x1, y1, 글)] (모두 0~1 비율)"""
     try:
         xml = subprocess.run(['pdftotext', '-bbox-layout', path, '-'], capture_output=True, timeout=180, check=True).stdout.decode('utf-8', 'ignore')
     except Exception as e:  # noqa: BLE001
         log('글자 위치 읽기 실패', path, str(e)[:80])
-        return {}
+        return []
     pages = []
-    for pi, (w, h, body) in enumerate(_PAGE_RE.findall(xml)):
+    for w, h, body in _PAGE_RE.findall(xml):
         W, H = float(w), float(h)
         lines = []
         for x0, y0, x1, y1, inner in _LINE_RE.findall(body):
             t = ' '.join(_WORD_RE.findall(inner)).strip()
             if t:
-                lines.append((float(x0), float(y0), float(x1), float(y1), t))
-        two = sum(1 for ln in lines if ln[0] > W * 0.5) > 8 and sum(1 for ln in lines if ln[0] < W * 0.48 and ln[2] > W * 0.52) < len(lines) * 0.15
-        pages.append((pi + 1, W, H, lines, two))
-    # 번호 줄 후보: (쪽, 단, y, 번호)
-    cands = []
-    for pg, W, H, lines, two in pages:
+                lines.append((float(x0) / W, float(y0) / H, float(x1) / W, float(y1) / H, t))
+        pages.append(lines)
+    return pages
+
+
+def page_lines_ocr(path):
+    """그림 PDF → 쪽마다 줄 목록 (tesseract 줄 위치, 0~1 비율)"""
+    d = tempfile.mkdtemp()
+    pages = []
+    try:
+        subprocess.run(['pdftoppm', '-r', '150', '-gray', '-png', path, os.path.join(d, 'p')], check=True, timeout=300, capture_output=True)
+        for f in sorted(os.listdir(d)):
+            r = subprocess.run(['tesseract', os.path.join(d, f), '-', '-l', 'kor', '--psm', '4', 'tsv'], capture_output=True, timeout=180)
+            rows = [ln.split('\t') for ln in r.stdout.decode('utf-8', 'ignore').splitlines()[1:]]
+            W = H = None
+            groups = collections.OrderedDict()
+            for c in rows:
+                if len(c) < 12:
+                    continue
+                lvl, left, top, wd, ht, txt = int(c[0]), int(c[6]), int(c[7]), int(c[8]), int(c[9]), c[11].strip()
+                if lvl == 1:
+                    W, H = wd, ht
+                if lvl != 5 or not txt:
+                    continue
+                k = (c[2], c[3], c[4])  # 블록·문단·줄
+                g = groups.setdefault(k, [left, top, left + wd, top + ht, []])
+                g[0], g[1], g[2], g[3] = min(g[0], left), min(g[1], top), max(g[2], left + wd), max(g[3], top + ht)
+                g[4].append(txt)
+            if not W:
+                pages.append([])
+                continue
+            pages.append([(g[0] / W, g[1] / H, g[2] / W, g[3] / H, ' '.join(g[4])) for g in groups.values()])
+    except Exception as e:  # noqa: BLE001
+        log('글자 읽기(OCR) 위치 실패', path, str(e)[:100])
+    return pages
+
+
+def boxes_from_lines(pages, src):
+    """쪽마다 줄 위치(0~1) → 문항마다 {'p', 'r', 'src'}. 두 단 문제지면 단마다 따로"""
+    info = []
+    for pi, lines in enumerate(pages):
+        two = sum(1 for ln in lines if ln[0] > 0.5) > 8 and sum(1 for ln in lines if ln[0] < 0.48 and ln[2] > 0.52) < len(lines) * 0.15
+        info.append((pi + 1, lines, two))
+    cands = []  # (쪽, 단, y, 번호)
+    for pg, lines, two in info:
         for x0, y0, x1, y1, t in lines:
             m = _QSTART.match(t)
-            if not m or y0 > H * 0.95:
+            if not m or y0 > 0.95:
                 continue
-            col = 1 if (two and x0 > W * 0.5) else 0
-            left = W * 0.5 if col else 0
-            if x0 - left > W * 0.12:  # 줄 맨 앞(단 왼쪽)에 있는 번호만
+            col = 1 if (two and x0 > 0.5) else 0
+            if x0 - (0.5 if col else 0) > 0.12:  # 단 왼쪽 끝 번호만
                 continue
             cands.append((pg, col, y0, int(m.group(1))))
     cands.sort()
-    # 1부터 차례로 이어지는 번호만 (중간 '1.' 같은 보기 번호 거르기). 가장 긴 줄기를 고름
-    best = []
+    best = []  # 1부터 차례로 이어지는 가장 긴 줄기 (보기 속 '1.' 거르기)
     for i, c in enumerate(cands):
         if c[3] != 1:
             continue
@@ -253,24 +295,51 @@ def question_boxes(path):
                 want += 1
         if len(seq) > len(best):
             best = seq
-    info = {pg: (W, H, lines, two) for pg, W, H, lines, two in pages}
+    by_pg = {pg: (lines, two) for pg, lines, two in info}
     out = {}
     for k, (pg, col, y, n) in enumerate(best):
-        W, H, lines, two = info[pg]
-        lo, hi = (W * 0.5, W) if (two and col) else (0, W * 0.5 if two else W)
+        lines, two = by_pg[pg]
+        lo, hi = (0.5, 1.0) if (two and col) else (0.0, 0.5 if two else 1.0)
         nxt = best[k + 1] if k + 1 < len(best) else None
-        body = [ln for ln in lines if ln[1] >= y - 1 and ln[1] < H * 0.95 and lo - 2 <= ln[0] < hi]
-        if nxt and nxt[0] == pg and nxt[1] == col:
-            body = [ln for ln in body if ln[1] < nxt[2] - 1]
+        same = bool(nxt and nxt[0] == pg and nxt[1] == col)
+        body = [ln for ln in lines if ln[1] >= y - 0.002 and ln[1] < 0.95 and lo - 0.005 <= ln[0] < hi]
+        if same:
+            body = [ln for ln in body if ln[1] < nxt[2] - 0.002]
         if not body:
             continue
-        x0 = max(0.0, min(ln[0] for ln in body) - 8)
-        x1 = min(W, max(ln[2] for ln in body) + 8)
-        y0 = max(0.0, y - 8)
-        y1 = min(H, max(ln[3] for ln in body) + 10)
-        if nxt and nxt[0] == pg and nxt[1] == col:
-            y1 = max(y1, min(H, nxt[2] - 4))  # 그림·표(글자 없는 부분)도 다음 번호 앞까지 포함
-        out[n] = [pg, round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)]
+        x0 = max(0.0, min(ln[0] for ln in body) - 0.012)
+        x1 = min(1.0, max(ln[2] for ln in body) + 0.012)
+        y0 = max(0.0, y - 0.01)
+        y1 = min(1.0, max(ln[3] for ln in body) + 0.012)
+        if same:
+            y1 = max(y1, min(1.0, nxt[2] - 0.005))  # 그림·표(글자 없는 부분)도 다음 번호 앞까지
+        out[n] = {'p': pg, 'r': [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)], 'src': src}
+    return out
+
+
+def manual_boxes():
+    """사람이 넣은 문항 자리 (같은 구조, src='manual'). 잘못된 값은 건너뜀"""
+    try:
+        raw = json.load(open(MANUAL_BOXES))
+    except FileNotFoundError:
+        return {}
+    except Exception as e:  # noqa: BLE001
+        log('수동 문항 자리 파일 오류', e)
+        return {}
+    out = {}
+    for key, qs in raw.items():
+        if key.startswith('_') or not isinstance(qs, dict):
+            continue
+        for n, b in qs.items():
+            try:
+                pg, r = int(b['p']), [float(v) for v in b['r']]
+                ok = pg >= 1 and len(r) == 4 and all(0 <= v <= 1 for v in r) and r[0] < r[2] and r[1] < r[3]
+            except Exception:  # noqa: BLE001
+                ok = False
+            if not ok:
+                log('수동 문항 자리 건너뜀', key, n, b)
+                continue
+            out.setdefault(key, {})[str(int(n))] = {'p': pg, 'r': [round(v, 4) for v in r], 'src': 'manual'}
     return out
 
 
@@ -450,24 +519,14 @@ def main():
         if not download(url, p):
             continue
         txt = pdf_text(p, layout=False)  # 두 단 문제지는 읽는 차례대로
-        if len(re.findall(r'[가-힣]', txt)) < 2000:
+        scanned = len(re.findall(r'[가-힣]', txt)) < 2000
+        if scanned:
             txt = ocr_pdf(p)
             log(f'   {year} {paper}: 그림 문제지 → 글자 읽기 {len(txt)}자')
         qs = split_questions(txt)
-        bx = question_boxes(p)
+        bx = boxes_from_lines(page_lines_ocr(p) if scanned else page_lines_text(p), 'ocr' if scanned else 'text')
         boxes[f'{year}{paper}'] = {str(k): v for k, v in bx.items()}
-        log(f'기출 {year} {paper}: 문항 {len(qs)} 위치 {len(bx)} (1번 앞부분: {qs.get(1, "")[:25]})')
-        if year in (2019, 2024) and bx:  # 확인용 작은 그림(문항 2개)
-            dbg = os.path.join(out, 'debug')
-            os.makedirs(dbg, exist_ok=True)
-            for n in list(bx)[:2]:
-                pg, a, b, c, d = bx[n]
-                try:
-                    W, H = (float(x) for x in re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', subprocess.run(['pdfinfo', p], capture_output=True).stdout.decode()).groups())
-                    r = 50 / 72
-                    subprocess.run(['pdftoppm', '-f', str(pg), '-l', str(pg), '-r', '50', '-png', '-singlefile', '-x', str(int(a * W * r)), '-y', str(int(b * H * r)), '-W', str(int((c - a) * W * r)), '-H', str(int((d - b) * H * r)), p, os.path.join(dbg, f'{year}{paper}_{n}')], timeout=60)
-                except Exception as e:  # noqa: BLE001
-                    log('확인 그림 실패', e)
+        log(f'기출 {year} {paper}: 문항 {len(qs)} 자리 {len(bx)}{" (OCR)" if scanned else ""} (1번 앞부분: {qs.get(1, "")[:25]})')
         if not qs:
             log('   번호 같은 줄', [ln[:15] for ln in txt.splitlines() if re.match(r'^\s*\d{1,2}\s*[.)]', ln)][:6])
         for n, t in qs.items():
@@ -574,6 +633,11 @@ def main():
                   open(os.path.join(out, 'elementary', fn), 'w'), ensure_ascii=False)
     def snippet(i):
         return re.sub(r'\s+', ' ', units[i]['text'].replace(units[i]['code'], '')).strip()[:100]
+    # 사람이 넣은 자리(2014·2015 스캔본 고치기 등)가 자동 값보다 먼저
+    man = manual_boxes()
+    for key, qs in man.items():
+        boxes.setdefault(key, {}).update(qs)
+    log('문항 자리: 자동', sum(1 for v in boxes.values() for b in v.values() if b['src'] != 'manual'), '수동', sum(len(v) for v in man.values()))
     result = {
         'level': 'elementary',
         'built': time.strftime('%Y-%m-%d'),

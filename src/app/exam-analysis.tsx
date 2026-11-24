@@ -5,6 +5,7 @@ import { Chip, Screen, Segmented, Txt } from '../components/ui';
 import { examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
 import { Sheet } from '../features/community/parts';
+import { QuestionClip } from '../features/analysis/QuestionClip';
 import { useAppSettings } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
@@ -36,6 +37,56 @@ export default function ExamAnalysisScreen() {
     const f = await examPdf(level, h.y, h.p);
     if (!f) return Alert.alert('문제지를 찾지 못했어요');
     router.push({ pathname: '/pdf', params: { url: f.url, title: `${h.y}학년도 교육과정 ${h.p} ${h.n}번`, page: f.page, pageLabel: '평가원 게시판' } });
+  };
+
+  // 출제 지도 팝업: 나온 문항을 평가원 원본에서 그 문항만 잘라 보여 줌(A안, 문항 그림은 저장 안 함)
+  const HitClips = ({ hs }: { hs: Hit[] }) => {
+    const [more, setMore] = useState(false);
+    const uniq = [...new Map([...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => [`${h.y}${h.p}${h.n}`, h])).values()];
+    const shown = more ? uniq : uniq.slice(0, 3);
+    return (
+      <View style={{ gap: space.md }}>
+        <Txt variant="sub" style={{ fontSize: 12.5 }}>
+          나온 문항 {uniq.length}개 · 평가원 원문에서 그 문항만 보여 줘요
+        </Txt>
+        {shown.map((h) => (
+          <OneClip key={`${h.y}${h.p}${h.n}`} h={h} />
+        ))}
+        {!more && uniq.length > 3 && (
+          <Pressable onPress={() => setMore(true)} accessibilityRole="button" style={{ alignSelf: 'center', padding: space.sm }}>
+            <Txt style={{ fontWeight: '700', color: colors.brand }}>{uniq.length - 3}개 더 보기</Txt>
+          </Pressable>
+        )}
+      </View>
+    );
+  };
+  const OneClip = ({ h }: { h: Hit }) => {
+    const f = useAsync(() => examPdf(level, h.y, h.p), [h.y, h.p]);
+    const box = a?.boxes?.[`${h.y}${h.p}`]?.[String(h.n)];
+    return (
+      <View style={{ gap: 6 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <View style={{ paddingHorizontal: 9, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}>
+            <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat.coral.fg }}>
+              {h.y}학년도 {h.p} {h.n}번
+            </Txt>
+          </View>
+          <View style={{ flex: 1 }} />
+          <Pressable onPress={() => openExam(h)} accessibilityRole="button" hitSlop={8}>
+            <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.textSub }}>원문 전체 보기 ›</Txt>
+          </Pressable>
+        </View>
+        {box && f.data ? (
+          <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} />
+        ) : f.loading ? (
+          <ActivityIndicator color={colors.brand} />
+        ) : (
+          <Txt variant="sub" style={{ fontSize: 12.5 }}>
+            이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 원문 전체 보기로 확인해 주세요.
+          </Txt>
+        )}
+      </View>
+    );
   };
 
   const HitChips = ({ hs }: { hs: Hit[] }) => (
@@ -217,10 +268,7 @@ export default function ExamAnalysisScreen() {
                 <Txt style={{ fontSize: 15, lineHeight: 23 }}>{sel.text}</Txt>
                 {hitsOf(sel.id).length ? (
                   <>
-                    <Txt variant="sub" style={{ fontSize: 12.5 }}>
-                      나온 문항 (누르면 문제지)
-                    </Txt>
-                    <HitChips hs={hitsOf(sel.id)} />
+                    <HitClips hs={hitsOf(sel.id)} />
                   </>
                 ) : (
                   <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>

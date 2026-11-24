@@ -7,6 +7,9 @@ import type { Level } from '../store/AppSettings';
 const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/analysis';
 
 export type Unit = { id: number; subject: string; era: '2022' | '2015'; section: string; area: string; code: string; text: string; file?: { name: string; url: string } | null };
+/** 문항 자리 (2026-11-24): 쪽(1부터) + [왼쪽, 위, 오른쪽, 아래]를 쪽 크기에 대한 비율(0~1)로.
+ *  src: text(글자 PDF 위치) / ocr(그림 PDF 글자 읽기) / manual(사람이 넣은 값) — 모두 같은 구조 */
+export type Box = { p: number; r: [number, number, number, number]; src?: 'text' | 'ocr' | 'manual' };
 export type Hit = { y: number; p: string; n: number; s: number; h: [number, number][] };
 export type Analysis = {
   level: Level;
@@ -15,6 +18,8 @@ export type Analysis = {
   years: number[];
   subjects: { name: string; file: string; units: number; hit_units: number }[];
   questions: { year: number; paper: string; no: number; subject: string | null }[];
+  /** 문항 자리만: '2019B' → '6' → Box. 문항 그림·글은 없음 */
+  boxes?: Record<string, Record<string, Box>>;
   stats: {
     subject_year: Record<string, Record<string, number>>;
     section_share: Record<string, Record<string, number>>;
