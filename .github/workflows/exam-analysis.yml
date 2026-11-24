@@ -1,7 +1,12 @@
 name: exam-analysis
 # 기출 분석(초등 교육과정 A·B): 교육과정 원문 칸 ↔ 기출 문항 연결 + 통계 → raw-files/raw/analysis (문항 글은 저장 안 함)
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      debug_boxes:
+        description: '문항 자리 진단할 연도 (비우면 안 함)'
+        required: false
+        default: ''
   schedule:
     - cron: '17 21 * * 1'   # 매주 화 06:17 KST (교육과정 목록 갱신 다음 날)
 permissions:
@@ -19,6 +24,8 @@ jobs:
         with: { python-version: '3.12' }
       - run: sudo apt-get install -y -qq poppler-utils >/dev/null && pip install -q pyhwp lxml six && sudo apt-get install -y -qq tesseract-ocr tesseract-ocr-kor >/dev/null
       - run: python -I -u app/scripts/collector/exam_analysis.py raw raw/analysis
+        env:
+          DEBUG_BOXES: ${{ github.event.inputs.debug_boxes }}
       - name: raw-files 브랜치에 저장
         if: always()
         run: |

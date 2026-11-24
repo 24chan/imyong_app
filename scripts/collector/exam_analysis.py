@@ -527,7 +527,11 @@ def main():
             txt = ocr_pdf(p)
             log(f'   {year} {paper}: 그림 문제지 → 글자 읽기 {len(txt)}자')
         qs = split_questions(txt)
-        bx = boxes_from_lines(page_lines_ocr(p) if scanned else page_lines_text(p), 'ocr' if scanned else 'text')
+        pl = page_lines_ocr(p) if scanned else page_lines_text(p)
+        bx = boxes_from_lines(pl, 'ocr' if scanned else 'text')
+        if os.environ.get('DEBUG_BOXES') == str(year):  # 진단: 번호처럼 보이는 줄 머리만 (작업 기록에만)
+            for pi, lines in enumerate(pl[:4]):
+                print('  쪽', pi + 1, [(round(ln[0], 3), round(ln[1], 3), ln[4][:6]) for ln in lines if re.match(r'^\W{0,2}\d{1,2}\W', ln[4])][:14])
         if not scanned and len(qs) < len(bx) * 0.7:
             # 번호로 못 나눈 문제지(2014 등): 찾은 문항 자리 안의 글자로 문항 글을 만듦(작업 중에만 씀)
             W_, H_ = (float(x) for x in re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', subprocess.run(['pdfinfo', p], capture_output=True).stdout.decode()).groups())
