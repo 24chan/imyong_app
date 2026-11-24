@@ -77,6 +77,36 @@ SEC_RE = [
 CODE_RE = re.compile(r'\[\s*(\d{1,2})\s*([가-힣]{1,3})\s*(\d{2})\s*[-‐‑–−~]\s*(\d{2})\s*\]')
 
 
+def hwp_text_tables(path):
+    """2026-11-24 고침: hwp5txt는 표를 '<표>'로만 남겨 표 안의 성취기준 문장이 빠졌음 → hwp5html로 표 칸 글까지.
+    표는 칸마다 한 줄로(성취기준 표는 칸 하나가 성취기준 하나)"""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import content_system as cs  # 같은 폴더(내용 체계표 수집기)의 변환·표 읽기
+    d = tempfile.mkdtemp()
+    try:
+        xh = cs.to_xhtml(path, d)
+        doc = cs.Doc()
+        doc.feed(open(xh, encoding='utf-8', errors='ignore').read())
+    except Exception as e:  # noqa: BLE001
+        log('한글 표 글 뽑기 실패 → hwp5txt', path, str(e)[:100])
+        return hwp_text(path)
+    lines = []
+    for kind, v in doc.items:
+        if kind == 'p':
+            lines.append(v)
+        else:
+            for row in v:
+                for cell in row:
+                    t = cell['t']
+                    if not t:
+                        continue
+                    if CODE_RE.match(t.strip()):
+                        lines.append(re.sub(r'\s*\n\s*', ' ', t))  # 성취기준 칸은 한 줄로
+                    else:
+                        lines.extend(t.split('\n'))
+    return '\n'.join(lines)
+
+
 def hwp_text(path):
     try:
         out = subprocess.run(['hwp5txt', path], capture_output=True, timeout=300, check=True).stdout
@@ -155,6 +185,19 @@ def split_units(text, subject, era):
         if sum(len(b) for b in buf) > 600:
             flush()
     flush()
+    # 같은 코드가 두 번(표 속 성취기준 문장 + 아래 해설) 나오면 한 칸으로: 성취기준 문장 먼저, 해설은 뒤에
+    merged, by_code = [], {}
+    for u in units:
+        if u['code'] and not u.get('drop'):
+            if u['code'] in by_code:
+                prev = by_code[u['code']]
+                body = u['text'][len(u['code']):].strip() if u['text'].startswith(u['code']) else u['text']
+                if body and body not in prev['text']:
+                    prev['text'] += ' ▶ 해설·고려 사항: ' + body if '▶' not in prev['text'] else ' ' + body
+                continue
+            by_code[u['code']] = u
+        merged.append(u)
+    units = merged
     elem_blocks = {u['block'] for u in units if u['code']}
     if elem_blocks:
         units = [u for u in units if u['block'] in elem_blocks and not u.get('drop')]
@@ -492,12 +535,20 @@ def main():
         if k not in pick or school > pick[k][0]:
             pick[k] = (school, f)
     units = []
-    for (era, subj), (school, ff) in sorted(pick.items()):
-        t, f = '', None
+    # 한글 → 표 글까지 바꾸기는 느려서(문서마다 1~3분) 먼저 받아 두고 4개씩 동시에
+    import concurrent.futures as cf
+    hwp_paths = {}
+    for k, (school, ff) in pick.items():
         if ff['hwp']:
             p = os.path.join(work, f'cur_{ff["hwp"]["seq"]}.hwp')
             if download(ff['hwp']['url'], p, magic=b'\xd0\xcf\x11\xe0'):
-                t, f = hwp_text(p), ff['hwp']
+                hwp_paths[k] = p
+    with cf.ThreadPoolExecutor(4) as ex:
+        hwp_texts = dict(zip(hwp_paths, ex.map(hwp_text_tables, hwp_paths.values())))
+    for (era, subj), (school, ff) in sorted(pick.items()):
+        t, f = '', None
+        if (era, subj) in hwp_texts:
+            t, f = hwp_texts[(era, subj)], ff['hwp']
         if (not t or broken(t)) and ff['pdf']:
             p = os.path.join(work, f'cur_{ff["pdf"]["seq"]}.pdf')
             if download(ff['pdf']['url'], p):
@@ -607,6 +658,9 @@ def main():
         return {w: x / norm for w, x in v.items()}
 
     uvec = [vec(words(u['text'])) for u in units]
+    subj_idx = collections.defaultdict(list)
+    for i, u in enumerate(units):
+        subj_idx[u['subject']].append(i)
     hits = collections.defaultdict(list)
     q_subject = []
     review = []
@@ -624,12 +678,16 @@ def main():
         review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': '문항 속 교과 이름·성취기준 코드' if cue else '원문과 비슷한 칸 다수결',
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
-        for s, i in scored:
-            if units[i]['subject'] != subj or s < 0.12:
-                continue
+        # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)
+        same = sorted(((sum(qv.get(w, 0) * x for w, x in uvec[i].items()), i) for i in subj_idx.get(subj, [])), reverse=True)[:8]
+        linked = 0
+        for k_, (s, i) in enumerate(same):
+            if s < 0.1:
+                break
             spans = shared_phrases(q['text'], units[i]['text'])
-            if s >= 0.2 or spans:
+            if s >= 0.18 or spans or (k_ == 0 and s >= 0.1):  # 가장 비슷한 칸 하나는 0.1 이상이면 이음(약한 연결)
                 hits[i].append({'y': q['year'], 'p': q['paper'], 'n': q['no'], 's': round(s, 3), 'h': spans[:12]})
+                linked += 1
 
     # 4) 통계
     by_subject_year = collections.defaultdict(lambda: collections.Counter())
