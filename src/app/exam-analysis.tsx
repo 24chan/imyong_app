@@ -34,7 +34,7 @@ export default function ExamAnalysisScreen() {
 
   const openExam = async (h: Hit) => {
     setOpenId(null);
-    const f = await examPdf(level, h.y, h.p);
+    const f = await examPdf(level, h.y, h.p, a);
     if (!f) return Alert.alert('문제지를 찾지 못했어요');
     router.push({ pathname: '/pdf', params: { url: f.url, title: `${h.y}학년도 교육과정 ${h.p} ${h.n}번`, page: f.page, pageLabel: '평가원 게시판' } });
   };
@@ -61,7 +61,7 @@ export default function ExamAnalysisScreen() {
     );
   };
   const OneClip = ({ h }: { h: Hit }) => {
-    const f = useAsync(() => examPdf(level, h.y, h.p), [h.y, h.p]);
+    const f = useAsync(() => examPdf(level, h.y, h.p, a), [h.y, h.p, a]);
     const box = a?.boxes?.[`${h.y}${h.p}`]?.[String(h.n)];
     return (
       <View style={{ gap: 6 }}>

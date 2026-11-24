@@ -20,10 +20,12 @@ export type Analysis = {
   questions: { year: number; paper: string; no: number; subject: string | null }[];
   /** 문항 자리만: '2019B' → '6' → Box. 문항 그림·글은 없음 */
   boxes?: Record<string, Record<string, Box>>;
+  /** '2019B' → 분석에 쓴 평가원 문제지(초등학교) — 앱도 이 파일을 엶 */
+  papers?: Record<string, { name: string; url: string; page: string }>;
   stats: {
     subject_year: Record<string, Record<string, number>>;
     section_share: Record<string, Record<string, number>>;
-    top_terms: Record<string, { term: string; total: number; years: Record<string, number> }[]>;
+    top_terms: Record<string, { term: string; total: number; years: Record<string, number>; area?: string; cat?: string }[]>;
     untouched_recent5: Record<string, { code: string; area: string; id: number; text: string }[]>;
     new_terms_2022: Record<string, string[]>;
   };
@@ -48,12 +50,19 @@ export function getAnalysisSubject(level: Level, file: string): Promise<SubjectD
   });
 }
 
-/** 연도·A/B → 평가원 문제지 주소 (앱 안 PDF 보기용) */
-export async function examPdf(level: Level, year: number, paper: string): Promise<{ url: string; page: string } | null> {
+/** 연도·A/B → 평가원 문제지 주소 (앱 안 PDF 보기용)
+ *  2026-11-24 고침: 같은 연도에 '유치원교사 추가 임용' 글이 먼저 걸려 유치원 문제지가 열리던 문제 → 분석에 쓴 파일(papers)을 그대로 쓰고,
+ *  없을 때만 '초등' 시험 글의 '초등학교' 파일(특수·유치원 제외)을 찾음 */
+export async function examPdf(level: Level, year: number, paper: string, a?: Analysis | null): Promise<{ url: string; page: string } | null> {
+  const fixed = a?.papers?.[`${year}${paper}`];
   const list = await getPastExams(level);
+  if (fixed) return { url: fixed.url, page: fixed.page || list?.page || '' };
   if (!list) return null;
-  const it = list.items.find((x) => x.year === year && x.kind === '문제' && new RegExp(`교육과정\\s*${paper}`).test(x.title));
-  const f = it?.files.find((x) => x.name.includes('초등학교')) ?? it?.files[0];
+  const isElemFile = (n: string) => n.includes('초등학교') && !n.includes('특수') && !n.includes('유치원');
+  const it = list.items.find(
+    (x) => x.year === year && x.kind === '문제' && new RegExp(`교육과정\\s*${paper}`).test(x.title) && x.title.includes('초등') && !x.title.includes('유치원교사') && x.files.some((f) => isElemFile(f.name)),
+  );
+  const f = it?.files.find((x) => isElemFile(x.name));
   return f ? { url: fileUrl(list, f), page: list.page } : null;
 }
 

@@ -45,7 +45,7 @@ type State = { k: 'wait' } | { k: 'render'; b64: string } | { k: 'done'; img: Cr
 export function QuestionClip({ url, box, cacheKey, title }: { url: string; box: Box; cacheKey: string; title: string }) {
   const { colors } = useTheme();
   const W = webview();
-  const name = cropName(cacheKey, box);
+  const name = cropName(cacheKey, box, url);
   const [st, setSt] = useState<State>(() => {
     const c = cachedCrop(name);
     return c ? { k: 'done', img: c } : { k: 'wait' };

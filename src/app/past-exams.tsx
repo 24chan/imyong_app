@@ -36,12 +36,13 @@ export default function PastExamsScreen() {
   // 초등: 같은 글에 유치원·특수 파일도 함께 있어서 초등학교 파일만 (없으면 전부)
   const filesOf = (x: (typeof items)[number]) => {
     if (viewLevel !== 'elementary') return x.files;
-    const e = x.files.filter((f) => f.name.includes('초등학교'));
+    const e = x.files.filter((f) => f.name.includes('초등학교') && !f.name.includes('특수'));
     return e.length ? e : x.files;
   };
   const titleOf = (x: (typeof items)[number]) =>
     viewLevel === 'elementary' ? `${x.year}학년도 1차 · ${prettyFile(filesOf(x)[0]?.name ?? '').replace('초등학교', '').trim() || x.title}` : `${x.year}학년도 ${x.title}`;
-  const shown = items.filter((x) => x.year === y && matchSub(x.title));
+  // 2026-11-24: 초등 모드에서는 초등학교 파일이 없는 글(예: 2019 유치원교사 추가 임용)은 빼기
+  const shown = items.filter((x) => x.year === y && matchSub(x.title) && (viewLevel !== 'elementary' || x.files.some((f) => f.name.includes('초등학교') && !f.name.includes('특수'))));
 
   return (
     <>

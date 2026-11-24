@@ -438,6 +438,18 @@ CUES = [('국어', r'국어'), ('수학', r'수학'), ('사회', r'사회과|사
 CODE_LET = {'국': '국어', '수': '수학', '사': '사회', '과': '과학', '도': '도덕', '실': '실과', '체': '체육', '음': '음악', '미': '미술', '영': '영어', '바': '통합교과', '슬': '통합교과', '즐': '통합교과'}
 
 
+def cue_counts(t):
+    c = collections.Counter()
+    for m in CODE_RE.finditer(t):
+        if m.group(2)[0] in CODE_LET:
+            c['코드:' + CODE_LET[m.group(2)[0]]] += 1
+    for name, rx in CUES:
+        n = len(re.findall(rx, t))
+        if n:
+            c[name] += n
+    return dict(c)
+
+
 def cue_subject(t):
     """문항 속 성취기준 코드·교과 이름으로 교과 정하기(가장 많이 나온 것)"""
     c = collections.Counter()
@@ -521,16 +533,24 @@ def main():
 
     # 2) 기출: 초등학교 교육과정 A·B 문제지
     exams = []
+    papers = {}
     for it in kice['items']:
         if it.get('kind') != '문제':
             continue
         paper = 'A' if re.search(r'교육과정\s*A', it['title']) else 'B' if re.search(r'교육과정\s*B', it['title']) else None
         if not paper:
             continue
-        f = next((x for x in it['files'] if '초등학교' in x['name']), None)
+        # 2026-11-24 고침: 초등 시험만 (유치원 추가 임용·특수학교 파일 섞이지 않게)
+        if '초등' not in it['title'] or '유치원교사' in it['title']:
+            continue
+        f = next((x for x in it['files'] if '초등학교' in x['name'] and '특수' not in x['name'] and '유치원' not in x['name']), None)
         if not f:
             continue
+        if any(e[0] == it['year'] and e[1] == paper for e in exams):
+            log('같은 연도·A/B 문제지가 둘', it['year'], paper, it['title'])
+            continue
         exams.append((it['year'], paper, kice['file_url'] + f['key']))
+        papers[f'{it["year"]}{paper}'] = {'name': f['name'], 'url': kice['file_url'] + f['key'], 'page': kice.get('page', '')}
     questions = []
     boxes = {}
     for year, paper, url in sorted(exams):
@@ -589,6 +609,7 @@ def main():
     uvec = [vec(words(u['text'])) for u in units]
     hits = collections.defaultdict(list)
     q_subject = []
+    review = []
     for q in questions:
         qv = vec(words(q['text']))
         # 문항 교과: 가장 비슷한 칸들의 교과 다수결
@@ -596,8 +617,13 @@ def main():
         if not scored or scored[0][0] < 0.08:
             q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': None})
             continue
-        subj = cue_subject(q['text']) or collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05).most_common(1)[0][0]
+        cue = cue_subject(q['text'])
+        vote = collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05)
+        subj = cue or vote.most_common(1)[0][0]
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': '문항 속 교과 이름·성취기준 코드' if cue else '원문과 비슷한 칸 다수결',
+                       'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
+                       'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         for s, i in scored:
             if units[i]['subject'] != subj or s < 0.12:
                 continue
@@ -636,6 +662,45 @@ def main():
     for subj, tw in term_years.items():
         ranked = sorted(tw.items(), key=lambda kv: (-sum(kv[1].values()), kv[0]))[:40]
         top_terms[subj] = [{'term': w, 'total': sum(c.values()), 'years': dict(sorted(c.items()))} for w, c in ranked]
+    # 2026-11-24 사용자 요청: 핵심어는 단순히 자주 나온 말이 아니라 '꼭 공부해야 할 핵심 개념' 위주로
+    # → 2022 개정 교육과정 '내용 체계'의 내용 요소(교육과정이 정한 핵심 개념)가 그 교과 문항에 나온 횟수.
+    #   (평가원은 초등 교육과정 A·B 정답을 공개하지 않아(모은 목록 기준) 정답 글은 쓸 수 없음)
+    cs_path = os.path.join(raw, 'curriculum', 'content_system_elementary.json')
+    concepts = collections.defaultdict(dict)  # 교과 → 띄어쓰기 없앤 말 → (보이는 말, 영역, 범주)
+    if os.path.exists(cs_path):
+        for sj in json.load(open(cs_path))['subjects']:
+            name = subj_name(sj['subject'])
+            for ar in sj['areas']:
+                for row in ar['rows']:
+                    if row['cat'].startswith('가치'):
+                        continue  # 흥미·태도 같은 말은 문항 근거로 약함
+                    for cell in row['cells']:
+                        for it in cell['items']:
+                            for part in {it, *re.split(r'\s*,\s*', it)}:
+                                part = re.sub(r'\s+', ' ', part).strip(' ·')
+                                k = re.sub(r'[\s·]', '', part)
+                                if 2 <= len(k) <= 14 and k not in concepts[name]:
+                                    concepts[name][k] = (part, ar['area'].split(' · ')[-1], row['cat'])
+    qdf = collections.Counter()
+    qnorm = [re.sub(r'[\s·ㆍ]', '', q['text']) for q in questions]
+    for name, cmap in concepts.items():
+        for k in cmap:
+            qdf[k] = max(qdf[k], sum(1 for t in qnorm if k in t))
+    concept_terms = {}
+    for name, cmap in concepts.items():
+        cy = collections.defaultdict(collections.Counter)
+        for q, x, t in zip(questions, q_subject, qnorm):
+            if x['subject'] != name:
+                continue
+            for k, (disp, area, cat) in cmap.items():
+                if k in t and qdf[k] <= max(8, len(questions) * 0.12):  # 거의 모든 문항에 나오는 '대화·발표' 같은 상황 말은 뺌
+                    cy[k][q['year']] += 1
+        ranked = sorted(cy.items(), key=lambda kv: (-sum(kv[1].values()), -len(kv[0])))[:40]
+        if ranked:
+            concept_terms[name] = [{'term': cmap[k][0], 'area': cmap[k][1], 'cat': cmap[k][2], 'total': sum(c.values()), 'years': dict(sorted(c.items()))} for k, c in ranked]
+    log('핵심 개념(내용 요소) 교과', {k: len(v) for k, v in concept_terms.items()})
+    if concept_terms:
+        top_terms = concept_terms
     years = sorted({q['year'] for q in questions})
     recent = [y for y in years if y >= (max(years) - 4 if years else 0)]
     untouched = collections.defaultdict(list)
@@ -684,6 +749,7 @@ def main():
         'subjects': [{'name': s_, 'file': files[s_], 'units': sum(1 for u in units if u['subject'] == s_),
                       'hit_units': sum(1 for u in units if u['subject'] == s_ and u['id'] in hits)} for s_ in subjects],
         'questions': q_subject,
+        'papers': papers,  # 연도A/B → 분석에 쓴 평가원 문제지(초등학교) 파일 — 앱이 같은 파일을 열게
         'boxes': boxes,  # 문항 위치만(쪽·비율). 그림·글은 없음
         'stats': {
             'subject_year': {s_: dict(sorted(c.items())) for s_, c in by_subject_year.items()},
@@ -694,6 +760,15 @@ def main():
         },
     }
     json.dump(result, open(os.path.join(out, 'elementary.json'), 'w'), ensure_ascii=False)
+    # 이중 검토용(문항 글 없음): 문항마다 교과 판정 근거·연결된 성취기준
+    for r in review:
+        k = f"{r['year']}{r['paper']}"
+        r['paper_file'] = papers.get(k, {}).get('name')
+        r['paper_url'] = papers.get(k, {}).get('url')
+        r['box'] = boxes.get(k, {}).get(str(r['no']))
+        r['linked'] = sorted(({'code': units[i]['code'] or units[i]['section'], 'subject': units[i]['subject'], 'era': units[i]['era'], 'score': h['s'], 'text': re.sub(r'\s+', ' ', units[i]['text'])[:120]}
+                              for i, hs in hits.items() for h in hs if h['y'] == r['year'] and h['p'] == r['paper'] and h['n'] == r['no']), key=lambda x: -x['score'])[:8]
+    json.dump(review, open(os.path.join(out, 'elementary_review.json'), 'w'), ensure_ascii=False)
     json.dump(LOG, open(os.path.join(out, 'elementary_log.json'), 'w'), ensure_ascii=False, indent=0)
     log(f'끝: 원문 칸 {len(units)}, 문항 {len(questions)}, 교과 판정 {sum(1 for x in q_subject if x["subject"])}, 연결 {sum(len(v) for v in hits.values())}')
 

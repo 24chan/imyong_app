@@ -27,7 +27,7 @@ export const hasDeviceCache = () => fs() !== null;
 const KEEP_PDFS = 16; // 문제지 원본은 최근 16개까지만 (한 개 1~5MB)
 const UA = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Mobile Safari/537.36';
 
-function hash(s: string) {
+export function hash(s: string) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
   return h.toString(36);
@@ -40,7 +40,8 @@ function dir(m: FSMod, sub: 'pdf' | 'crop') {
 }
 
 /** 잘라낸 그림 이름: 문항 + 쪽 + 비율(바뀌면 새로 그림) */
-export const cropName = (key: string, b: Box) => `${key}_p${b.p}_${b.r.map((v) => Math.round(v * 10000)).join('-')}`;
+/** 2026-11-24: 파일 주소도 이름에 넣음 — 예전에 잘못된 문제지(유치원)로 잘라 저장한 그림을 다시 쓰지 않게 */
+export const cropName = (key: string, b: Box, url = '') => `${key}_${hash(url)}_p${b.p}_${b.r.map((v) => Math.round(v * 10000)).join('-')}`;
 
 export type Crop = { uri: string; w: number; h: number };
 
