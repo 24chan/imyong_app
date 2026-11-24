@@ -275,17 +275,31 @@ def boxes_from_lines(pages, src):
         info.append((pi + 1, lines, two))
     cands = []  # (쪽, 단, y, 번호)
     cover = re.compile(r'문답지|감독관|수험번호|답안\s*작성|유의\s*사항|시험이\s*시작되면|필기구|부정행위')
-    for pg, lines, two in info:
-        if any(_QSTART.match(ln[4]) and cover.search(ln[4]) for ln in lines):
-            continue  # 번호 붙은 유의 사항이 있는 쪽(표지)의 '1. 2. 3.'은 문항이 아님
+    for pi, (pg, lines, two) in enumerate(info):
+        pc = []  # 이 쪽 번호 줄 (단, y, 번호, 글)
         for x0, y0, x1, y1, t in lines:
             m = _QSTART.match(t)
             if not m or y0 > 0.95:
                 continue
-            col = 1 if (two and x0 > 0.5) else 0
+            col = 1 if x0 > 0.5 else 0  # 줄마다 단 판단(표지처럼 한 쪽에 넓은 줄과 두 단이 섞인 쪽)
             if x0 - (0.5 if col else 0) > 0.12:  # 단 왼쪽 끝 번호만
                 continue
-            cands.append((pg, col, y0, int(m.group(1))))
+            pc.append((col, y0, int(m.group(1)), t))
+        pc.sort()
+        # 표지 유의 사항: '1. 시험이 시작되면…'부터 번호가 1씩 이어지는 줄은 문항이 아님
+        skip = set()
+        for a_, c in enumerate(pc):
+            if cover.search(c[3]) and a_ not in skip:
+                skip.add(a_)
+                last = c
+                for b_ in range(a_ + 1, len(pc)):
+                    d = pc[b_]
+                    if d[0] == last[0] and d[2] == last[2] + 1:
+                        skip.add(b_)
+                        last = d
+        if any(c[0] == 1 for c in pc):
+            info[pi] = (pg, lines, True)
+        cands.extend((pg, c[0], c[1], c[2]) for k_, c in enumerate(pc) if k_ not in skip)
     cands.sort()
     best = []  # 1부터 차례로 이어지는 가장 긴 줄기 (보기 속 '1.' 거르기)
     for i, c in enumerate(cands):
@@ -317,6 +331,8 @@ def boxes_from_lines(pages, src):
         if same:
             y1 = max(y1, min(1.0, nxt[2] - 0.005))  # 그림·표(글자 없는 부분)도 다음 번호 앞까지
         out[n] = {'p': pg, 'r': [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)], 'src': src}
+        if not same and y1 > 0.88:
+            out[n]['more'] = True  # 단·쪽 끝까지 감 → 다음 단·쪽으로 이어질 수 있음(앱에 안내)
     return out
 
 
