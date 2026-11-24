@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, View } from 'react-native';
 import { TextInput } from '../../components/TextField';
 import { ViewModeBanner } from '../../components/ModeToggle';
@@ -26,6 +26,11 @@ export default function AcademyScreen() {
   const { session } = useAuth();
   const subject = viewLevel === 'secondary' ? settings.subjectCode : null;
   const [tab, setTab] = useState<Tab>('lectures');
+  // 홈 바로가기 '공개 자료'(2026-11-24)에서 tab=public 으로 들어옴
+  const params = useLocalSearchParams<{ tab?: string; t?: string }>();
+  useEffect(() => {
+    if (params.tab === 'public' || params.tab === 'mock' || params.tab === 'lectures') setTab(params.tab);
+  }, [params.tab, params.t]);
   const [area, setArea] = useState<Area | null>(null);
   const [sort, setSort] = useState<'rating' | 'reviews'>('rating');
   const [lectures, setLectures] = useState<Lecture[] | null>(null);
