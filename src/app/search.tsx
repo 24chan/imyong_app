@@ -11,6 +11,7 @@ import { getTeacherJobs, isOpen } from '../data/jobs';
 import { regionByCode } from '../data/regions';
 import { getNotices, searchSchools } from '../data/repository';
 import { useAsync } from '../data/useAsync';
+import { ELEM_SUBJECTS_FOR_CS, matchStudyMenus, matchSubjects } from '../data/searchSynonyms';
 import { NOTICE_LABEL } from '../features/news/NoticeList';
 import { useAppSettings, useToday } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
@@ -65,6 +66,11 @@ export default function SearchScreen() {
     return [...js, ...ns].sort((a, b) => Number(a.closed) - Number(b.closed) || ((b.date ?? '') > (a.date ?? '') ? 1 : -1));
   }, [noticesAll.data, jobsAll.data, t, ready, viewLevel, today]);
 
+  // 공부 메뉴 (동의어 표, 2026-11-24): '내체표' 등으로 찾으면 맨 위에
+  const menus = useMemo(() => (ready ? matchStudyMenus(q, viewLevel) : []), [q, ready, viewLevel]);
+  const subjHits = useMemo(() => (ready ? matchSubjects(q) : []), [q, ready]);
+  const csSubjects = menus.some((m) => m.key === 'cs') ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
+
   const loading = schools.loading || posts.loading || lectures.loading || noticesAll.loading || jobsAll.loading;
   const counts = {
     school: schools.data?.length ?? 0,
@@ -72,7 +78,7 @@ export default function SearchScreen() {
     notice: notices.length,
     lecture: lectures.data?.length ?? 0,
   };
-  const total = counts.school + counts.post + counts.notice + counts.lecture;
+  const total = counts.school + counts.post + counts.notice + counts.lecture + menus.length;
   const limit = (n: number) => (cat === 'all' ? Math.min(n, PREVIEW) : n);
 
   const Row = ({ onPress, children, link }: { onPress: () => void; children: ReactNode; link?: boolean }) => (
@@ -133,7 +139,7 @@ export default function SearchScreen() {
             autoFocus
             returnKeyType="search"
             onSubmitEditing={() => setQ(input.trim())}
-            placeholder="학교, 글, 공고, 강의·강사 이름"
+            placeholder="학교, 글, 공고, 강의, 공부 메뉴(내체표 등)"
             placeholderTextColor={colors.textSub}
             accessibilityLabel="검색어"
             style={{ flex: 1, paddingVertical: space.md, color: colors.text, fontSize: 16 }}
@@ -165,6 +171,30 @@ export default function SearchScreen() {
         ) : total === 0 ? (
           <Txt variant="sub">"{q}"에 맞는 결과가 없어요. 다른 낱말로 찾아보세요.</Txt>
         ) : null}
+
+        {ready && menus.length > 0 && (
+          <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.brand, overflow: 'hidden' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.lg, paddingBottom: space.sm }}>
+              <Ionicons name="book-outline" size={18} color={colors.brand} />
+              <Txt variant="heading" style={{ flex: 1 }}>
+                공부 메뉴
+              </Txt>
+            </View>
+            {menus.map((m) => (
+              <Row key={m.key} onPress={() => router.push(m.params ? { pathname: m.path as never, params: m.params } : (m.path as never))}>
+                <Txt style={{ fontWeight: '700' }}>{m.title}</Txt>
+                <Txt variant="sub">{m.desc}</Txt>
+                {m.key === 'cs' && (
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                    {csSubjects.map((sj) => (
+                      <Chip key={sj} label={`${sj} 내용 체계`} selected={false} onPress={() => router.push({ pathname: '/content-system', params: { subject: sj } })} />
+                    ))}
+                  </View>
+                )}
+              </Row>
+            ))}
+          </View>
+        )}
 
         {ready && (
           <>
