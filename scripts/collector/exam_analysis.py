@@ -283,6 +283,8 @@ def split_questions(text):
 #  - text: 글자 PDF의 글자 위치(pdftotext -bbox-layout)
 #  - ocr: 그림 PDF(2014·2015 등)를 글자 읽기(tesseract)한 줄 위치
 #  - manual: 사람이 넣은 값(data/exam_boxes_manual.json) — 자동 값보다 먼저
+MANUAL_SUBJ = {k: v for k, v in (lambda p: json.load(open(p)) if os.path.exists(p) else {})(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_subject_manual.json')).items() if not k.startswith('_')}
 MANUAL_BOXES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_boxes_manual.json')
 _LINE_RE = re.compile(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', re.S)
 _PAGE_RE = re.compile(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', re.S)
@@ -746,13 +748,12 @@ def main():
             continue
         vote = collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05)
         subj, how = decide_subject(q['text'], vote)
-        if f"{q['year']}{q['paper']}{q['no']}" in ('2021A3', '2023A3', '2024A3', '2027A3', '2025A5', '2022A4'):
-            al = len(re.findall(r'[A-Za-z]', q['text'])); ko = len(re.findall(r'[가-힣]', q['text']))
-            ctx = [q['text'][max(0, m.start() - 6):m.end() + 6].replace('\n', ' ') for m in re.finditer('영어', q['text'])][:3]
-            print('진단', q['year'], q['paper'], q['no'], subj, how, '알파벳', al, '한글', ko, ctx)
+        mk = f"{q['year']}{q['paper']}{q['no']}"
+        if mk in MANUAL_SUBJ:  # 사람이 정한 교과(검토로 확인한 문항)
+            subj, how = MANUAL_SUBJ[mk], 'manual'
         cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
-        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(영단어 15개 이상·영어 단서+다수결 2표)'}[how],
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(영단어 15개 이상·영어 단서+다수결 2표)', 'manual': '사람이 직접 정함(검토 확인)'}[how],
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)
