@@ -674,9 +674,14 @@ def main():
                 for row in ar['rows']:
                     if row['cat'].startswith('가치'):
                         continue  # 흥미·태도 같은 말은 문항 근거로 약함
+                    know = row['cat'].startswith('지식')
                     for cell in row['cells']:
                         for it in cell['items']:
-                            for part in {it, *re.split(r'\s*,\s*', it)}:
+                            # 지식·이해: 항목과 쉼표로 나눈 낱말 / 과정·기능: 항목 통째로만('예상·분석' 같은 일반 동사 낱말 빼기), 끝의 '하기' 떼고 5글자 이상
+                            parts = {it, *re.split(r'\s*,\s*', it)} if know else {re.sub(r'\s*하기$', '', it)}
+                            for part in parts:
+                                if not know and len(re.sub(r'\s', '', part)) < 5:
+                                    continue
                                 part = re.sub(r'\s+', ' ', part).strip(' ·')
                                 k = re.sub(r'[\s·]', '', part)
                                 if 2 <= len(k) <= 14 and k not in concepts[name]:
