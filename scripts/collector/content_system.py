@@ -36,7 +36,9 @@ def download(url, path):
 
 def to_xhtml(hwp, outdir):
     os.makedirs(outdir, exist_ok=True)
-    subprocess.run(['hwp5html', '--output', outdir, hwp], check=True, timeout=600, capture_output=True)
+    r = subprocess.run(['hwp5html', '--output', outdir, hwp], timeout=900, capture_output=True)
+    if r.returncode:
+        print('hwp5html 오류', r.returncode, r.stderr.decode('utf-8', 'ignore')[-600:])
     for root, _, files in os.walk(outdir):
         for f in files:
             if f.endswith('.xhtml') or f.endswith('.html'):
@@ -144,7 +146,8 @@ def dot(t):
 def norm(t):
     """칸 이름: 줄바꿈은 '·' 뒤면 붙이고 아니면 띄움 ('지식·\\n이해' → '지식·이해', '듣기·말하기\\n맥락' → '듣기·말하기 맥락')"""
     t = dot(t or '').strip()
-    return re.sub(r'\s+', ' ', re.sub(r'·\s*\n\s*', '·', t)).strip()
+    t = re.sub(r'\s*\n\s*·', '·', re.sub(r'·\s*\n\s*', '·', t))
+    return re.sub(r'\s+', ' ', t).strip()
 
 
 def items_of(t):
@@ -156,7 +159,9 @@ def parse_cs_table(rows):
     g = grid(rows)
     if len(g) < 4:
         return None
-    idea_r = next((r for r, row in enumerate(g) if row and row[0][0].replace(' ', '').startswith('핵심아이디어')), None)
+    if any(re.sub(r'\s', '', t) == '내용요소' for t, _ in g[0]) and any(re.sub(r'\s', '', t) == '영역' for t, _ in g[0]) and not any(GRADE_RE.search(t or '') for row in g[:4] for t, _ in row):
+        return parse_area_rows(g)  # 통합교과처럼 '영역 | 핵심 아이디어 | 범주 | 내용 요소' 꼴(학년 칸 없음)
+    idea_r = next((r for r, row in enumerate(g) if row and re.sub(r'\s', '', row[0][0]).startswith('핵심아이디어')), None)
     hr = next((r for r, row in enumerate(g) if sum(1 for t, _ in row if GRADE_RE.search(t or '')) >= 1 and any('학년' in (t or '') for t, _ in row)), None)
     if idea_r is None or hr is None:
         return None
@@ -185,10 +190,13 @@ def parse_cs_table(rows):
     if not cols:
         return None
     out_rows = []
+    emitted = set()  # 위 줄과 합쳐진(rowspan) 칸은 한 번만
     for r in range(hr + 1, len(g)):
         row = g[r]
         cat = norm(row[0][0])
-        sub = norm(row[1][0]) if len(row) > 1 and row[1][1] != row[0][1] and row[1][1] not in [row[c][1] for c, _ in cols] else ''
+        sub = norm(row[1][0]) if len(row) > 1 and row[1][1] != row[0][1] and row[1][1] not in [row[c][1] for c, _ in cols] and row[1][1] not in emitted else ''
+        if sub:
+            emitted.add(row[1][1])
         cells = []
         prev = None
         for c, _ in cols:
@@ -196,10 +204,13 @@ def parse_cs_table(rows):
             if prev is not None and cid == prev and cid != -1:
                 cells[-1]['span'] += 1
                 continue
-            cells.append({'items': items_of(t), 'span': 1})
+            cells.append({'items': [] if cid in emitted else items_of(t), 'span': 1})
             prev = cid
-        if not cat and not sub and not any(x['items'] for x in cells):
-            continue
+        for c, _ in cols:
+            if c < len(row) and row[c][1] != -1:
+                emitted.add(row[c][1])
+        if not sub and not any(x['items'] for x in cells):
+            continue  # 빈 줄(위 칸과 합쳐진 줄)
         out_rows.append({'cat': cat, 'sub': sub, 'cells': cells})
     # 범주 칸이 비면 위 범주 이어받기
     last = ''
@@ -209,6 +220,34 @@ def parse_cs_table(rows):
         else:
             x['cat'] = last
     return {'ideas': ideas, 'grades': [lab for _, lab in cols], 'rows': out_rows}
+
+
+SUBJ_CODE = {'바': '바른 생활', '슬': '슬기로운 생활', '즐': '즐거운 생활', '건': '건강한 생활'}
+
+
+def parse_area_rows(g):
+    """'영역 | 핵심 아이디어 | 범주 | 내용 요소 | (성취기준)' 표 → 영역 여러 개 (1~2학년 한 칸)"""
+    head = [re.sub(r'\s', '', t) for t, _ in g[0]]
+    ci = {k: head.index(k) for k in ('영역', '핵심아이디어', '범주', '내용요소') if k in head}
+    if len(ci) < 4:
+        return None
+    sc = head.index('성취기준') if '성취기준' in head else None
+    areas, cur, last_area = [], None, None
+    for row in g[1:]:
+        at, aid = row[ci['영역']]
+        if aid != last_area:
+            last_area = aid
+            group = ''
+            if sc is not None:
+                m = re.search(r'\[\s*\d+\s*([가-힣])', row[sc][0] or '')
+                group = SUBJ_CODE.get(m.group(1), '') if m else ''
+            cur = {'area': (group + ' · ' if group else '') + norm(at), 'ideas': items_of(row[ci['핵심아이디어']][0]), 'grades': ['1~2'], 'rows': []}
+            areas.append(cur)
+        cat = norm(row[ci['범주']][0])
+        items = items_of(row[ci['내용요소']][0])
+        if cat or items:
+            cur['rows'].append({'cat': cat, 'sub': '', 'cells': [{'items': items, 'span': 1}]})
+    return {'multi': areas} if areas else None
 
 
 AREA_RE = re.compile(r'^\(\s*(\d+)\s*\)\s*(.{2,30})$')
@@ -264,6 +303,9 @@ def main():
             t = parse_cs_table(v)
             if not t:
                 continue
+            if 'multi' in t:
+                tables.extend(t['multi'])
+                continue
             area = ''
             for ptxt in reversed(paras[-6:]):
                 m = AREA_RE.match(ptxt.strip())
@@ -273,7 +315,18 @@ def main():
             t['area'] = area or f'영역 {len(tables) + 1}'
             t['prev'] = [x[:40] for x in paras[-3:]]  # 확인용(앱은 안 씀)
             tables.append(t)
-        print(subj, school, '내용 체계 표', len(tables))
+        # 영역 이름 띄어쓰기: 문서 속 '(1) 우리는 누구로 살아갈까' 같은 제목과 글자가 같으면 그 제목으로
+        heads = {}
+        for kind, v in doc.items:
+            m = AREA_RE.match(v.strip()) if kind == 'p' else None
+            if m:
+                heads.setdefault(re.sub(r'\s', '', norm(m.group(2))), norm(m.group(2)))
+        for t in tables:
+            pre, _, name = t['area'].rpartition(' · ')
+            fixed = heads.get(re.sub(r'\s', '', name))
+            if fixed:
+                t['area'] = (pre + ' · ' if pre else '') + fixed
+        print(subj, school, '내용 체계 표', len(tables), [t['area'] for t in tables])
         result.append({'subject': subj, 'era': '2022', 'school': school, 'file': {'name': hwp['name'], 'url': hwp['url']}, 'areas': tables})
     if not probe:
         json.dump({'built': time.strftime('%Y-%m-%d'), 'source': 'NCIC 국가교육과정정보센터 교육과정 고시문(한글 파일)', 'subjects': result},
