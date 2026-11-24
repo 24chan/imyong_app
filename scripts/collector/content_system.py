@@ -110,6 +110,44 @@ class Doc(HTMLParser):
         self.buf = []
 
 
+def items_from_hwpxml(path):
+    """hwp5html이 안 되는 파일: hwp5proc xml → 같은 [('p', 글) | ('table', 칸들)] 목록"""
+    import xml.etree.ElementTree as ET
+    r = subprocess.run(['hwp5proc', 'xml', path], capture_output=True, timeout=900)
+    if r.returncode or not r.stdout:
+        raise RuntimeError('hwp5proc 오류 ' + r.stderr.decode('utf-8', 'ignore')[-300:])
+    root = ET.fromstring(r.stdout)
+    items = []
+
+    def para_text(el):
+        return ''.join(t.text or '' for t in el.iter('Text'))
+
+    def walk(el, in_table=False):
+        for ch in el:
+            if ch.tag == 'TableControl' and not in_table:
+                rows = []
+                for row in ch.iter('TableRow'):
+                    cells = []
+                    for cell in row.findall('TableCell'):
+                        txt = '\n'.join(para_text(pp) for pp in cell.iter('Paragraph'))
+                        cells.append({'t': clean(txt), 'rs': int(cell.get('rowspan', 1)), 'cs': int(cell.get('colspan', 1))})
+                    rows.append(cells)
+                items.append(('table', rows))
+            elif ch.tag == 'Paragraph' and not in_table:
+                t = clean(''.join(x.text or '' for x in ch.findall('.//LineSeg/Text')) or para_text_direct(ch))
+                if t:
+                    items.append(('p', t))
+                walk(ch, in_table)
+            else:
+                walk(ch, in_table or ch.tag == 'TableControl')
+
+    def para_text_direct(pp):
+        return ''.join(t.text or '' for t in pp.iter('Text') if not any(True for _ in []))
+
+    walk(root)
+    return items
+
+
 def clean(t):
     t = re.sub(r'[ \t ]+', ' ', t)
     t = re.sub(r'\s*\n\s*', '\n', t)
@@ -276,13 +314,17 @@ def main():
         p = os.path.join(work, f'{hwp["seq"]}.hwp')
         if not download(hwp['url'], p):
             continue
+        doc = Doc()
         try:
             xh = to_xhtml(p, os.path.join(work, str(hwp['seq'])))
+            doc.feed(open(xh, encoding='utf-8', errors='ignore').read())
         except Exception as e:  # noqa: BLE001
-            print('바꾸기 실패', subj, e)
-            continue
-        doc = Doc()
-        doc.feed(open(xh, encoding='utf-8', errors='ignore').read())
+            print('바꾸기 실패', subj, e, '→ hwp5proc xml로')
+            try:
+                doc.items = items_from_hwpxml(p)
+            except Exception as e2:  # noqa: BLE001
+                print('xml도 실패', subj, e2)
+                continue
         if probe:
             dbg = os.path.join(out, 'debug')
             os.makedirs(dbg, exist_ok=True)
