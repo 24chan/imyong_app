@@ -99,28 +99,52 @@ export function PostRow({ post, showBoard, flat }: { post: Post; showBoard?: boo
   );
 }
 
-/** 바텀시트 틀 */
+/** 바텀시트 틀 — 2026-11-24: 뒤 화면 전체를 어둡게, 시트는 테두리·손잡이·닫기 버튼으로 경계가 또렷하게 */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title: string; children: ReactNode }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={{ flex: 1, backgroundColor: '#0006' }} onPress={onClose} accessibilityLabel="닫기" />
-      <View
-        style={{
-          backgroundColor: colors.background,
-          borderTopLeftRadius: radius.lg,
-          borderTopRightRadius: radius.lg,
-          padding: space.lg,
-          paddingBottom: space.lg + insets.bottom,
-          gap: space.md,
-          maxWidth: 640,
-          width: '100%',
-          alignSelf: 'center',
-        }}
-      >
-        <Txt variant="heading">{title}</Txt>
-        {children}
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: '#000000A6', justifyContent: 'flex-end' }}>
+        <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onPress={onClose} accessibilityLabel="닫기" />
+        <View
+          style={{
+            backgroundColor: colors.background,
+            borderTopLeftRadius: radius.xl,
+            borderTopRightRadius: radius.xl,
+            borderWidth: 1,
+            borderBottomWidth: 0,
+            borderColor: colors.line,
+            paddingHorizontal: space.lg,
+            paddingTop: space.sm,
+            paddingBottom: space.lg + insets.bottom,
+            gap: space.md,
+            maxWidth: 640,
+            width: '100%',
+            alignSelf: 'center',
+            elevation: 24,
+            shadowColor: '#000',
+            shadowOpacity: 0.3,
+            shadowRadius: 16,
+            shadowOffset: { width: 0, height: -4 },
+          }}
+        >
+          <View style={{ alignSelf: 'center', width: 44, height: 5, borderRadius: 3, backgroundColor: colors.line }} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <Txt variant="heading" style={{ flex: 1 }}>
+              {title}
+            </Txt>
+            <Pressable
+              onPress={onClose}
+              hitSlop={10}
+              accessibilityLabel="닫기"
+              style={{ width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface }}
+            >
+              <Ionicons name="close" size={20} color={colors.text} />
+            </Pressable>
+          </View>
+          {children}
+        </View>
       </View>
     </Modal>
   );

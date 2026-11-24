@@ -153,10 +153,11 @@ export function PrimaryButton({
   label: string;
   onPress: () => void;
   disabled?: boolean;
-  variant?: 'solid' | 'ghost';
+  variant?: 'solid' | 'ghost' | 'outline';
 }) {
   const { colors } = useTheme();
   const solid = variant === 'solid';
+  const outline = variant === 'outline';
   return (
     <Pressable
       onPress={onPress}
@@ -166,11 +167,13 @@ export function PrimaryButton({
         alignItems: 'center',
         paddingVertical: 16,
         borderRadius: 14,
-        backgroundColor: solid ? colors.brand : 'transparent',
+        backgroundColor: solid ? colors.brand : outline ? colors.background : 'transparent',
+        borderWidth: outline ? 1.5 : 0,
+        borderColor: colors.brand,
         opacity: disabled ? 0.4 : 1,
       }}
     >
-      <Txt style={{ fontWeight: '800', fontSize: 16 }} color={solid ? 'background' : 'textSub'}>
+      <Txt style={{ fontWeight: '800', fontSize: 16 }} color={solid ? 'background' : outline ? 'brand' : 'textSub'}>
         {label}
       </Txt>
     </Pressable>

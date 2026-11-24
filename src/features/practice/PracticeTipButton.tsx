@@ -84,10 +84,10 @@ export function PracticeTipButton({ univ, year, label = '실습학교 목록 제
         </Txt>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           <View style={{ flex: 1 }}>
-            <PrimaryButton label="사진·캡처" variant="ghost" disabled={room <= 0} onPress={addPhotos} />
+            <PrimaryButton label="사진·캡처" variant="outline" disabled={room <= 0} onPress={addPhotos} />
           </View>
           <View style={{ flex: 1 }}>
-            <PrimaryButton label="PDF·파일" variant="ghost" disabled={room <= 0} onPress={addPdf} />
+            <PrimaryButton label="PDF·파일" variant="outline" disabled={room <= 0} onPress={addPdf} />
           </View>
         </View>
         {files.map((f, i) => (

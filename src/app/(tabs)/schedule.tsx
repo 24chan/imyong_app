@@ -225,19 +225,18 @@ export default function ScheduleScreen() {
       <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.xl, backgroundColor: colors.cat.pink.bg }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
           <Ionicons name="megaphone-outline" size={18} color={colors.cat.pink.fg} />
-          <Txt style={{ flex: 1, fontWeight: '800', color: colors.cat.pink.fg }}>
-            {academy !== null && academy.length === 0 ? '이번 달 학원 일정이 아직 없어요' : '아는 일정 있으면 알려 주세요'}
-          </Txt>
+          <Txt style={{ flex: 1, fontSize: 16, fontWeight: '700', color: colors.cat.pink.fg }}>학원 일정 제보하기</Txt>
         </View>
         <Txt variant="sub" style={{ fontSize: 13 }}>
-          모의고사·개강·설명회·특강·인강 오픈 무엇이든요. 학원 공지 캡처·사진·PDF·주소만 보내도 돼요. 운영자가 확인하고 올려요.
+          {academy !== null && academy.length === 0 ? '이번 달 학원 일정이 아직 없어요. ' : ''}모의고사·개강·설명회·특강·인강 오픈 무엇이든 알려 주세요. 학원 공지
+          캡처·사진·PDF·주소만 보내도 돼요. 운영자가 확인하고 올려요.
         </Txt>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
           <View style={{ flex: 1 }}>
-            <PracticeTipButton univ="일정" year={null} topic="event" label="캡처·사진으로" variant="primary" />
+            <PracticeTipButton univ="일정" year={null} topic="event" label="캡처·사진으로 제보" variant="primary" />
           </View>
           <View style={{ flex: 1 }}>
-            <EventTipButton level={viewLevel} label="직접 입력" />
+            <EventTipButton level={viewLevel} label="직접 입력해 제보" variant="outline" />
           </View>
         </View>
       </View>

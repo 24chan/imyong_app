@@ -4,6 +4,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-nat
 import { Chip, Screen, Segmented, Txt } from '../components/ui';
 import { examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
+import { Sheet } from '../features/community/parts';
 import { useAppSettings } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
@@ -31,6 +32,7 @@ export default function ExamAnalysisScreen() {
   useEffect(() => setOpenId(null), [subj, era, tab]);
 
   const openExam = async (h: Hit) => {
+    setOpenId(null);
     const f = await examPdf(level, h.y, h.p);
     if (!f) return Alert.alert('문제지를 찾지 못했어요');
     router.push({ pathname: '/pdf', params: { url: f.url, title: `${h.y}학년도 교육과정 ${h.p} ${h.n}번`, page: f.page, pageLabel: '평가원 게시판' } });
@@ -182,7 +184,7 @@ export default function ExamAnalysisScreen() {
       return (
         <>
           <Segmented options={[{ value: '2022', label: '2022 개정' }, { value: '2015', label: '2015 개정' }]} value={era} onChange={setEra} compact />
-          <Txt variant="sub" style={{ fontSize: 12.5 }}>성취기준 하나가 한 칸이에요. 진할수록 많이 나왔고, 빈칸은 안 나온 곳이에요. 칸을 누르면 아래에 내용이 나와요.</Txt>
+          <Txt variant="sub" style={{ fontSize: 12.5 }}>성취기준 하나가 한 칸이에요. 진할수록 많이 나왔고, 빈칸은 안 나온 곳이에요. 칸을 누르면 바로 내용이 떠요.</Txt>
           {std.length === 0 && <Txt variant="sub">성취기준을 찾지 못했어요.</Txt>}
           {areas.map((ar) => (
             <Card key={ar} title={ar}>
@@ -203,12 +205,29 @@ export default function ExamAnalysisScreen() {
               </View>
             </Card>
           ))}
-          {sel && (
-            <Card title={`${sel.code} · ${cnt(sel)}회`}>
-              <Txt style={{ fontSize: 14.5, lineHeight: 22 }}>{sel.text}</Txt>
-              <HitChips hs={hitsOf(sel.id)} />
-            </Card>
-          )}
+          {/* 2026-11-24 사용자 요청: 맨 아래가 아니라 누른 자리에서 바로 보이게 → 팝업 시트 */}
+          <Sheet visible={!!sel} onClose={() => setOpenId(null)} title={sel ? `${sel.code} · ${cnt(sel)}회 나옴` : ''}>
+            {sel && (
+              <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ gap: space.md }}>
+                {!!sel.area && (
+                  <Txt variant="sub" style={{ fontSize: 12.5 }}>
+                    {subj} · {sel.area}
+                  </Txt>
+                )}
+                <Txt style={{ fontSize: 15, lineHeight: 23 }}>{sel.text}</Txt>
+                {hitsOf(sel.id).length ? (
+                  <>
+                    <Txt variant="sub" style={{ fontSize: 12.5 }}>
+                      나온 문항 (누르면 문제지)
+                    </Txt>
+                    <HitChips hs={hitsOf(sel.id)} />
+                  </>
+                ) : (
+                  <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>
+                )}
+              </ScrollView>
+            )}
+          </Sheet>
         </>
       );
     }
@@ -274,7 +293,8 @@ export default function ExamAnalysisScreen() {
   return (
     <>
       <Stack.Screen options={{ title: '기출 분석' }} />
-      <Screen>
+      <View style={{ flex: 1 }}>
+        <Screen>
         {viewLevel === 'secondary' && <Txt variant="sub">지금은 초등 교육과정 A·B 분석만 있어요. 중등 교육학·전공은 다음 단계에서 넣을게요.</Txt>}
         {data.loading && !a ? (
           <ActivityIndicator color={colors.brand} />
@@ -306,8 +326,34 @@ export default function ExamAnalysisScreen() {
             {body()}
           </>
         )}
-      </Screen>
+        </Screen>
+        <Watermark />
+      </View>
     </>
+  );
+}
+
+/** 임용몽땅 워터마크 (2026-11-24 사용자 요청): 화면 위에 옅게 겹쳐 놓고 터치는 아래로 통과 */
+function Watermark() {
+  const { colors } = useTheme();
+  const rows = Array.from({ length: 14 });
+  const cols = Array.from({ length: 5 });
+  return (
+    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
+      <View
+        style={{ position: 'absolute', top: -120, left: -160, right: -160, bottom: -120, transform: [{ rotate: '-24deg' }], justifyContent: 'space-around' }}
+      >
+        {rows.map((_, r) => (
+          <View key={r} style={{ flexDirection: 'row', justifyContent: 'space-around', marginLeft: r % 2 ? 90 : 0 }}>
+            {cols.map((__, c) => (
+              <Txt key={c} style={{ fontSize: 20, fontWeight: '700', color: colors.text, opacity: 0.06 }}>
+                임용몽땅
+              </Txt>
+            ))}
+          </View>
+        ))}
+      </View>
+    </View>
   );
 }
 
