@@ -142,6 +142,10 @@ ADMIN_RE = re.compile(r'부\s*칙|이\s*고시는|시행한다|게재|고시\s*�
 UPPER_RE = re.compile(r'중학교|고등학교|고교|학점|단위\s*배당|선택\s*과목|공통\s*과목|9\s*학년|[789]학년|1\s*[~∼～-]\s*3\s*학년')
 
 
+# 핵심 낱말 보충에서 뺄 말(2026-11-24 검토: 공부 개념이 아님)
+TOKEN_STOP = set('잡힌 도덕적 미술 음악 체육 국어 수학 사회 과학 실과 영어 기본 수행 유형 파악 활동 이해 탐구 표현 태도 의미 방법 과정 상황 생활 경험'.split())
+
+
 def keep_text(t):
     """코드 없는 칸 거르기 (2026-11-24 이중 검토 지적): 스타일 코드, 행정 머리말(부칙·시행일·게재 안내), 중·고등만 다루는 글"""
     if CSS_RE.search(t):
@@ -289,6 +293,8 @@ def split_questions(text):
 #  - manual: 사람이 넣은 값(data/exam_boxes_manual.json) — 자동 값보다 먼저
 MANUAL_SUBJ = {k: v for k, v in (lambda p: json.load(open(p)) if os.path.exists(p) else {})(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_subject_manual.json')).items() if not k.startswith('_')}
+CONFIRMED_SUBJ = {k: v for k, v in (lambda p: json.load(open(p)) if os.path.exists(p) else {})(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_subject_confirmed.json')).items() if not k.startswith('_')}
 MANUAL_BOXES = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'exam_boxes_manual.json')
 _LINE_RE = re.compile(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', re.S)
 _PAGE_RE = re.compile(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', re.S)
@@ -752,9 +758,11 @@ def main():
         mk = f"{q['year']}{q['paper']}{q['no']}"
         if mk in MANUAL_SUBJ:  # 사람이 정한 교과(검토로 확인한 문항)
             subj, how = MANUAL_SUBJ[mk], 'manual'
+        elif mk in CONFIRMED_SUBJ:  # 2026-11-24 확정본(원문을 고쳐 다시 돌려도 교과가 흔들리지 않게). 새 연도만 규칙으로
+            subj, how = CONFIRMED_SUBJ[mk], 'confirmed'
         cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
-        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(영단어 15개 이상·영어 단서+다수결 2표)', 'manual': '사람이 직접 정함(검토 확인)'}[how],
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(영단어 15개 이상·영어 단서+다수결 2표)', 'manual': '사람이 직접 정함(검토 확인)', 'confirmed': '확정 판정(2026-11-24 검토 확정본)'}[how],
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)
@@ -824,6 +832,9 @@ def main():
                             for part in parts:
                                 if not know and len(re.sub(r'\s', '', part)) < 5:
                                     continue
+                                # 2026-11-24 검토: 괄호가 짝이 안 맞는 조각('km)', 'm)')·영문 단위 조각 빼기
+                                if part.count('(') != part.count(')') or re.fullmatch(r'[\sA-Za-z0-9°%.,()]+', part):
+                                    continue
                                 part = re.sub(r'\s+', ' ', part).strip(' ·')
                                 k = re.sub(r'[\s·]', '', part)
                                 if 2 <= len(k) <= 14 and k not in concepts[name]:
@@ -867,7 +878,7 @@ def main():
                     for cell in row['cells']:
                         for it in cell['items']:
                             for w in words(it):
-                                if len(w) >= 2 and subject_term(name, w) and w not in toks:
+                                if len(w) >= 2 and subject_term(name, w) and w not in toks and w not in TOKEN_STOP:
                                     toks[w] = (ar['area'].split(' · ')[-1], row['cat'])
             known = {re.sub(r'\s', '', t['term']) for t in have}
             cy = collections.defaultdict(collections.Counter)
