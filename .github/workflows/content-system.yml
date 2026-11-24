@@ -1,0 +1,30 @@
+name: content-system
+# 내용 체계표(내체표)·개념 구조도: 교육과정 고시문 한글 파일의 '내용 체계' 표 → raw-files/raw/curriculum (매주 월 05:27 KST, 교육과정 목록 갱신 뒤)
+on:
+  workflow_dispatch:
+    inputs:
+      mode: { description: 'probe 이면 국어·수학 표 모양만 확인', required: false, default: '' }
+  schedule:
+    - cron: '27 20 * * 0'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -q pyhwp lxml six
+      - run: python -I -u app/scripts/collector/content_system.py raw raw/curriculum ${{ github.event.inputs.mode }}
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/curriculum
+          git commit -qm "내용 체계표 $(date +%F)" || exit 0
+          ok=0; for i in 1 2 3 4 5; do if git pull -q --rebase -X theirs origin raw-files && git push -q origin HEAD:raw-files; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep $((i*5)); done; [ "$ok" = 1 ]
