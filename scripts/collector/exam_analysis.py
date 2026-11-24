@@ -537,15 +537,16 @@ def decide_subject(t, vote):
             c[name] += n
     top = c.most_common(2)
     vtop = vote.most_common(1)[0][0] if vote else None
-    # 2026-11-24 영어 예외(이중 검토): 영어 문항은 지문이 영어라 한글 유사도가 국어·통합교과로 쏠림
-    #  - 알파벳 비율 30% 이상이면 영어 / '영어'가 한 번이라도 있고 알파벳 15% 이상이거나 다수결에서 영어가 1위와 동점이면 영어
-    alpha = len(re.findall(r'[A-Za-z]', t))
-    ko = len(re.findall(r'[가-힣]', t))
-    ratio = alpha / max(1, alpha + ko)
-    vmax = max(vote.values()) if vote else 0
-    strong = re.search(r'영어과|영어\s*(수업|교과|시간|학습|교사|교육과정|성취기준|단원|과목)', t)
-    if ratio >= 0.3 or strong or (c.get('영어', 0) >= 1 and (ratio >= 0.15 or (vmax and vote.get('영어', 0) == vmax))):
-        return '영어', 'english'
+    # 2026-11-24 영어 예외(이중 검토 3차 반영, 조건을 좁힘)
+    #  ① 다른 교과가 교과 이름 2회 이상·단독 1위이거나 원문 다수결 4표 이상이면 영어 예외 안 씀
+    #  ② 알파벳 비율 대신 4글자 이상 영단어가 15개 이상(악보 코드·악상 기호·(A)(B) 같은 기호에 반응하지 않게)
+    #  ③ '영어' 단서가 있으면 다수결에 영어가 2표 이상일 때만
+    other_cue = bool(top) and top[0][0] != '영어' and top[0][1] >= 2 and not (len(top) > 1 and top[1][1] == top[0][1])
+    other_vote = any(k != '영어' and v >= 4 for k, v in vote.items())
+    if not other_cue and not other_vote:
+        en_words = len(re.findall(r'\b[A-Za-z]{4,}\b', t))
+        if en_words >= 15 or (c.get('영어', 0) >= 1 and vote.get('영어', 0) >= 2):
+            return '영어', 'english'
     if top:
         name, n = top[0]
         tie = len(top) > 1 and top[1][1] == n
@@ -751,7 +752,7 @@ def main():
             print('진단', q['year'], q['paper'], q['no'], subj, how, '알파벳', al, '한글', ko, ctx)
         cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
-        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(알파벳 비율·영어 단서)'}[how],
+        review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(영단어 15개 이상·영어 단서+다수결 2표)'}[how],
                        'cue_counts': cue_counts(q['text']), 'similar_votes': dict(vote.most_common(4)),
                        'top_units': [{'code': units[i]['code'], 'subject': units[i]['subject'], 'section': units[i]['section'], 'score': round(sc, 3)} for sc, i in scored[:5]]})
         # 2026-11-24 고침: 연결은 정한 교과 칸 안에서만 다시 순위(전체 상위 12칸에 그 교과가 없으면 연결이 0개가 되던 문제)
