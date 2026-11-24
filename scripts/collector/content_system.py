@@ -121,52 +121,84 @@ def grid(rows):
 
 
 GRADE_RE = re.compile(r'(\d)\s*[~∼～-]\s*(\d)\s*학년')
-CAT_RE = re.compile(r'지식\s*[·ㆍ⋅]?\s*이해|과정\s*[·ㆍ⋅]?\s*기능|가치\s*[·ㆍ⋅]?\s*태도')
+BULLET = '⋅·•ㆍ∙-–▪ '
+
+
+def dot(t):
+    return t.replace('⋅', '·').replace('ㆍ', '·').replace('∙', '·')
+
+
+def norm(t):
+    """칸 이름: 줄바꿈은 '·' 뒤면 붙이고 아니면 띄움 ('지식·\\n이해' → '지식·이해', '듣기·말하기\\n맥락' → '듣기·말하기 맥락')"""
+    t = dot(t or '').strip()
+    return re.sub(r'\s+', ' ', re.sub(r'·\s*\n\s*', '·', t)).strip()
+
+
+def items_of(t):
+    return [dot(x.strip().lstrip(BULLET).strip()) for x in (t or '').split('\n') if x.strip().lstrip(BULLET).strip()]
 
 
 def parse_cs_table(rows):
-    """2022 내용 체계 표 하나 → {area, ideas, cats: [{cat, grades: {'1~2': [요소…]}}]} (못 읽으면 None)"""
+    """2022 내용 체계 표 하나 → {ideas, grades, rows:[{cat, sub, cells:[{items, span}]}]} (초등 학년군만, 못 읽으면 None)"""
     g = grid(rows)
-    if not g:
+    if len(g) < 4:
         return None
-    flat = '\n'.join(t for row in g for t, _ in row)
-    if '핵심 아이디어' not in flat.replace('  ', ' ') and '핵심아이디어' not in flat:
+    idea_r = next((r for r, row in enumerate(g) if row and row[0][0].replace(' ', '').startswith('핵심아이디어')), None)
+    hr = next((r for r, row in enumerate(g) if sum(1 for t, _ in row if GRADE_RE.search(t or '')) >= 1 and any('학년' in (t or '') for t, _ in row)), None)
+    if idea_r is None or hr is None:
         return None
-    area, ideas, grades, cats = '', [], [], []
-    hdr_row = None
-    for r, row in enumerate(g):
-        texts = [t for t, _ in row]
-        if any(GRADE_RE.search(t) for t in texts) and hdr_row is None:
-            hdr_row = r
-            grades = [(c, '{}~{}'.format(*GRADE_RE.search(t).groups())) for c, t in enumerate(texts) if GRADE_RE.search(t) and (c == 0 or texts[c - 1] != t)]
-    for r, row in enumerate(g):
-        texts = [t for t, _ in row]
-        if texts and texts[0].replace(' ', '') == '영역' and len(set(texts)) > 1:
-            area = next((t for t in texts[1:] if t and t.replace(' ', '') != '영역'), area)
-        if any(t.replace(' ', '').startswith('핵심아이디어') for t in texts):
-            body = [t for t in dict.fromkeys(texts) if t and not t.replace(' ', '').startswith('핵심아이디어')]
-            for t in body:
-                ideas.extend(x.strip('•·ㆍ- ') for x in t.split('\n') if x.strip('•·ㆍ- '))
-    if hdr_row is None:
-        return {'area': area, 'ideas': ideas, 'cats': [], 'raw': [[t for t, _ in row] for row in g]}
-    cur = None
-    for r in range(hdr_row + 1, len(g)):
-        row = g[r]
-        label = next((t for t, _ in row[:2] if CAT_RE.search(t or '')), None)
-        if label:
-            cur = {'cat': re.sub(r'\s+', '', CAT_RE.search(label).group(0)).replace('ㆍ', '·').replace('⋅', '·'), 'grades': {}}
-            cats.append(cur)
-        if not cur:
+    ideas = []
+    seen = {g[idea_r][0][1]}
+    for t, cid in g[idea_r][1:]:
+        if cid in seen or not t:
             continue
-        for c, gl in grades:
-            t = row[c][0] if c < len(row) else ''
-            if t and not CAT_RE.fullmatch(t.strip()):
-                items = [x.strip('•·ㆍ- ') for x in t.split('\n') if x.strip('•·ㆍ- ')]
-                lst = cur['grades'].setdefault(gl, [])
-                for x in items:
-                    if x not in lst:
-                        lst.append(x)
-    return {'area': area, 'ideas': ideas, 'cats': cats}
+        seen.add(cid)
+        ideas.extend(items_of(t))
+    school = g[hr - 1] if hr > 0 else []
+    cols = []
+    for c, (t, cid) in enumerate(g[hr]):
+        m = GRADE_RE.search(t or '')
+        if not m:
+            continue
+        sch = school[c][0] if c < len(school) else ''
+        if sch and ('중학교' in sch or '고등학교' in sch):
+            continue
+        a, b = int(m.group(1)), int(m.group(2))
+        if b > 6:
+            continue
+        lab = f'{a}~{b}'
+        if lab not in [x[1] for x in cols]:
+            cols.append((c, lab))
+    if not cols:
+        return None
+    out_rows = []
+    for r in range(hr + 1, len(g)):
+        row = g[r]
+        cat = norm(row[0][0])
+        sub = norm(row[1][0]) if len(row) > 1 and row[1][1] != row[0][1] and row[1][1] not in [row[c][1] for c, _ in cols] else ''
+        cells = []
+        prev = None
+        for c, _ in cols:
+            t, cid = row[c] if c < len(row) else ('', -1)
+            if prev is not None and cid == prev and cid != -1:
+                cells[-1]['span'] += 1
+                continue
+            cells.append({'items': items_of(t), 'span': 1})
+            prev = cid
+        if not cat and not sub and not any(x['items'] for x in cells):
+            continue
+        out_rows.append({'cat': cat, 'sub': sub, 'cells': cells})
+    # 범주 칸이 비면 위 범주 이어받기
+    last = ''
+    for x in out_rows:
+        if x['cat']:
+            last = x['cat']
+        else:
+            x['cat'] = last
+    return {'ideas': ideas, 'grades': [lab for _, lab in cols], 'rows': out_rows}
+
+
+AREA_RE = re.compile(r'^\(\s*(\d+)\s*\)\s*(.{2,30})$')
 
 
 def main():
@@ -206,12 +238,23 @@ def main():
             print(subj, '표', sum(1 for k, _ in doc.items if k == 'table'), '내용 체계 후보', len(tabs))
             continue
         tables = []
+        paras = []
         for kind, v in doc.items:
-            if kind != 'table':
+            if kind == 'p':
+                paras.append(v)
                 continue
             t = parse_cs_table(v)
-            if t:
-                tables.append(t)
+            if not t:
+                continue
+            area = ''
+            for ptxt in reversed(paras[-6:]):
+                m = AREA_RE.match(ptxt.strip())
+                if m:
+                    area = norm(m.group(2))
+                    break
+            t['area'] = area or f'영역 {len(tables) + 1}'
+            t['prev'] = [x[:40] for x in paras[-3:]]  # 확인용(앱은 안 씀)
+            tables.append(t)
         print(subj, school, '내용 체계 표', len(tables))
         result.append({'subject': subj, 'era': '2022', 'school': school, 'file': {'name': hwp['name'], 'url': hwp['url']}, 'areas': tables})
     if not probe:
