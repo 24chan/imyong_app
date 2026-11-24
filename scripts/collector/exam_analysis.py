@@ -101,7 +101,9 @@ def hwp_text_tables(path):
                     if not t:
                         continue
                     if CODE_RE.match(t.strip()):
-                        lines.append(re.sub(r'\s*\n\s*', ' ', t))  # 성취기준 칸은 한 줄로
+                        # 칸 하나에 성취기준이 여러 개 있으면 코드마다 한 줄로(줄바꿈으로 이어진 문장은 붙임)
+                        for piece in re.split(r'\n(?=\s*\[\s*\d{1,2}\s*[가-힣]{1,3}\s*\d{2}\s*[-‐‑–−~]\s*\d{2}\s*\])', t):
+                            lines.append(re.sub(r'\s*\n\s*', ' ', piece))
                     else:
                         lines.extend(t.split('\n'))
     return '\n'.join(lines)
@@ -725,6 +727,7 @@ def main():
     #   (평가원은 초등 교육과정 A·B 정답을 공개하지 않아(모은 목록 기준) 정답 글은 쓸 수 없음)
     cs_path = os.path.join(raw, 'curriculum', 'content_system_elementary.json')
     concepts = collections.defaultdict(dict)  # 교과 → 띄어쓰기 없앤 말 → (보이는 말, 영역, 범주)
+    fuzzy = collections.defaultdict(dict)  # 긴 항목: 핵심 낱말이 모두 문항에 있으면 나온 것으로(예: '중심 생각 파악하기')
     if os.path.exists(cs_path):
         for sj in json.load(open(cs_path))['subjects']:
             name = subj_name(sj['subject'])
@@ -737,6 +740,10 @@ def main():
                         for it in cell['items']:
                             # 지식·이해: 항목과 쉼표로 나눈 낱말 / 과정·기능: 항목 통째로만('예상·분석' 같은 일반 동사 낱말 빼기), 끝의 '하기' 떼고 5글자 이상
                             parts = {it, *re.split(r'\s*,\s*', it)} if know else {re.sub(r'\s*하기$', '', it)}
+                            if not know or len(it) > 10:
+                                toks = [w for w in words(re.sub(r'\s*하기$', '', it)) if len(w) >= 2]
+                                if len(toks) >= 2:
+                                    fuzzy[name][re.sub(r'[\s·]', '', it)] = (it, ar['area'].split(' · ')[-1], row['cat'], set(toks))
                             for part in parts:
                                 if not know and len(re.sub(r'\s', '', part)) < 5:
                                     continue
@@ -757,6 +764,13 @@ def main():
                 continue
             for k, (disp, area, cat) in cmap.items():
                 if k in t and qdf[k] <= max(8, len(questions) * 0.12):  # 거의 모든 문항에 나오는 '대화·발표' 같은 상황 말은 뺌
+                    cy[k][q['year']] += 1
+            qw = set(words(q['text']))
+            for k, (disp, area, cat, toks) in fuzzy.get(name, {}).items():
+                if k not in cmap and toks <= qw:
+                    cmap[k] = (disp, area, cat)
+                    cy[k][q['year']] += 1
+                elif k in cmap and toks <= qw and k not in t:
                     cy[k][q['year']] += 1
         ranked = sorted(cy.items(), key=lambda kv: (-sum(kv[1].values()), -len(kv[0])))[:40]
         if ranked:
