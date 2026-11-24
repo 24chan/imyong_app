@@ -525,6 +525,21 @@ def main():
             log(f'   {year} {paper}: 그림 문제지 → 글자 읽기 {len(txt)}자')
         qs = split_questions(txt)
         bx = boxes_from_lines(page_lines_ocr(p) if scanned else page_lines_text(p), 'ocr' if scanned else 'text')
+        if not scanned and len(qs) < len(bx) * 0.7:
+            # 번호로 못 나눈 문제지(2014 등): 찾은 문항 자리 안의 글자로 문항 글을 만듦(작업 중에만 씀)
+            W_, H_ = (float(x) for x in re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', subprocess.run(['pdfinfo', p], capture_output=True).stdout.decode()).groups())
+            qs2 = {}
+            for n, b in bx.items():
+                x0, y0, x1, y1 = b['r']
+                try:
+                    t = subprocess.run(['pdftotext', '-f', str(b['p']), '-l', str(b['p']), '-x', str(int(x0 * W_)), '-y', str(int(y0 * H_)), '-W', str(int((x1 - x0) * W_)), '-H', str(int((y1 - y0) * H_)), '-enc', 'UTF-8', p, '-'], capture_output=True, timeout=60).stdout.decode('utf-8', 'ignore')
+                except Exception:  # noqa: BLE001
+                    t = ''
+                if len(t.strip()) > 30:
+                    qs2[n] = t
+            if len(qs2) > len(qs):
+                log(f'   {year} {paper}: 문항 자리로 나눔 {len(qs)} → {len(qs2)}')
+                qs = qs2
         boxes[f'{year}{paper}'] = {str(k): v for k, v in bx.items()}
         log(f'기출 {year} {paper}: 문항 {len(qs)} 자리 {len(bx)}{" (OCR)" if scanned else ""} (1번 앞부분: {qs.get(1, "")[:25]})')
         if not qs:
