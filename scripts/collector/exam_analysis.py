@@ -508,7 +508,7 @@ def shared_phrases(q, unit_text, n_min=5):
 
 CUES = [('국어', r'국어'), ('수학', r'수학'), ('사회', r'사회과|사회\s*수업|사회\s*교과'), ('과학', r'과학'), ('도덕', r'도덕'), ('실과', r'실과'),
         ('체육', r'체육'), ('음악', r'음악'), ('미술', r'미술'), ('영어', r'영어'), ('통합교과', r'바른\s*생활|슬기로운\s*생활|즐거운\s*생활|통합\s*교과'),
-        ('창체', r'창의적\s*체험\s*활동|동아리\s*활동|자율\s*활동'), ('총론', r'총론|학교\s*교육과정|편성[·ㆍ]?\s*운영')]
+        ('창체', r'창의적\s*체험\s*활동|동아리\s*활동|자율\s*활동'), ('총론', r'총론|(?<!초등)학교\s*교육과정|편성[·ㆍ]?\s*운영')]
 CODE_LET = {'국': '국어', '수': '수학', '사': '사회', '과': '과학', '도': '도덕', '실': '실과', '체': '체육', '음': '음악', '미': '미술', '영': '영어', '바': '통합교과', '슬': '통합교과', '즐': '통합교과'}
 
 
@@ -543,7 +543,8 @@ def decide_subject(t, vote):
     ko = len(re.findall(r'[가-힣]', t))
     ratio = alpha / max(1, alpha + ko)
     vmax = max(vote.values()) if vote else 0
-    if ratio >= 0.3 or (c.get('영어', 0) >= 1 and (ratio >= 0.15 or (vmax and vote.get('영어', 0) == vmax))):
+    strong = re.search(r'영어과|영어\s*(수업|교과|시간|학습|교사|교육과정|성취기준|단원|과목)', t)
+    if ratio >= 0.3 or strong or (c.get('영어', 0) >= 1 and (ratio >= 0.15 or (vmax and vote.get('영어', 0) == vmax))):
         return '영어', 'english'
     if top:
         name, n = top[0]
@@ -744,6 +745,10 @@ def main():
             continue
         vote = collections.Counter(units[i]['subject'] for s, i in scored[:6] if s > 0.05)
         subj, how = decide_subject(q['text'], vote)
+        if f"{q['year']}{q['paper']}{q['no']}" in ('2021A3', '2023A3', '2024A3', '2027A3', '2025A5', '2022A4'):
+            al = len(re.findall(r'[A-Za-z]', q['text'])); ko = len(re.findall(r'[가-힣]', q['text']))
+            ctx = [q['text'][max(0, m.start() - 6):m.end() + 6].replace('\n', ' ') for m in re.finditer('영어', q['text'])][:3]
+            print('진단', q['year'], q['paper'], q['no'], subj, how, '알파벳', al, '한글', ko, ctx)
         cue = how != 'vote'
         q_subject.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj})
         review.append({**{k: q[k] for k in ('year', 'paper', 'no')}, 'subject': subj, 'how': {'code': '문항 속 성취기준 코드', 'cue': '문항 속 교과 이름(2회 이상·단독 1위)', 'vote': '원문과 비슷한 칸 다수결', 'english': '영어 예외(알파벳 비율·영어 단서)'}[how],
