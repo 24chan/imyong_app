@@ -37,10 +37,23 @@ def download(url, path):
 def to_xhtml(hwp, outdir):
     os.makedirs(outdir, exist_ok=True)
     subprocess.run(['hwp5html', '--output', outdir, hwp], check=True, timeout=600, capture_output=True)
-    for f in os.listdir(outdir):
-        if f.endswith('.xhtml') or f.endswith('.html'):
-            return os.path.join(outdir, f)
-    raise RuntimeError('xhtml 없음')
+    for root, _, files in os.walk(outdir):
+        for f in files:
+            if f.endswith('.xhtml') or f.endswith('.html'):
+                return os.path.join(root, f)
+    raise RuntimeError('xhtml 없음: ' + str([f for _, _, fs in os.walk(outdir) for f in fs][:10]))
+
+
+SKIP = ('총론', '창의적', '한국어')
+
+
+def subj_name(s):
+    t = s.replace(' ', '')
+    if t.startswith('실과'):
+        return '실과'
+    if '바른생활' in t or '슬기로운' in t:
+        return '통합교과'
+    return s
 
 
 class Doc(HTMLParser):
@@ -203,19 +216,23 @@ AREA_RE = re.compile(r'^\(\s*(\d+)\s*\)\s*(.{2,30})$')
 
 def main():
     raw, out = sys.argv[1], sys.argv[2]
-    probe = len(sys.argv) > 3 and sys.argv[3] == 'probe'
+    probe = len(sys.argv) > 3 and sys.argv[3].startswith('probe')
+    probe_subj = sys.argv[3].split(':', 1)[1].split(',') if probe and ':' in sys.argv[3] else ['국어', '수학']
     cur = json.load(open(os.path.join(raw, 'ncic', 'curriculum.json')))
     docs = [d for d in cur['docs'] if d['era'].startswith('2022') and '초등' in d['school']]
     pick = {}
     for d in docs:
         hwp = next((f for f in d['files'] if f['ext'] == 'hwp'), None)
-        if hwp and (d['subject'] not in pick or d['school'] > pick[d['subject']][0]):
-            pick[d['subject']] = (d['school'], hwp, d)
+        if not hwp or any(k in d['subject'] for k in SKIP):
+            continue
+        name = subj_name(d['subject'])
+        if name not in pick or d['school'] > pick[name][0]:
+            pick[name] = (d['school'], hwp, d)
     os.makedirs(out, exist_ok=True)
     work = tempfile.mkdtemp()
     result = []
     for subj, (school, hwp, d) in sorted(pick.items()):
-        if probe and subj not in ('국어', '수학'):
+        if probe and subj not in probe_subj:
             continue
         p = os.path.join(work, f'{hwp["seq"]}.hwp')
         if not download(hwp['url'], p):
@@ -234,7 +251,8 @@ def main():
             for kind, v in doc.items:
                 if kind == 'table' and '핵심' in json.dumps(v, ensure_ascii=False):
                     tabs.append(v)
-            json.dump({'subject': subj, 'tables': tabs[:3], 'items_head': [x for x in doc.items[:80]]}, open(os.path.join(dbg, f'cs_{subj}.json'), 'w'), ensure_ascii=False, indent=1)
+            ci = next((k for k, (kind, v) in enumerate(doc.items) if kind == 'p' and re.search(r'내용\s*체계', v)), 0)
+            json.dump({'subject': subj, 'tables': tabs[:3], 'near': [x for x in doc.items[ci:ci + 12]]}, open(os.path.join(dbg, f'cs_{subj}.json'), 'w'), ensure_ascii=False, indent=1)
             print(subj, '표', sum(1 for k, _ in doc.items if k == 'table'), '내용 체계 후보', len(tabs))
             continue
         tables = []
