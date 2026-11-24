@@ -202,6 +202,78 @@ def split_questions(text):
     return {k: re.sub(r'\s+', ' ', v) for k, v in best.items()}
 
 
+# ---------- 문항 위치 (2026-11-24 사용자 승인 A안) ----------
+# 문항 그림은 저장하지 않고 '몇 쪽, 어디부터 어디까지'(쪽 크기에 대한 비율) 숫자만 남김.
+# 앱이 평가원 원본 PDF를 받아 그 부분만 잘라 보여 줌.
+_LINE_RE = re.compile(r'<line xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</line>', re.S)
+_PAGE_RE = re.compile(r'<page width="([\d.]+)" height="([\d.]+)">(.*?)</page>', re.S)
+_WORD_RE = re.compile(r'<word[^>]*>(.*?)</word>', re.S)
+_QSTART = re.compile(r'^(\d{1,2})\s*[.．]')
+
+
+def question_boxes(path):
+    """PDF 글자 위치(pdftotext -bbox-layout)로 문항 번호 줄을 찾아 문항마다 [쪽(1부터), x0, y0, x1, y1] (0~1 비율)"""
+    try:
+        xml = subprocess.run(['pdftotext', '-bbox-layout', path, '-'], capture_output=True, timeout=180, check=True).stdout.decode('utf-8', 'ignore')
+    except Exception as e:  # noqa: BLE001
+        log('글자 위치 읽기 실패', path, str(e)[:80])
+        return {}
+    pages = []
+    for pi, (w, h, body) in enumerate(_PAGE_RE.findall(xml)):
+        W, H = float(w), float(h)
+        lines = []
+        for x0, y0, x1, y1, inner in _LINE_RE.findall(body):
+            t = ' '.join(_WORD_RE.findall(inner)).strip()
+            if t:
+                lines.append((float(x0), float(y0), float(x1), float(y1), t))
+        two = sum(1 for ln in lines if ln[0] > W * 0.5) > 8 and sum(1 for ln in lines if ln[0] < W * 0.48 and ln[2] > W * 0.52) < len(lines) * 0.15
+        pages.append((pi + 1, W, H, lines, two))
+    # 번호 줄 후보: (쪽, 단, y, 번호)
+    cands = []
+    for pg, W, H, lines, two in pages:
+        for x0, y0, x1, y1, t in lines:
+            m = _QSTART.match(t)
+            if not m or y0 > H * 0.95:
+                continue
+            col = 1 if (two and x0 > W * 0.5) else 0
+            left = W * 0.5 if col else 0
+            if x0 - left > W * 0.12:  # 줄 맨 앞(단 왼쪽)에 있는 번호만
+                continue
+            cands.append((pg, col, y0, int(m.group(1))))
+    cands.sort()
+    # 1부터 차례로 이어지는 번호만 (중간 '1.' 같은 보기 번호 거르기). 가장 긴 줄기를 고름
+    best = []
+    for i, c in enumerate(cands):
+        if c[3] != 1:
+            continue
+        seq, want = [c], 2
+        for d in cands[i + 1:]:
+            if d[3] == want:
+                seq.append(d)
+                want += 1
+        if len(seq) > len(best):
+            best = seq
+    info = {pg: (W, H, lines, two) for pg, W, H, lines, two in pages}
+    out = {}
+    for k, (pg, col, y, n) in enumerate(best):
+        W, H, lines, two = info[pg]
+        lo, hi = (W * 0.5, W) if (two and col) else (0, W * 0.5 if two else W)
+        nxt = best[k + 1] if k + 1 < len(best) else None
+        body = [ln for ln in lines if ln[1] >= y - 1 and ln[1] < H * 0.95 and lo - 2 <= ln[0] < hi]
+        if nxt and nxt[0] == pg and nxt[1] == col:
+            body = [ln for ln in body if ln[1] < nxt[2] - 1]
+        if not body:
+            continue
+        x0 = max(0.0, min(ln[0] for ln in body) - 8)
+        x1 = min(W, max(ln[2] for ln in body) + 8)
+        y0 = max(0.0, y - 8)
+        y1 = min(H, max(ln[3] for ln in body) + 10)
+        if nxt and nxt[0] == pg and nxt[1] == col:
+            y1 = max(y1, min(H, nxt[2] - 4))  # 그림·표(글자 없는 부분)도 다음 번호 앞까지 포함
+        out[n] = [pg, round(x0 / W, 4), round(y0 / H, 4), round(x1 / W, 4), round(y1 / H, 4)]
+    return out
+
+
 def ocr_pdf(path):
     """그림만 있는 옛 문제지: 쪽마다 그림으로 바꿔 글자 읽기(tesseract 한국어)"""
     d = tempfile.mkdtemp()
@@ -372,6 +444,7 @@ def main():
             continue
         exams.append((it['year'], paper, kice['file_url'] + f['key']))
     questions = []
+    boxes = {}
     for year, paper, url in sorted(exams):
         p = os.path.join(work, f'exam_{year}_{paper}.pdf')
         if not download(url, p):
@@ -381,7 +454,20 @@ def main():
             txt = ocr_pdf(p)
             log(f'   {year} {paper}: 그림 문제지 → 글자 읽기 {len(txt)}자')
         qs = split_questions(txt)
-        log(f'기출 {year} {paper}: 문항 {len(qs)} (1번 앞부분: {qs.get(1, "")[:25]})')
+        bx = question_boxes(p)
+        boxes[f'{year}{paper}'] = {str(k): v for k, v in bx.items()}
+        log(f'기출 {year} {paper}: 문항 {len(qs)} 위치 {len(bx)} (1번 앞부분: {qs.get(1, "")[:25]})')
+        if year in (2019, 2024) and bx:  # 확인용 작은 그림(문항 2개)
+            dbg = os.path.join(out, 'debug')
+            os.makedirs(dbg, exist_ok=True)
+            for n in list(bx)[:2]:
+                pg, a, b, c, d = bx[n]
+                try:
+                    W, H = (float(x) for x in re.search(r'Page size:\s+([\d.]+) x ([\d.]+)', subprocess.run(['pdfinfo', p], capture_output=True).stdout.decode()).groups())
+                    r = 50 / 72
+                    subprocess.run(['pdftoppm', '-f', str(pg), '-l', str(pg), '-r', '50', '-png', '-singlefile', '-x', str(int(a * W * r)), '-y', str(int(b * H * r)), '-W', str(int((c - a) * W * r)), '-H', str(int((d - b) * H * r)), p, os.path.join(dbg, f'{year}{paper}_{n}')], timeout=60)
+                except Exception as e:  # noqa: BLE001
+                    log('확인 그림 실패', e)
         if not qs:
             log('   번호 같은 줄', [ln[:15] for ln in txt.splitlines() if re.match(r'^\s*\d{1,2}\s*[.)]', ln)][:6])
         for n, t in qs.items():
@@ -496,6 +582,7 @@ def main():
         'subjects': [{'name': s_, 'file': files[s_], 'units': sum(1 for u in units if u['subject'] == s_),
                       'hit_units': sum(1 for u in units if u['subject'] == s_ and u['id'] in hits)} for s_ in subjects],
         'questions': q_subject,
+        'boxes': boxes,  # 문항 위치만(쪽·비율). 그림·글은 없음
         'stats': {
             'subject_year': {s_: dict(sorted(c.items())) for s_, c in by_subject_year.items()},
             'section_share': {s_: dict(c) for s_, c in sec_share.items()},
