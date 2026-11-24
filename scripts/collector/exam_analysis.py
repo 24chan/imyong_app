@@ -205,6 +205,10 @@ def split_units(text, subject, era):
                 units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': '', 'text': '', 'block': block, 'drop': True})
                 continue
             code = f'[{cm.group(1)}{cm.group(2)}{cm.group(3)}-{cm.group(4)}]'
+            rest = s[cm.end():].lstrip()
+            if cm.start() > 0 or re.match(r'[)\]’”,]|(과|와|에서|에|을|를|의|은|는|로|으로|이|가|도)\s', rest):
+                buf.append(s)  # 줄 가운데 코드 또는 인용 조각('…])과 연계할 수 있는')은 성취기준 칸이 아님
+                continue
             units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': code, 'text': s[cm.start():], 'block': block})
             continue
         if units and units[-1].get('drop') and not buf and sec == '성취기준' and not s.startswith(('(', '[', '①')):
@@ -634,13 +638,10 @@ def main():
         log(f'원문 {era} {school} {subj}: 글자 {len(t)} 칸 {len(us)} (성취기준 {sum(1 for u in us if u["code"])})')
         units.extend(us)
     CODE_SUBJ = {'국': '국어', '수': '수학', '사': '사회', '과': '과학', '도': '도덕', '실': '실과', '체': '체육', '음': '음악', '미': '미술', '영': '영어', '바': '통합교과', '슬': '통합교과', '즐': '통합교과'}
-    fixed = 0
-    for u in units:
-        m = CODE_RE.match(u['code']) if u['code'] else None
-        if m and m.group(2)[0] in CODE_SUBJ and CODE_SUBJ[m.group(2)[0]] != u['subject']:
-            u['subject'] = CODE_SUBJ[m.group(2)[0]]
-            fixed += 1
-    log('성취기준 코드로 교과 바로잡음', fixed)
+    # 2026-11-24 검토 반영: 다른 교과 코드는 해설 속 인용('[6국05-02])과 연계할 수 있는…')이라 그 교과 칸으로 옮기지 않고 뺌
+    before = len(units)
+    units = [u for u in units if not (u['code'] and (m := CODE_RE.match(u['code'])) and m.group(2)[0] in CODE_SUBJ and CODE_SUBJ[m.group(2)[0]] != u['subject'])]
+    log('다른 교과 코드 인용 칸 뺌', before - len(units))
     # 같은 글이 두 번 들어간 칸(통합교과 두 파일 등) 하나만
     seen_t, uniq = set(), []
     for u in units:
@@ -851,6 +852,34 @@ def main():
         ranked = sorted(cy.items(), key=lambda kv: (-sum(kv[1].values()), -len(kv[0])))[:40]
         if ranked:
             concept_terms[name] = [{'term': cmap[k][0], 'area': cmap[k][1], 'cat': cmap[k][2], 'total': sum(c.values()), 'years': dict(sorted(c.items()))} for k, c in ranked]
+    # 2026-11-24 검토 반영: 도덕·실과처럼 내용 요소가 문장형이라 잡힌 개념이 적은 교과는 내용 요소 속 핵심 낱말로 보충
+    if os.path.exists(cs_path):
+        for sj in json.load(open(cs_path))['subjects']:
+            name = subj_name(sj['subject'])
+            have = concept_terms.get(name, [])
+            if len(have) >= 8:
+                continue
+            toks = {}
+            for ar in sj['areas']:
+                for row in ar['rows']:
+                    if row['cat'].startswith('가치'):
+                        continue
+                    for cell in row['cells']:
+                        for it in cell['items']:
+                            for w in words(it):
+                                if len(w) >= 2 and subject_term(name, w) and w not in toks:
+                                    toks[w] = (ar['area'].split(' · ')[-1], row['cat'])
+            known = {re.sub(r'\s', '', t['term']) for t in have}
+            cy = collections.defaultdict(collections.Counter)
+            for q, x in zip(questions, q_subject):
+                if x['subject'] != name:
+                    continue
+                qw = set(words(q['text']))
+                for w in toks:
+                    if w in qw and w not in known:
+                        cy[w][q['year']] += 1
+            extra = sorted(((w, c) for w, c in cy.items() if sum(c.values()) >= 2), key=lambda kv: -sum(kv[1].values()))[:20]
+            concept_terms[name] = have + [{'term': w, 'area': toks[w][0], 'cat': toks[w][1] + '(핵심 낱말)', 'total': sum(c.values()), 'years': dict(sorted(c.items()))} for w, c in extra]
     log('핵심 개념(내용 요소) 교과', {k: len(v) for k, v in concept_terms.items()})
     if concept_terms:
         top_terms = concept_terms

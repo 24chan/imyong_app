@@ -194,14 +194,33 @@ def dot(t):
 
 
 def norm(t):
+    t = re.sub(r'^\[(.*)\]$', r'\1', (t or '').strip(), flags=re.S)  # '[지식·이해]' 대괄호 빼기(미술·음악)
     """칸 이름: 줄바꿈은 '·' 뒤면 붙이고 아니면 띄움 ('지식·\\n이해' → '지식·이해', '듣기·말하기\\n맥락' → '듣기·말하기 맥락')"""
     t = dot(t or '').strip()
     t = re.sub(r'\s*\n\s*·', '·', re.sub(r'·\s*\n\s*', '·', t))
     return re.sub(r'\s+', ' ', t).strip()
 
 
+JOIN_RE = re.compile(r'^(\(|에서|에|을|를|의|과|와|로|으로|하기|및|등)')
+
+
 def items_of(t):
-    return [dot(x.strip().lstrip(BULLET).strip()) for x in (t or '').split('\n') if x.strip().lstrip(BULLET).strip()]
+    """칸 글 → 내용 요소 목록. 2026-11-24 검토 반영: 글머리표(⋅)가 있으면 글머리표마다 하나, 줄바꿈으로 쪼개진 조각
+    ('글 수준\\n에서 고쳐쓰기', '시각과 시간\\n(시, 분)')은 앞 줄에 붙임. 각도 기호 복구"""
+    lines = [x.strip() for x in (t or '').split('\n') if x.strip()]
+    bullet = any(x[0] in '⋅·•ㆍ∙▪' for x in lines)
+    out = []
+    for x in lines:
+        starts = x[0] in '⋅·•ㆍ∙▪-–'
+        body = x.lstrip(BULLET).strip()
+        if not body:
+            continue
+        if out and ((bullet and not starts) or JOIN_RE.match(body)):
+            sep = '' if JOIN_RE.match(body) and not body.startswith('(') else ' '
+            out[-1] = out[-1] + sep + body
+        else:
+            out.append(body)
+    return [dot(re.sub(r'각도\s*\(\s*\)', '각도(°)', x)) for x in out]
 
 
 def parse_cs_table(rows):
@@ -259,8 +278,8 @@ def parse_cs_table(rows):
         for c, _ in cols:
             if c < len(row) and row[c][1] != -1:
                 emitted.add(row[c][1])
-        if not sub and not any(x['items'] for x in cells):
-            continue  # 빈 줄(위 칸과 합쳐진 줄)
+        if not any(x['items'] for x in cells):
+            continue  # 초등 칸이 다 빈 줄(위 칸과 합쳐진 줄, 중학교 전용 하위 범주)
         out_rows.append({'cat': cat, 'sub': sub, 'cells': cells})
     # 범주 칸이 비면 위 범주 이어받기
     last = ''

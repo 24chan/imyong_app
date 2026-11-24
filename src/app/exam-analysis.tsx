@@ -187,6 +187,11 @@ export default function ExamAnalysisScreen() {
         <>
           <Card title={`${subj} · 원문 어느 칸에서 나왔나`}>
             {secs.length === 0 && <Txt variant="sub">아직 이어진 문항이 없어요.</Txt>}
+            {(subj === '총론' || subj === '창체') && (
+              <Txt variant="sub" style={{ fontSize: 12 }}>
+                {subj}은 교과별 성취기준 편제가 없어서 '성취기준' 비율은 해당 없음이에요.
+              </Txt>
+            )}
             {secs.map(([s, n]) => (
               <View key={s} style={{ gap: 3 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -224,6 +229,7 @@ export default function ExamAnalysisScreen() {
               </View>
             </ScrollView>
             <Txt variant="sub" style={{ fontSize: 12 }}>문항마다 가장 비슷한 교과로 자동 분류했어요(통합 문항은 한 교과로만 셈).</Txt>
+            <Txt variant="sub" style={{ fontSize: 12 }}>2015학년도는 그림(스캔) 문제지라 글자를 읽은 3문항만 셌어요.</Txt>
           </Card>
         </>
       );
@@ -318,7 +324,6 @@ export default function ExamAnalysisScreen() {
       );
     }
     const un = a.stats.untouched_recent5[subj] ?? [];
-    const nt = a.stats.new_terms_2022[subj] ?? [];
     return (
       <>
         <Card title={`최근 5년 안 나온 성취기준 (2022 개정) · ${un.length}개`}>
@@ -330,16 +335,7 @@ export default function ExamAnalysisScreen() {
             </Txt>
           ))}
         </Card>
-        <Card title={`2022 개정에서 새로 생겼고 아직 기출에 안 나온 말 · ${nt.length}개`}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-            {nt.map((w) => (
-              <View key={w} style={{ paddingHorizontal: 9, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: colors.cat.green.bg }}>
-                <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.cat.green.fg }}>{w}</Txt>
-              </View>
-            ))}
-          </View>
-          <Txt variant="sub" style={{ fontSize: 12 }}>2015 개정 원문에 없던 말 중 지금까지 기출에 없던 것이에요(자동 추출이라 일반 낱말이 섞일 수 있어요).</Txt>
-        </Card>
+        {/* 2026-11-24 검토 반영: '2022 새 용어'는 자동 추출 잡음이 많아 1차 배포에서 숨김(데이터는 그대로 둠) */}
       </>
     );
   };
