@@ -79,11 +79,6 @@ export default function ExamAnalysisScreen() {
         {box && f.data ? (
           <>
             <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} />
-            {box.more && (
-              <Txt variant="sub" style={{ fontSize: 12 }}>
-                다음 단·쪽으로 이어질 수 있어요. 나머지는 원문 전체 보기에서 확인해 주세요.
-              </Txt>
-            )}
           </>
         ) : f.loading ? (
           <ActivityIndicator color={colors.brand} />
