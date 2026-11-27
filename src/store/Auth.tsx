@@ -13,6 +13,10 @@ type AuthValue = {
   session: Session | null;
   email: string | null;
   isAdmin: boolean;
+  /** 승인된 학교 인증의 대학 코드 (예: 'ginue'). 경인교대 전용 메뉴 노출에 씀 (lib/access.ts) */
+  univCodes: string[];
+  /** 인증이 승인된 뒤 다시 불러오기 */
+  refreshAccess: () => void;
   /** agreed: 로그인 화면에서 약관에 동의했는지 (처음 가입이면 동의 기록이 계정에 같이 남음) */
   sendCode: (email: string, agreed: boolean) => Promise<void>;
   /** 구글·카카오로 시작 (2026-11-22 사용자 요청). 취소하면 false */
@@ -55,6 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [univCodes, setUnivCodes] = useState<string[]>([]);
+  const [accessTick, setAccessTick] = useState(0);
+  const refreshAccess = useCallback(() => setAccessTick((t) => t + 1), []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -99,6 +106,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     supabase.rpc('is_admin').then(({ data, error }) => setIsAdmin(!error && data === true));
   }, [uid]);
+
+  // 승인된 학교 인증 → 대학 코드 (2026-11-28: 경인교대 전용 메뉴). 앱이 다시 앞으로 올 때도 확인
+  useEffect(() => {
+    if (!uid) {
+      setUnivCodes([]);
+      return;
+    }
+    let off = false;
+    const load = () =>
+      supabase
+        .from('verifications')
+        .select('univ_code')
+        .eq('user_id', uid)
+        .eq('kind', 'school')
+        .eq('status', 'approved')
+        .then(({ data, error }) => {
+          if (off || error) return;
+          const next = [...new Set((data ?? []).map((r: { univ_code: string | null }) => r.univ_code).filter((c): c is string => !!c))].sort();
+          setUnivCodes((prev) => (prev.join() === next.join() ? prev : next));
+        });
+    load();
+    const sub = AppState.addEventListener('change', (st) => st === 'active' && load());
+    return () => {
+      off = true;
+      sub.remove();
+    };
+  }, [uid, accessTick]);
 
   const agreedAtLogin = useRef(false);
 
@@ -170,8 +204,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthValue>(
-    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount }),
-    [ready, session, isAdmin, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount],
+    () => ({ ready, session, email: session?.user.email ?? null, isAdmin, univCodes, refreshAccess, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount }),
+    [ready, session, isAdmin, univCodes, refreshAccess, sendCode, signInWithProvider, verifyCode, agreeTerms, signOut, deleteAccount],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

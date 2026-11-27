@@ -1,3 +1,4 @@
+import { Gate } from '../features/study/Gate';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
@@ -14,7 +15,7 @@ import { useTheme } from '../theme/useTheme';
 // '전체 접기' 뒤 하나씩 펼치며 떠올리기(인출 테스트), 빈칸 모드로 맨 끝 내용 요소 가리기
 const KIND_COLOR = { subject: 'teal', area: 'blue', ideas: 'purple', cat: 'coral', sub: 'amber', grade: 'green', leaf: 'gray' } as const;
 
-export default function ConceptTreeScreen() {
+function ConceptTreeScreenInner() {
   const { colors } = useTheme();
   const params = useLocalSearchParams<{ subject?: string }>();
   const data = useAsync(() => getContentSystem(), []);
@@ -122,5 +123,15 @@ function Node({ n, depth, opened, toggle }: { n: TreeNode; depth: number; opened
         </View>
       )}
     </View>
+  );
+}
+
+
+// 2026-11-28: 경인교대 인증 회원·운영자만 (lib/access.ts)
+export default function ConceptTreeScreen() {
+  return (
+    <Gate feature="concept-tree">
+      <ConceptTreeScreenInner />
+    </Gate>
   );
 }

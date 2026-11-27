@@ -42,7 +42,7 @@ const METHOD_HINT: Partial<Record<VerifyMethod, string>> = {
 // 학교·교사 인증: 방법을 골라 학교 메일로 바로 인증하거나 사진을 올려 운영자 확인
 export default function VerifyScreen() {
   const { colors } = useTheme();
-  const { session, email, signOut } = useAuth();
+  const { session, email, signOut, refreshAccess } = useAuth();
   const { viewLevel } = useAppSettings();
   const uid = session?.user.id ?? null;
   const [reload, setReload] = useState(0);
@@ -117,6 +117,7 @@ export default function VerifyScreen() {
     setError(null);
     try {
       const label = await verifySchoolEmail();
+      refreshAccess(); // 경인교대 전용 메뉴 바로 보이게
       Alert.alert('인증됐어요', `이제 '${label}' 라벨로 글을 쓸 수 있어요.`);
       setReload((n) => n + 1);
     } catch (e) {

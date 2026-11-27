@@ -1,3 +1,4 @@
+import { useAccess } from '../lib/access';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { openLink } from '../lib/openLink';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
@@ -67,9 +68,10 @@ export default function SearchScreen() {
   }, [noticesAll.data, jobsAll.data, t, ready, viewLevel, today]);
 
   // 공부 메뉴 (동의어 표, 2026-11-24): '내체표' 등으로 찾으면 맨 위에
-  const menus = useMemo(() => (ready ? matchStudyMenus(q, viewLevel) : []), [q, ready, viewLevel]);
+  const can = useAccess();
+  const menus = useMemo(() => (ready ? matchStudyMenus(q, viewLevel, can) : []), [q, ready, viewLevel, can]);
   const subjHits = useMemo(() => (ready ? matchSubjects(q) : []), [q, ready]);
-  const csSubjects = menus.some((m) => m.key === 'cs') ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
+  const csSubjects = menus.some((m) => m.key === 'cs' && can('content-system')) ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
 
   const loading = schools.loading || posts.loading || lectures.loading || noticesAll.loading || jobsAll.loading;
   const counts = {

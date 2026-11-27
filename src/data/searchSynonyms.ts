@@ -1,8 +1,9 @@
+import type { Feature } from '../lib/access';
 import { ELEM_ORDER } from './contentSystem';
 
 // 검색 동의어 표 (2026-11-24 사용자 요청): 수험생 줄임말·다른 말로 찾아도 공부 메뉴가 맨 위에 뜨게
 // words 중 하나가 검색어에 들어 있거나 검색어가 words 중 하나에 들어 있으면 그 메뉴를 보여 줌(띄어쓰기·대소문자 무시)
-export type StudyMenu = { key: string; title: string; desc: string; words: string[]; path: string; params?: Record<string, string>; level?: 'elementary' };
+export type StudyMenu = { key: string; title: string; desc: string; words: string[]; path: string; params?: Record<string, string>; level?: 'elementary'; feature?: Feature };
 
 export const STUDY_MENUS: StudyMenu[] = [
   {
@@ -12,6 +13,7 @@ export const STUDY_MENUS: StudyMenu[] = [
     words: ['내체표', '내용체계표', '내용체계', '체계표', '내용요소', '핵심아이디어', '빈칸암기', '빈칸'],
     path: '/content-system',
     level: 'elementary',
+    feature: 'content-system',
   },
   {
     key: 'tree',
@@ -20,6 +22,7 @@ export const STUDY_MENUS: StudyMenu[] = [
     words: ['구조도', '개념구조도', '개념도', '마인드맵', '트리', '인출'],
     path: '/concept-tree',
     level: 'elementary',
+    feature: 'concept-tree',
   },
   {
     key: 'cur',
@@ -35,6 +38,7 @@ export const STUDY_MENUS: StudyMenu[] = [
     words: ['기출분석', '출제분석', '출제지도', '형광펜', '핵심어', '빈출', '안나온곳'],
     path: '/exam-analysis',
     level: 'elementary',
+    feature: 'exam-analysis',
   },
   {
     key: 'past',
@@ -63,10 +67,10 @@ export const STUDY_MENUS: StudyMenu[] = [
 const n = (s: string) => s.replace(/[\s·ㆍ.]/g, '').toLowerCase();
 
 /** 검색어에 맞는 공부 메뉴 (동의어 포함) */
-export function matchStudyMenus(q: string, level: 'elementary' | 'secondary'): StudyMenu[] {
+export function matchStudyMenus(q: string, level: 'elementary' | 'secondary', can: (f: Feature) => boolean = () => true): StudyMenu[] {
   const t = n(q);
   if (t.length < 2) return [];
-  return STUDY_MENUS.filter((m) => (!m.level || m.level === level) && m.words.some((w) => t.includes(n(w)) || (t.length >= 2 && n(w).includes(t))));
+  return STUDY_MENUS.filter((m) => (!m.level || m.level === level) && (!m.feature || can(m.feature)) && m.words.some((w) => t.includes(n(w)) || (t.length >= 2 && n(w).includes(t))));
 }
 
 /** '국어 내체표'처럼 교과 이름이 같이 있으면 그 교과 내용 체계로 바로 */

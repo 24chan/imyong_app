@@ -1,3 +1,4 @@
+import { Gate } from '../features/study/Gate';
 import { router, Stack } from 'expo-router';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
@@ -15,7 +16,7 @@ import { useTheme } from '../theme/useTheme';
 type Tab = 'text' | 'stats' | 'map' | 'terms' | 'gaps';
 const SECTION_ORDER = ['성격', '목표', '성격·목표', '내용 체계', '성취기준', '교수·학습', '교수·학습 및 평가', '평가', '앞부분'];
 
-export default function ExamAnalysisScreen() {
+function ExamAnalysisScreenInner() {
   const { colors } = useTheme();
   const { viewLevel } = useAppSettings();
   const level = 'elementary'; // 1단계는 초등만
@@ -417,3 +418,13 @@ function Watermark() {
 }
 
 const sumv = (o: Record<string, number> | undefined) => Object.values(o ?? {}).reduce((x, y) => x + y, 0);
+
+
+// 2026-11-28: 경인교대 인증 회원·운영자만 (lib/access.ts)
+export default function ExamAnalysisScreen() {
+  return (
+    <Gate feature="exam-analysis">
+      <ExamAnalysisScreenInner />
+    </Gate>
+  );
+}
