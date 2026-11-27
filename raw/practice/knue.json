@@ -1,0 +1,110 @@
+{
+ "univ": "knue",
+ "name": "한국교원대",
+ "campuses": {
+  "main": {
+   "name": "한국교원대",
+   "addr": "충청북도 청주시 흥덕구 강내면 태성탑연로 250",
+   "lat": 36.60981,
+   "lng": 127.35989
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "chungbuk|한국교원대학교부설월곡초등학교",
+     "block": "chungbuk",
+     "campus": "main"
+    },
+    {
+     "id": "chungbuk|강내초등학교",
+     "block": "chungbuk",
+     "campus": "main"
+    },
+    {
+     "id": "chungbuk|오송초등학교",
+     "block": "chungbuk",
+     "campus": "main"
+    },
+    {
+     "id": "chungbuk|비봉초등학교",
+     "block": "chungbuk",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "chungbuk|한국교원대학교부설월곡초등학교": {
+   "name": "한국교원대학교부설월곡초등학교",
+   "short": "한국교원대학교부설월곡초등학교",
+   "region": "chungbuk",
+   "sigungu": "청주시",
+   "found": "n",
+   "lat": 36.62329,
+   "lng": 127.36237,
+   "km": {
+    "main": 1.5
+   },
+   "transit_min": {}
+  },
+  "chungbuk|강내초등학교": {
+   "name": "강내초등학교",
+   "short": "강내초등학교",
+   "region": "chungbuk",
+   "sigungu": "청주시",
+   "found": "p",
+   "lat": 36.59764,
+   "lng": 127.35689,
+   "km": {
+    "main": 1.4
+   },
+   "transit_min": {}
+  },
+  "chungbuk|오송초등학교": {
+   "name": "오송초등학교",
+   "short": "오송초등학교",
+   "region": "chungbuk",
+   "sigungu": "청주시",
+   "found": "p",
+   "lat": 36.61217,
+   "lng": 127.32622,
+   "km": {
+    "main": 3.0
+   },
+   "transit_min": {}
+  },
+  "chungbuk|비봉초등학교": {
+   "name": "비봉초등학교",
+   "short": "비봉초등학교",
+   "region": "chungbuk",
+   "sigungu": "청주시",
+   "found": "p",
+   "lat": 36.71276,
+   "lng": 127.41329,
+   "km": {
+    "main": 12.4
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

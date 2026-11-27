@@ -1,0 +1,52 @@
+{
+ "univ": "jejunu",
+ "name": "제주대 교육대학",
+ "home": "https://www.jejunu.ac.kr/index.htm",
+ "boards": [
+  "교육/학사안내 https://www.jejunu.ac.kr/admission/eduguide.htm",
+  "학사 https://www.jejunu.ac.kr/admission/eduguide/degree.htm",
+  "글로컬대학사업 https://glocal.jejunu.ac.kr/",
+  "공지사항 https://www.jejunu.ac.kr/ara/noticesurvey/outEvent.htm",
+  "학사제도 https://www.jejunu.ac.kr/admission/eduguide/degree/schoolsystem.htm",
+  "학사일정 https://www.jejunu.ac.kr/admission/eduguide/degree/academyschedule/academic.htm",
+  "공지 전체보기 + https://www.jejunu.ac.kr/ara/noticesurvey/outEvent.htm?category=203",
+  "학사 전체보기 + https://www.jejunu.ac.kr/ara/noticesurvey/outEvent.htm?category=320",
+  "학사일정 https://www.jejunu.ac.kr/admission/eduguide/sai/academyschedule.htm",
+  "학사일정 https://cms.jejunu.ac.kr/admission/eduguide/degree/academyschedule/academic.htm",
+  "개인정보목적외이용·제공공지 https://www.jejunu.ac.kr/siteassist/privacyBoard.htm"
+ ],
+ "posts": [],
+ "errors": [
+  "https://www.jejunu.ac.kr/admission/eduguide/degree/schoolsystem.htm?page=4 RemoteDisconnected"
+ ],
+ "home_final": "https://www.jejunu.ac.kr/index.htm",
+ "home_len": 115326,
+ "anchors": 508,
+ "anchor_sample": [
+  "교육/학사안내 https://www.jejunu.ac.kr/admission/eduguide.htm",
+  "학사 https://www.jejunu.ac.kr/admission/eduguide/degree.htm",
+  "문의 https://www.jejunu.ac.kr/admission/eduguide/board.htm",
+  "글로컬대학사업 https://glocal.jejunu.ac.kr/",
+  "JNU 소식 https://www.jejunu.ac.kr/promotion/jnunotice.htm",
+  "NEWS https://www.jejunu.ac.kr/promotion/jnunotice/notice.htm",
+  "JNU 홍보 https://www.jejunu.ac.kr/promotion/jnuboards.htm",
+  "홍보영상 https://www.jejunu.ac.kr/promotion/jnuboards/jnuvideo.htm",
+  "브로슈어 https://www.jejunu.ac.kr/promotion/jnuboards/jnugallery.htm",
+  "JEJUNU 알림 https://www.jejunu.ac.kr/ara/noticesurvey.htm",
+  "공지사항 https://www.jejunu.ac.kr/ara/noticesurvey/outEvent.htm",
+  "교직원채용 https://www.jejunu.ac.kr/ara/noticesurvey/recruit.htm",
+  "제주대게시판 https://www.jejunu.ac.kr/ara/noticesurvey/jnuboard.htm",
+  "새창 https://jejunu.ac.kr/ara/noticesurvey/outEvent.htm?act=view&seq=283230",
+  "새창 https://jejunu.ac.kr/ara/noticesurvey/outEvent.htm?q=%EC%82%AC%EC%B9%AD&qType=title&catego",
+  "회계학과, 제22회 희망드림장학금 수 https://www.jejunu.ac.kr/ara/scholnotice/notice.htm?act=view&seq=103975",
+  "회계학과, 제22회 희망드림장학금 수 https://www.jejunu.ac.kr/ara/scholnotice/notice.htm?act=view&seq=103978",
+  "자세히 보기 + https://www.jejunu.ac.kr/ara/scholnotice/notice.htm",
+  "학사제도 https://www.jejunu.ac.kr/admission/eduguide/degree/schoolsystem.htm",
+  "학사일정 https://www.jejunu.ac.kr/admission/eduguide/degree/academyschedule/academic.htm",
+  "학사제도 https://www.jejunu.ac.kr/admission/eduguide/degree/schoolsystem.htm",
+  "JEJUNU소식 https://www.jejunu.ac.kr/ara/scholnotice/notice.htm",
+  "JEJUNU소식 https://www.jejunu.ac.kr/ara/scholnotice/notice.htm",
+  "JEJUNU소식 https://www.jejunu.ac.kr/ara/scholnotice/notice.htm",
+  "공지 "
+ ]
+}

@@ -1,0 +1,199 @@
+{
+ "univ": "cnue",
+ "name": "춘천교대",
+ "campuses": {
+  "main": {
+   "name": "춘천교대",
+   "addr": "강원특별자치도 춘천시 공지로 126",
+   "lat": 37.85902,
+   "lng": 127.74837
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-2-teach",
+   "year": 2026,
+   "term": 2,
+   "kind": "수업실습 (춘천지역)",
+   "grade": null,
+   "period": "강릉·원주지역 학교는 공지에 없어요",
+   "source": {
+    "title": "2026학년도 수업실습 학교 배정 및 변경 신청 안내",
+    "by": "춘천교대 학사공지",
+    "date": "2026-09-16"
+   },
+   "schools": [
+    {
+     "id": "gangwon|춘천교육대학교부설초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|석사초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|장학초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|남춘천초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    }
+   ]
+  },
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "gangwon|춘천교육대학교부설초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|석사초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|장학초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|남춘천초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|성원초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|평원초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    },
+    {
+     "id": "gangwon|한솔초등학교",
+     "block": "gangwon",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "gangwon|춘천교육대학교부설초등학교": {
+   "name": "춘천교육대학교부설초등학교",
+   "short": "춘천교육대학교부설초등학교",
+   "region": "gangwon",
+   "sigungu": "춘천시",
+   "found": "n",
+   "lat": 37.86935,
+   "lng": 127.7314,
+   "km": {
+    "main": 1.9
+   },
+   "transit_min": {}
+  },
+  "gangwon|석사초등학교": {
+   "name": "석사초등학교",
+   "short": "석사초등학교",
+   "region": "gangwon",
+   "sigungu": "춘천시",
+   "found": "p",
+   "lat": 37.85816,
+   "lng": 127.74942,
+   "km": {
+    "main": 0.1
+   },
+   "transit_min": {}
+  },
+  "gangwon|장학초등학교": {
+   "name": "장학초등학교",
+   "short": "장학초등학교",
+   "region": "gangwon",
+   "sigungu": "춘천시",
+   "found": "p",
+   "lat": 37.89521,
+   "lng": 127.75224,
+   "km": {
+    "main": 4.0
+   },
+   "transit_min": {}
+  },
+  "gangwon|남춘천초등학교": {
+   "name": "남춘천초등학교",
+   "short": "남춘천초등학교",
+   "region": "gangwon",
+   "sigungu": "춘천시",
+   "found": "p",
+   "lat": 37.86162,
+   "lng": 127.72205,
+   "km": {
+    "main": 2.3
+   },
+   "transit_min": {}
+  },
+  "gangwon|성원초등학교": {
+   "name": "성원초등학교",
+   "short": "성원초등학교",
+   "region": "gangwon",
+   "sigungu": "춘천시",
+   "found": "p",
+   "lat": 37.84833,
+   "lng": 127.74491,
+   "km": {
+    "main": 1.2
+   },
+   "transit_min": {}
+  },
+  "gangwon|평원초등학교": {
+   "name": "평원초등학교",
+   "short": "원주평원초",
+   "region": "gangwon",
+   "sigungu": "원주시",
+   "found": "p",
+   "lat": 37.34968,
+   "lng": 127.93175,
+   "km": {
+    "main": 58.9
+   },
+   "transit_min": {}
+  },
+  "gangwon|한솔초등학교": {
+   "name": "한솔초등학교",
+   "short": "강릉한솔초",
+   "region": "gangwon",
+   "sigungu": "강릉시",
+   "found": "p",
+   "lat": 37.77445,
+   "lng": 128.91414,
+   "km": {
+    "main": 102.8
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

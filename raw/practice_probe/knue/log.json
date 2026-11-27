@@ -1,0 +1,64 @@
+{
+ "univ": "knue",
+ "name": "한국교원대",
+ "home": "https://www.knue.ac.kr/",
+ "boards": [
+  "학사안내 https://www.knue.ac.kr/www/selectSchdleWebList.do?key=542",
+  "학사상담 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=208&key=547",
+  "학점교류 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=254&key=1562",
+  "교육실습 https://www.knue.ac.kr/www/contents.do?key=561",
+  "교육실습Ⅰ https://www.knue.ac.kr/www/contents.do?key=562",
+  "교육실습Ⅱ https://www.knue.ac.kr/www/contents.do?key=563",
+  "제2교육실습 https://www.knue.ac.kr/www/contents.do?key=564",
+  "등록금 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=11&key=550",
+  "장학금 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=207&key=1443",
+  "교환학생 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=13&key=597",
+  "학생 지원 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=258&key=1625"
+ ],
+ "posts": [
+  {
+   "title": "초등교육 참관실습",
+   "url": "https://www.knue.ac.kr/www/selectSchdleWebView.do?key=542&schdleNum=1081",
+   "files": [
+    {
+     "name": "도서관",
+     "saved": "00_f0.pdf",
+     "bytes": 38769294
+    }
+   ],
+   "images": [],
+   "date": null
+  }
+ ],
+ "errors": [],
+ "home_final": "https://www.knue.ac.kr/www/index.do",
+ "home_len": 346237,
+ "anchors": 409,
+ "anchor_sample": [
+  "총장연설문 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=7&key=376",
+  "학교통계연보 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=8&key=394",
+  "학사안내 https://www.knue.ac.kr/www/selectSchdleWebList.do?key=542",
+  "학사정보 https://www.knue.ac.kr/www/selectSchdleWebList.do?key=542",
+  "학사일정 https://www.knue.ac.kr/www/selectSchdleWebList.do?key=542",
+  "학사상담 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=208&key=547",
+  "서식 자료 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=10&key=548",
+  "수업정상운영 신속지원센터 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=294&key=1972",
+  "학점교류 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=254&key=1562",
+  "교육실습 https://www.knue.ac.kr/www/contents.do?key=561",
+  "교육실습안내 https://www.knue.ac.kr/www/contents.do?key=561",
+  "교육실습Ⅰ https://www.knue.ac.kr/www/contents.do?key=562",
+  "교육실습Ⅱ https://www.knue.ac.kr/www/contents.do?key=563",
+  "제2교육실습 https://www.knue.ac.kr/www/contents.do?key=564",
+  "등록 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=11&key=550",
+  "등록금 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=11&key=550",
+  "장학 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=207&key=1443",
+  "장학금 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=207&key=1443",
+  "교환학생 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=13&key=597",
+  "대학생활 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=259&key=1630",
+  "임용/취업 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=259&key=1630",
+  "임용 안내 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=259&key=1630",
+  "취업 정보 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=12&key=574",
+  "학생 지원 공지사항 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=258&key=1625",
+  "개인정보 목적 외 이용/제공 https://www.knue.ac.kr/www/selectBbsNttList.do?bbsNo=23&key=802"
+ ]
+}

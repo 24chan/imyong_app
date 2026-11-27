@@ -1,0 +1,182 @@
+{
+ "univ": "jnue",
+ "name": "전주교대",
+ "campuses": {
+  "main": {
+   "name": "전주교대",
+   "addr": "전북특별자치도 전주시 완산구 서학로 50",
+   "lat": 35.8097,
+   "lng": 127.15154
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "jeonbuk|전주교육대학교전주부설초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주교육대학교군산부설초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주남초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주완산서초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주우림초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주인봉초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주초포초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    },
+    {
+     "id": "jeonbuk|전주효천초등학교",
+     "block": "jeonbuk",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "jeonbuk|전주교육대학교전주부설초등학교": {
+   "name": "전주교육대학교전주부설초등학교",
+   "short": "전주교육대학교전주부설초등학교",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "n",
+   "lat": 35.80846,
+   "lng": 127.15111,
+   "km": {
+    "main": 0.1
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주교육대학교군산부설초등학교": {
+   "name": "전주교육대학교군산부설초등학교",
+   "short": "전주교육대학교군산부설초등학교",
+   "region": "jeonbuk",
+   "sigungu": "군산시",
+   "found": "n",
+   "lat": 35.97396,
+   "lng": 126.72262,
+   "km": {
+    "main": 42.7
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주남초등학교": {
+   "name": "전주남초등학교",
+   "short": "전주남초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.80318,
+   "lng": 127.15107,
+   "km": {
+    "main": 0.7
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주완산서초등학교": {
+   "name": "전주완산서초등학교",
+   "short": "전주완산서초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.80676,
+   "lng": 127.13362,
+   "km": {
+    "main": 1.6
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주우림초등학교": {
+   "name": "전주우림초등학교",
+   "short": "전주우림초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.80663,
+   "lng": 127.09829,
+   "km": {
+    "main": 4.8
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주인봉초등학교": {
+   "name": "전주인봉초등학교",
+   "short": "전주인봉초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.82692,
+   "lng": 127.16502,
+   "km": {
+    "main": 2.3
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주초포초등학교": {
+   "name": "전주초포초등학교",
+   "short": "전주초포초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.87718,
+   "lng": 127.1397,
+   "km": {
+    "main": 7.6
+   },
+   "transit_min": {}
+  },
+  "jeonbuk|전주효천초등학교": {
+   "name": "전주효천초등학교",
+   "short": "전주효천초",
+   "region": "jeonbuk",
+   "sigungu": "전주시",
+   "found": "p",
+   "lat": 35.79968,
+   "lng": 127.10511,
+   "km": {
+    "main": 4.3
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

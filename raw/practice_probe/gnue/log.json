@@ -1,0 +1,99 @@
+{
+ "univ": "gnue",
+ "name": "광주교대",
+ "home": "https://www.gnue.ac.kr/",
+ "boards": [
+  "공지사항 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab96e22b860197cdc8445474b1",
+  "학사정보 https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f",
+  "교육실습 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c861a104f01f5",
+  "대학공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10",
+  "학부공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338db1267e12",
+  "대학원공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338de6be7e14",
+  "장학공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338e192d7e16",
+  "입시공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196b362cb6c0416",
+  "2026학년도 2학기학사운영 안내 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&nttId=9016652&boardUid=4a9f18ab5cf30bb3015cf67046f0021f&contentUid=4a9f18ab95186c070196338d676d7e10&layoutUid=&portalBoardId=BBSMSTR_000000000587",
+  "2026학년도 대학원학사일정 안내 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c07019632ed6a8d7896",
+  "일반공지 https://www.gnue.ac.kr/"
+ ],
+ "posts": [
+  {
+   "title": "실습학교주소",
+   "url": "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86391170028a",
+   "files": [],
+   "images": [
+    "00_img0"
+   ],
+   "date": null
+  },
+  {
+   "title": "실습운영계획",
+   "url": "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c86387c490287",
+   "files": [],
+   "images": [],
+   "error": "RemoteDisconnected Remote end closed connection without response"
+  },
+  {
+   "title": "2020학년도 2학기 교육실습 운영 데이터 보기",
+   "url": "https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&nttId=9008880&boardUid=4a9f18ab5cf30bb3015cf661088201c7&contentUid=4a9f18ab5c48fe8c015c86387c490287&layoutUid=&portalBoardId=BBSMSTR_000000000943",
+   "files": [],
+   "images": [],
+   "date": null,
+   "error": "RemoteDisconnected Remote end closed connection without response"
+  },
+  {
+   "title": "2019학년도 교육실습 운영 총괄표 안내 데이터 보기",
+   "url": "https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&nttId=9007263&boardUid=4a9f18ab5cf30bb3015cf661088201c7&contentUid=4a9f18ab5c48fe8c015c86387c490287&layoutUid=&portalBoardId=BBSMSTR_000000000943",
+   "files": [],
+   "images": [],
+   "error": "RemoteDisconnected Remote end closed connection without response"
+  }
+ ],
+ "errors": [
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab96e22b860197cdc8445474b1&searchType=ti RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f&searchConditi URLError",
+  "https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f&searchType=ti RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c861a104f01f5&searchType=ti RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10 RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10&searchConditi RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10&searchType=ti RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338de6be7e14&searchConditi RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338de6be7e14&searchType=ti RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338e192d7e16 RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338e192d7e16&searchConditi RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196b362cb6c0416 RemoteDisconnected",
+  "https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&ntt RemoteDisconnected",
+  "https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&ntt RemoteDisconnected",
+  "https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c07019632ed6a8d7896&searchType=ti RemoteDisconnected"
+ ],
+ "home_final": "https://www.gnue.ac.kr/index.9is",
+ "home_len": 127308,
+ "anchors": 293,
+ "anchor_sample": [
+  "학칙 및 제규정 https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bf5dbcc970065&boardUid=4a9f",
+  "입학안내 https://www.gnue.ac.kr/planweb/board/list.9is?contentUid=4a9f18ab96e22b860197cdc8445474b1&",
+  "공지사항 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab96e22b860197cdc8445474b1",
+  "학사정보 https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f",
+  "학사일정 https://www.gnue.ac.kr/index.9is?contentUid=ff8080815bf1bf8b015bfb2d0b4e052f",
+  "교육실습 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab5c48fe8c015c861a104f01f5",
+  "대학공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10",
+  "일반공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338d676d7e10",
+  "학부공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338db1267e12",
+  "대학원공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338de6be7e14",
+  "장학공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196338e192d7e16",
+  "입시공지 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c070196b362cb6c0416",
+  "대학평의원회 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab6c6b4ee6016d81bae28b509a&boardUid=4a9f",
+  "2026학년도 2학기학사운영 안내 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&ntt",
+  "2026학년도 대학원학사일정 안내 https://www.gnue.ac.kr/index.9is?contentUid=4a9f18ab95186c07019632ed6a8d7896",
+  "2026년도 광주교대-함평교육지원청  https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "2026년 늘봄 싱크탱크 대학 운영사 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교대, 베트남 호치민시사범대학교  https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주시교육청, 학생 맞춤형 \"기초학력 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교대 교육박물관, 박물관 박람회에 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교육대학교, 2026년 9월 9일 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교대, 전라·제주권 초등 방과후  https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교육대학교-5.18기념재단, 민주 https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교대, 4년 연속 국립국제교육원  https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi",
+  "광주교대 디지털새싹사업단, 2026  https://www.gnue.ac.kr/planweb/board/view.9is?dataUid=4a9f18ab5ea9092f015eb81025a12642&tCi"
+ ]
+}

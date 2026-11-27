@@ -1,0 +1,134 @@
+{
+ "univ": "dnue",
+ "name": "대구교대",
+ "home": "https://www.dnue.ac.kr/",
+ "boards": [
+  "학사정보 http://www.dnue.ac.kr/kor/CMS/Contents/Contents.do?mCode=MN135",
+  "학부학사일정 http://www.dnue.ac.kr/kor/CMS/ScheduleMgr/MonthList.do?mCode=MN119",
+  "교육실습 http://www.dnue.ac.kr/kor/CMS/Contents/Contents.do?mCode=MN145",
+  "공지사항 http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN168",
+  "학사공지 http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226",
+  "장학공지 http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN169",
+  "학생활동공지 http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN170",
+  "학사일정 https://www.dnue.ac.kr/kor/CMS/ScheduleMgr/MonthList.do?mCode=MN119",
+  "학사정보 https://www.dnue.ac.kr/kor/CMS/Contents/Contents.do?mCode=MN135",
+  "교육실습 https://www.dnue.ac.kr/kor/CMS/Contents/Contents.do?mCode=MN145",
+  "코로나19공지 http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171"
+ ],
+ "posts": [
+  {
+   "title": "대용실습학교 현황",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN148",
+   "files": [
+    {
+     "name": "2024학년도 대용실습학교 현황 내려받기",
+     "saved": "00_f0.bin",
+     "bytes": 53128
+    },
+    {
+     "name": "2023학년도 대용실습학교 현황 내려받기",
+     "saved": "00_f1.bin",
+     "bytes": 50785
+    },
+    {
+     "name": "2022학년도 대용실습학교 현황 내려받기",
+     "saved": "00_f2.bin",
+     "bytes": 50959
+    },
+    {
+     "name": "2021학년도 대용실습학교 현황 내려받기",
+     "saved": "00_f3.bin",
+     "bytes": 52389
+    },
+    {
+     "name": "2020학년도 교육실습 대용부설초등학교 현황 내려받기",
+     "saved": "00_f4.bin",
+     "bytes": 44657
+    }
+   ],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "2026학년도 안동부설초등학교 3학년 수업실습Ⅱ 참여학생 학부모 동의서 및 통근버스 미사용 신청서 제출 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&mode=view&mgr_seq=30&board_seq=19079",
+   "files": [],
+   "images": [],
+   "error": "RemoteDisconnected Remote end closed connection without response"
+  },
+  {
+   "title": "2026학년도 안동부설초등학교 3학년 수업실습Ⅱ 참여학생 학부모 동의서 및 통근버스 미사용 신청서 제출 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&searchKeyword=실습&mode=view&mgr_seq=30&board_seq=19079",
+   "files": [],
+   "images": [],
+   "error": "RemoteDisconnected Remote end closed connection without response"
+  },
+  {
+   "title": "2026학년도 3학년 수업실습(Ⅱ) 실습학교 신청 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&page=2&mode=view&mgr_seq=30&board_seq=18999",
+   "files": [
+    {
+     "name": "2026학년도 수업실습(Ⅱ) 실습학교 신청 안내_학사공지.hwp (81KB)",
+     "saved": "03_f0.hwp (",
+     "bytes": 82944
+    }
+   ],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "2026학년도 2학년 수업실습Ⅰ 전체 오리엔테이션 자료 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&page=2&mode=view&mgr_seq=30&board_seq=18958",
+   "files": [
+    {
+     "name": "2026학년도 2학기 2학년 교육실습 오리엔테이션 안내자료(공지).hwp (112KB)",
+     "saved": "04_f0.hwp (",
+     "bytes": 114688
+    }
+   ],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "2026학년도 안동부설초등학교 2학년 수업실습Ⅰ 참여학생 학부모 동의서 및 통근버스 미사용 신청서 제출 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&page=2&mode=view&mgr_seq=30&board_seq=18921",
+   "files": [
+    {
+     "name": "안동부설초등학교 교육실습 통근버스 미사용 신청서.hwp (36KB)",
+     "saved": "05_f0.hwp (",
+     "bytes": 37376
+    },
+    {
+     "name": "학부모동의서(수업실습1).hwp (53KB)",
+     "saved": "05_f1.hwp (",
+     "bytes": 54272
+    }
+   ],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "2026학년도 2학년 수업실습Ⅰ 실습학교 신청 안내",
+   "url": "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN226&page=3&mode=view&mgr_seq=30&board_seq=18848",
+   "files": [
+    {
+     "name": "2026학년도 수업실습(1) 실습학교 신청 안내_학사공지.hwp (153KB)",
+     "saved": "06_f0.hwp (",
+     "bytes": 157184
+    }
+   ],
+   "images": [],
+   "date": null
+  }
+ ],
+ "errors": [
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171 HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&searchCondition=title&searchKeywo HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&searchType=title&searchWord=%EC%8 HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&srchKey=title&srchVal=%EC%8B%A4%E HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&keyword=%EC%8B%A4%EC%8A%B5 HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&page=2 HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&page=3 HTTPError",
+  "http://www.dnue.ac.kr/kor/CMS/Board/Board.do?mCode=MN171&page=4 HTTPError"
+ ]
+}

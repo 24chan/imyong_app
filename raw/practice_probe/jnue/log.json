@@ -1,0 +1,66 @@
+{
+ "univ": "jnue",
+ "name": "전주교대",
+ "home": "https://www.jnue.kr/portal/jnue/main/main.do",
+ "boards": [
+  "학사공지 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000100010000",
+  "학칙및학사규정 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000100060000",
+  "학사종합정보시스템 https://www.jnue.kr/portal/main/not_select_sub_menu.do",
+  "학사일정 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000600000000",
+  "공지사항 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0006000100010000",
+  "학사종합정보시스템 https://portal.jnue.kr/",
+  "학사종합정보시스템 https://www.jnue.kr/portal/jnue/main/not_select_sub_menu.do",
+  "수업실습 https://www.jnue.kr/portal/jnue/contents/contents_view.do?menuId=M0004001300020000"
+ ],
+ "posts": [
+  {
+   "title": "수업실습",
+   "url": "https://www.jnue.kr/portal/jnue/contents/contents_view.do?menuId=M0004001300020000",
+   "files": [],
+   "images": [
+    "00_img0"
+   ],
+   "date": null
+  }
+ ],
+ "errors": [
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?searchCondition=title&searchKeyword HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?searchType=title&searchWord=%EC%8B% HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?srchKey=title&srchVal=%EC%8B%A4%EC% HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?keyword=%EC%8B%A4%EC%8A%B5 HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?page=2 HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?page=3 HTTPError",
+  "https://www.jnue.kr/portal/main/not_select_sub_menu.do?page=4 HTTPError"
+ ],
+ "home_final": "https://www.jnue.kr/portal/jnue/main/main.do",
+ "home_len": 105687,
+ "anchors": 402,
+ "anchor_sample": [
+  "1. 학사일정은 어디서 확인해야하나요 ",
+  "6. 교육봉사 실습은 어떻게 신청하나 ",
+  "7. 교육실습은 어떻게 하나요? ",
+  "업무추진비 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000100040000",
+  "예·결산 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000400020000",
+  "평의원회 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000400030000",
+  "대학요람 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000400050000",
+  "수의계약현황 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000400060000",
+  "전자규정집 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0001000600010000",
+  "JNUE News https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000400010000",
+  "황학소식 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000400020000",
+  "황학뉴스레터 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000400030000",
+  "대학언론사 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000400040001",
+  "대학홍보영상 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000500000000",
+  "홍보브로슈어 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0023000700000000",
+  "학사정보 ",
+  "학사공지 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000100010000",
+  "학칙및학사규정 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000100060000",
+  "학사종합정보시스템 https://www.jnue.kr/portal/main/not_select_sub_menu.do",
+  "학사일정 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000600000000",
+  "교육과정 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004001400000000",
+  "수업실습 ",
+  "생활안내 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000900050000",
+  "각종서식 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000800030000",
+  "분실물습득신고 https://www.jnue.kr/portal/jnue/bbs/list.do?menuId=M0004000400100000"
+ ]
+}

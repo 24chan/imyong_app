@@ -1,0 +1,71 @@
+{
+ "univ": "cnue",
+ "name": "춘천교대",
+ "home": "https://www.cnue.ac.kr/",
+ "boards": [
+  "교육실습 https://www.cnue.ac.kr/cnue/info/edu-practice01.do",
+  "대학공지 새창열림 https://www.cnue.ac.kr/cnue/news/notice01.do",
+  "교육실습 구조 개편(안) 의견 조회 https://www.cnue.ac.kr/cnue/news/notice02.do?mode=view&articleNo=41945",
+  "학사공지 새창열림 https://www.cnue.ac.kr/cnue/news/notice02.do",
+  "학생공지 새창열림 https://www.cnue.ac.kr/cnue/news/notice03.do",
+  "채용공지 새창열림 https://www.cnue.ac.kr/cnue/news/notice04.do"
+ ],
+ "posts": [
+  {
+   "title": "참관실습",
+   "url": "https://www.cnue.ac.kr/cnue/info/edu-practice02.do",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "수업실습",
+   "url": "https://www.cnue.ac.kr/cnue/info/edu-practice03.do",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "종합실습",
+   "url": "https://www.cnue.ac.kr/cnue/info/edu-practice04.do",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "2026학년도 수업실습 만족도 조사 실시 안내",
+   "url": "https://www.cnue.ac.kr/cnue/news/notice02.do?mode=view&articleNo=41989&article.offset=0&articleLimit=10",
+   "files": [],
+   "images": [],
+   "date": "2026-11-12"
+  },
+  {
+   "title": "2026학년도 수업실습 통학버스 운행 안내(변경) 자세히 보기",
+   "url": "https://www.cnue.ac.kr/cnue/news/notice02.do?mode=view&articleNo=41899&article.offset=0&articleLimit=10",
+   "files": [],
+   "images": [],
+   "date": "2026-10-21"
+  },
+  {
+   "title": "2026학년도 참관실습 만족도 조사 실시 안내 자세히 보기",
+   "url": "https://www.cnue.ac.kr/cnue/news/notice02.do?mode=view&articleNo=41799&article.offset=0&articleLimit=10",
+   "files": [],
+   "images": [],
+   "date": "2026-09-16"
+  },
+  {
+   "title": "2026학년도 수업실습 학교 배정 및 변경 신청 안내 자세히 보기",
+   "url": "https://www.cnue.ac.kr/cnue/news/notice02.do?mode=view&articleNo=41797&article.offset=0&articleLimit=10",
+   "files": [
+    {
+     "name": "수업실습 실습학교 변경신청서.hwp",
+     "saved": "06_f0.hwp",
+     "bytes": 26624
+    }
+   ],
+   "images": [],
+   "date": "2026-09-16"
+  }
+ ],
+ "errors": []
+}

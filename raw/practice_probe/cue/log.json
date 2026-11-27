@@ -1,0 +1,10 @@
+{
+ "univ": "cue",
+ "name": "진주교대",
+ "home": "https://www.cue.ac.kr/",
+ "boards": [],
+ "posts": [],
+ "errors": [
+  "홈 접속 실패: URLError <urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1011)>"
+ ]
+}

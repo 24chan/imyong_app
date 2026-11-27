@@ -1,0 +1,146 @@
+{
+ "univ": "cue",
+ "name": "진주교대",
+ "campuses": {
+  "main": {
+   "name": "진주교대",
+   "addr": "경상남도 진주시 진양호로 369",
+   "lat": 35.16886,
+   "lng": 128.05491
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "gyeongnam|진주교육대학교부설초등학교",
+     "block": "gyeongnam",
+     "campus": "main"
+    },
+    {
+     "id": "gyeongnam|배영초등학교",
+     "block": "gyeongnam",
+     "campus": "main"
+    },
+    {
+     "id": "gyeongnam|천전초등학교",
+     "block": "gyeongnam",
+     "campus": "main"
+    },
+    {
+     "id": "gyeongnam|도동초등학교",
+     "block": "gyeongnam",
+     "campus": "main"
+    },
+    {
+     "id": "gyeongnam|반송초등학교",
+     "block": "gyeongnam",
+     "campus": "main"
+    },
+    {
+     "id": "ulsan|범서초등학교",
+     "block": "ulsan",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "gyeongnam|진주교육대학교부설초등학교": {
+   "name": "진주교육대학교부설초등학교",
+   "short": "진주교육대학교부설초등학교",
+   "region": "gyeongnam",
+   "sigungu": "진주시",
+   "found": "n",
+   "lat": 35.18583,
+   "lng": 128.06793,
+   "km": {
+    "main": 2.2
+   },
+   "transit_min": {}
+  },
+  "gyeongnam|배영초등학교": {
+   "name": "배영초등학교",
+   "short": "진주배영초",
+   "region": "gyeongnam",
+   "sigungu": "진주시",
+   "found": "p",
+   "lat": 35.17668,
+   "lng": 128.0671,
+   "km": {
+    "main": 1.4
+   },
+   "transit_min": {}
+  },
+  "gyeongnam|천전초등학교": {
+   "name": "천전초등학교",
+   "short": "진주천전초",
+   "region": "gyeongnam",
+   "sigungu": "진주시",
+   "found": "p",
+   "lat": 35.18551,
+   "lng": 128.09104,
+   "km": {
+    "main": 3.8
+   },
+   "transit_min": {}
+  },
+  "gyeongnam|도동초등학교": {
+   "name": "도동초등학교",
+   "short": "진주도동초",
+   "region": "gyeongnam",
+   "sigungu": "진주시",
+   "found": "p",
+   "lat": 35.19016,
+   "lng": 128.11768,
+   "km": {
+    "main": 6.2
+   },
+   "transit_min": {}
+  },
+  "gyeongnam|반송초등학교": {
+   "name": "반송초등학교",
+   "short": "창원반송초",
+   "region": "gyeongnam",
+   "sigungu": "창원시",
+   "found": "p",
+   "lat": 35.23736,
+   "lng": 128.66972,
+   "km": {
+    "main": 56.4
+   },
+   "transit_min": {}
+  },
+  "ulsan|범서초등학교": {
+   "name": "범서초등학교",
+   "short": "범서초등학교",
+   "region": "ulsan",
+   "sigungu": "울주군",
+   "found": "p",
+   "lat": 35.56462,
+   "lng": 129.23072,
+   "km": {
+    "main": 115.3
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

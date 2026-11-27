@@ -1,0 +1,41 @@
+{
+ "univ": "gjue",
+ "name": "공주교대",
+ "home": "https://www.gjue.ac.kr/html/kor/index.html",
+ "boards": [
+  "학사일정 페이지 이동 https://www.gjue.ac.kr/kor/13/schedules",
+  "교육실습플랫폼 https://tp.gjue.ac.kr",
+  "(구)종합학사 https://www.gjue.ac.kr/kor/contents/39"
+ ],
+ "posts": [],
+ "errors": [],
+ "home_final": "https://www.gjue.ac.kr/html/kor/index.html",
+ "home_len": 51018,
+ "anchors": 134,
+ "anchor_sample": [
+  "\"; if (checkNewDate( https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "게시판 전체 페이지로 이동 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; if (checkNewDate( https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "게시판 전체 페이지로 이동 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; if (checkNewDate( https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "게시판 전체 페이지로 이동 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; if (checkNewDate( https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "게시판 전체 페이지로 이동 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; add_data += \"\"; a https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "더보기 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; add_data += \"\"; a https://www.gjue.ac.kr/html/kor/\" + val.pstUrl  + \"",
+  "더보기 https://www.gjue.ac.kr/html/kor/\"+val.bbsUrl+\"",
+  "\"; add_data += \"\"+va https://youtu.be/\" + val.ytbCd + \"",
+  "\"; add_data += \"\"+va https://youtu.be/\" + val.ytbCd + \"",
+  "경력증명서발급 새 창 열림 https://www.gjue.ac.kr/kor/article/BBSMSTR_000000000106/12445",
+  "학사일정 페이지 이동 https://www.gjue.ac.kr/kor/13/schedules",
+  "교육실습플랫폼 https://tp.gjue.ac.kr",
+  "(구)종합학사 https://www.gjue.ac.kr/kor/contents/39",
+  "서식자료 https://www.gjue.ac.kr/kor/article/BBSMSTR_000000000104",
+  "(구)종합학사 https://www.gjue.ac.kr/kor/contents/39",
+  "대학신문 https://www.gjue.ac.kr/kor/article/BBSMSTR_000000000401",
+  "교원자격증 재교부 https://www.gjue.ac.kr/kor/article/BBSMSTR_000000000104/5923",
+  "GJUE갤러리 https://www.gjue.ac.kr/kor/article/BBSMSTR_000000000112"
+ ],
+ "redirect": ","
+}

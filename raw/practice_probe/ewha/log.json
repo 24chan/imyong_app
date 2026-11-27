@@ -1,0 +1,10 @@
+{
+ "univ": "ewha",
+ "name": "이화여대 초등교육과",
+ "home": "https://elementary.ewha.ac.kr/",
+ "boards": [],
+ "posts": [],
+ "errors": [
+  "홈 접속 실패: URLError <urlopen error [Errno -2] Name or service not known>"
+ ]
+}

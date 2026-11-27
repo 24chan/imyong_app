@@ -1,0 +1,44 @@
+{
+ "univ": "cje",
+ "name": "청주교대",
+ "home": "https://www.cje.ac.kr/ctps/",
+ "boards": [
+  "추가 https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000015",
+  "추가 https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000031"
+ ],
+ "posts": [
+  {
+   "title": "교육실습 I",
+   "url": "https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000017",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "교육실습 II",
+   "url": "https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000020",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "교육실습 III",
+   "url": "https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000023",
+   "files": [],
+   "images": [],
+   "date": null
+  },
+  {
+   "title": "교육실습 IV",
+   "url": "https://www.cje.ac.kr/ctps/web/content.do?menu_cd=000026",
+   "files": [],
+   "images": [],
+   "date": null
+  }
+ ],
+ "errors": [],
+ "home_final": "https://www.cje.ac.kr/ctps/",
+ "home_len": 14792,
+ "anchors": 15,
+ "anchor_sample": []
+}

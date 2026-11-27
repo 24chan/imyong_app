@@ -1,0 +1,23 @@
+{
+ "log": [
+  {
+   "url": "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000273516",
+   "final": "https://www.law.go.kr/LSW/admRulInfoP.do?admRulSeq=2100000273516",
+   "file": "01.html",
+   "len": 78613
+  },
+  {
+   "url": "https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000273516",
+   "final": "https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000273516",
+   "file": "02.html",
+   "len": 78839
+  },
+  {
+   "url": "https://www.law.go.kr/LSW/admRulBylInfoPLinkR.do?admRulSeq=2100000273516",
+   "final": "https://www.law.go.kr/LSW/admRulBylInfoPLinkR.do?admRulSeq=2100000273516",
+   "file": "03.html",
+   "len": 13750
+  }
+ ],
+ "found": []
+}

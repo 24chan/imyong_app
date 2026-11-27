@@ -1,0 +1,128 @@
+{
+ "univ": "jeju_elem",
+ "name": "제주대",
+ "campuses": {
+  "main": {
+   "name": "제주대 사라캠퍼스",
+   "addr": "제주특별자치도 제주시 사범대학길 61",
+   "lat": 33.5151,
+   "lng": 126.5528
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "jeju|제주대학교교육대학부설초등학교",
+     "block": "jeju",
+     "campus": "main"
+    },
+    {
+     "id": "jeju|도련초등학교",
+     "block": "jeju",
+     "campus": "main"
+    },
+    {
+     "id": "jeju|아라초등학교",
+     "block": "jeju",
+     "campus": "main"
+    },
+    {
+     "id": "jeju|삼화초등학교",
+     "block": "jeju",
+     "campus": "main"
+    },
+    {
+     "id": "jeju|동홍초등학교",
+     "block": "jeju",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "jeju|제주대학교교육대학부설초등학교": {
+   "name": "제주대학교교육대학부설초등학교",
+   "short": "제주대학교교육대학부설초등학교",
+   "region": "jeju",
+   "sigungu": "제주시",
+   "found": "n",
+   "lat": 33.51393,
+   "lng": 126.55227,
+   "km": {
+    "main": 0.1
+   },
+   "transit_min": {}
+  },
+  "jeju|도련초등학교": {
+   "name": "도련초등학교",
+   "short": "도련초등학교",
+   "region": "jeju",
+   "sigungu": "제주시",
+   "found": "p",
+   "lat": 33.51379,
+   "lng": 126.58399,
+   "km": {
+    "main": 2.9
+   },
+   "transit_min": {}
+  },
+  "jeju|아라초등학교": {
+   "name": "아라초등학교",
+   "short": "아라초등학교",
+   "region": "jeju",
+   "sigungu": "제주시",
+   "found": "p",
+   "lat": 33.47725,
+   "lng": 126.54374,
+   "km": {
+    "main": 4.3
+   },
+   "transit_min": {}
+  },
+  "jeju|삼화초등학교": {
+   "name": "삼화초등학교",
+   "short": "삼화초등학교",
+   "region": "jeju",
+   "sigungu": "제주시",
+   "found": "p",
+   "lat": 33.51522,
+   "lng": 126.577,
+   "km": {
+    "main": 2.2
+   },
+   "transit_min": {}
+  },
+  "jeju|동홍초등학교": {
+   "name": "동홍초등학교",
+   "short": "동홍초등학교",
+   "region": "jeju",
+   "sigungu": "서귀포시",
+   "found": "p",
+   "lat": 33.26064,
+   "lng": 126.56975,
+   "km": {
+    "main": 28.3
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

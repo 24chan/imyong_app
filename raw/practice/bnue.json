@@ -1,0 +1,146 @@
+{
+ "univ": "bnue",
+ "name": "부산교대",
+ "campuses": {
+  "main": {
+   "name": "부산교대",
+   "addr": "부산광역시 연제구 교대로 24",
+   "lat": 35.19635,
+   "lng": 129.07645
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-compiled",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습 협력학교 (정리 자료·확인 필요)",
+   "grade": null,
+   "source": {
+    "title": "2026 전국 교대 교육실습협력초등학교 실제 명단 정리 자료",
+    "by": "운영자 제공 정리 자료 · 대학 실습 공지로 확인 필요",
+    "date": "2026-11-24"
+   },
+   "schools": [
+    {
+     "id": "busan|부산교육대학교부설초등학교",
+     "block": "busan",
+     "campus": "main"
+    },
+    {
+     "id": "busan|거제초등학교",
+     "block": "busan",
+     "campus": "main"
+    },
+    {
+     "id": "busan|연산초등학교",
+     "block": "busan",
+     "campus": "main"
+    },
+    {
+     "id": "busan|명륜초등학교",
+     "block": "busan",
+     "campus": "main"
+    },
+    {
+     "id": "busan|동래초등학교",
+     "block": "busan",
+     "campus": "main"
+    },
+    {
+     "id": "ulsan|내황초등학교",
+     "block": "ulsan",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "busan|부산교육대학교부설초등학교": {
+   "name": "부산교육대학교부설초등학교",
+   "short": "부산교육대학교부설초등학교",
+   "region": "busan",
+   "sigungu": "연제구",
+   "found": "n",
+   "lat": 35.19569,
+   "lng": 129.07708,
+   "km": {
+    "main": 0.1
+   },
+   "transit_min": {}
+  },
+  "busan|거제초등학교": {
+   "name": "거제초등학교",
+   "short": "부산거제초",
+   "region": "busan",
+   "sigungu": "연제구",
+   "found": "p",
+   "lat": 35.17807,
+   "lng": 129.06757,
+   "km": {
+    "main": 2.2
+   },
+   "transit_min": {}
+  },
+  "busan|연산초등학교": {
+   "name": "연산초등학교",
+   "short": "부산연산초",
+   "region": "busan",
+   "sigungu": "연제구",
+   "found": "p",
+   "lat": 35.17826,
+   "lng": 129.08412,
+   "km": {
+    "main": 2.1
+   },
+   "transit_min": {}
+  },
+  "busan|명륜초등학교": {
+   "name": "명륜초등학교",
+   "short": "부산명륜초",
+   "region": "busan",
+   "sigungu": "동래구",
+   "found": "p",
+   "lat": 35.20803,
+   "lng": 129.08327,
+   "km": {
+    "main": 1.4
+   },
+   "transit_min": {}
+  },
+  "busan|동래초등학교": {
+   "name": "동래초등학교",
+   "short": "부산동래초",
+   "region": "busan",
+   "sigungu": "금정구",
+   "found": "s",
+   "lat": 35.24711,
+   "lng": 129.09848,
+   "km": {
+    "main": 6.0
+   },
+   "transit_min": {}
+  },
+  "ulsan|내황초등학교": {
+   "name": "내황초등학교",
+   "short": "내황초등학교",
+   "region": "ulsan",
+   "sigungu": "중구",
+   "found": "p",
+   "lat": 35.55231,
+   "lng": 129.34899,
+   "km": {
+    "main": 46.7
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}

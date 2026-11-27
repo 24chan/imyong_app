@@ -1,0 +1,828 @@
+{
+ "univ": "gnue",
+ "name": "광주교대",
+ "campuses": {
+  "main": {
+   "name": "광주교대",
+   "addr": "광주광역시 북구 필문대로 55",
+   "lat": 35.16473,
+   "lng": 126.92572
+  }
+ },
+ "grade_campus": {},
+ "sessions": [
+  {
+   "id": "2026-teach-observe",
+   "year": 2026,
+   "term": 0,
+   "kind": "교육실습(수업·참관)",
+   "grade": null,
+   "period": "누리집 실습학교 안내 기준",
+   "source": {
+    "title": "교육실습 > 실습학교주소",
+    "by": "광주교대 누리집",
+    "date": "2026-11-22 확인"
+   },
+   "schools": [
+    {
+     "id": "gwangju|월봉초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "gwangju|금부초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "gwangju|광주농성초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "gwangju|광주교육대학교광주부설초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "gwangju|광주계림초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|장성중앙초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|나주초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|광주교육대학교목포부설초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|화순초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|순천부영초등학교",
+     "block": "gwangju",
+     "campus": "main"
+    }
+   ]
+  },
+  {
+   "id": "2026-rural-observe",
+   "year": 2026,
+   "term": 0,
+   "kind": "농산어촌·도서벽지 참관실습",
+   "grade": null,
+   "period": "누리집 실습학교 안내 기준",
+   "source": {
+    "title": "교육실습 > 실습학교주소 (농산어촌 및 도서벽지 참관실습 대상학교)",
+    "by": "광주교대 누리집",
+    "date": "2026-11-22 확인"
+   },
+   "schools": [
+    {
+     "id": "jeonnam|관기초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|화양초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|돌산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|외서초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|송산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|해룡초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|낙안초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|문평초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|남평초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|골약초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|옥곡초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|고서초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|원촌초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|도화초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|두원초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|미력초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|보성남초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|능주초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|아산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|관산남초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|마량초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|옥천초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|삼산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|학산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|청계초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|청계남초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|월야초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|대마초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|북일초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|청해초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|신지동초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|지산초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    },
+    {
+     "id": "jeonnam|압해서초등학교",
+     "block": "jeonnam",
+     "campus": "main"
+    }
+   ]
+  }
+ ],
+ "schools": {
+  "gwangju|월봉초등학교": {
+   "name": "월봉초등학교",
+   "short": "광주월봉초",
+   "region": "gwangju",
+   "sigungu": "광산구",
+   "found": "p",
+   "lat": 35.20934,
+   "lng": 126.84807,
+   "km": {
+    "main": 8.6
+   },
+   "transit_min": {}
+  },
+  "gwangju|금부초등학교": {
+   "name": "금부초등학교",
+   "short": "광주금부초",
+   "region": "gwangju",
+   "sigungu": "서구",
+   "found": "p",
+   "lat": 35.13504,
+   "lng": 126.86162,
+   "km": {
+    "main": 6.7
+   },
+   "transit_min": {}
+  },
+  "gwangju|광주농성초등학교": {
+   "name": "광주농성초등학교",
+   "short": "광주농성초등학교",
+   "region": "gwangju",
+   "sigungu": "남구",
+   "found": "p",
+   "lat": 35.14864,
+   "lng": 126.8905,
+   "km": {
+    "main": 3.7
+   },
+   "transit_min": {}
+  },
+  "gwangju|광주교육대학교광주부설초등학교": {
+   "name": "광주교육대학교광주부설초등학교",
+   "short": "광주교육대학교광주부설초등학교",
+   "region": "gwangju",
+   "sigungu": "북구",
+   "found": "n",
+   "lat": 35.16494,
+   "lng": 126.92605,
+   "km": {
+    "main": 0.0
+   },
+   "transit_min": {}
+  },
+  "gwangju|광주계림초등학교": {
+   "name": "광주계림초등학교",
+   "short": "광주계림초등학교",
+   "region": "gwangju",
+   "sigungu": "동구",
+   "found": "p",
+   "lat": 35.16033,
+   "lng": 126.92135,
+   "km": {
+    "main": 0.6
+   },
+   "transit_min": {}
+  },
+  "jeonnam|장성중앙초등학교": {
+   "name": "장성중앙초등학교",
+   "short": "장성중앙초등학교",
+   "region": "jeonnam",
+   "sigungu": "장성군",
+   "found": "p",
+   "lat": 35.29875,
+   "lng": 126.78682,
+   "km": {
+    "main": 19.5
+   },
+   "transit_min": {}
+  },
+  "jeonnam|나주초등학교": {
+   "name": "나주초등학교",
+   "short": "나주초등학교",
+   "region": "jeonnam",
+   "sigungu": "나주시",
+   "found": "p",
+   "lat": 35.0271,
+   "lng": 126.71883,
+   "km": {
+    "main": 24.3
+   },
+   "transit_min": {}
+  },
+  "jeonnam|광주교육대학교목포부설초등학교": {
+   "name": "광주교육대학교목포부설초등학교",
+   "short": "광주교육대학교목포부설초등학교",
+   "region": "jeonnam",
+   "sigungu": "목포시",
+   "found": "n",
+   "lat": 34.80823,
+   "lng": 126.40491,
+   "km": {
+    "main": 61.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|화순초등학교": {
+   "name": "화순초등학교",
+   "short": "화순초등학교",
+   "region": "jeonnam",
+   "sigungu": "화순군",
+   "found": "p",
+   "lat": 35.06562,
+   "lng": 126.98469,
+   "km": {
+    "main": 12.3
+   },
+   "transit_min": {}
+  },
+  "jeonnam|순천부영초등학교": {
+   "name": "순천부영초등학교",
+   "short": "순천부영초등학교",
+   "region": "jeonnam",
+   "sigungu": "순천시",
+   "found": "p",
+   "lat": 34.9476,
+   "lng": 127.5195,
+   "km": {
+    "main": 59.2
+   },
+   "transit_min": {}
+  },
+  "jeonnam|관기초등학교": {
+   "name": "관기초등학교",
+   "short": "여수관기초",
+   "region": "jeonnam",
+   "sigungu": "여수시",
+   "found": "p",
+   "lat": 34.74947,
+   "lng": 127.62623,
+   "km": {
+    "main": 78.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|화양초등학교": {
+   "name": "화양초등학교",
+   "short": "여수화양초",
+   "region": "jeonnam",
+   "sigungu": "여수시",
+   "found": "p",
+   "lat": 34.68624,
+   "lng": 127.59476,
+   "km": {
+    "main": 80.9
+   },
+   "transit_min": {}
+  },
+  "jeonnam|돌산초등학교": {
+   "name": "돌산초등학교",
+   "short": "여수돌산초등학교",
+   "region": "jeonnam",
+   "sigungu": "여수시",
+   "found": "p",
+   "lat": 34.61712,
+   "lng": 127.72967,
+   "km": {
+    "main": 95.3
+   },
+   "transit_min": {}
+  },
+  "jeonnam|외서초등학교": {
+   "name": "외서초등학교",
+   "short": "순천외서초등학교",
+   "region": "jeonnam",
+   "sigungu": "순천시",
+   "found": "p",
+   "lat": 34.91661,
+   "lng": 127.27346,
+   "km": {
+    "main": 42.0
+   },
+   "transit_min": {}
+  },
+  "jeonnam|송산초등학교": {
+   "name": "송산초등학교",
+   "short": "순천송산초",
+   "region": "jeonnam",
+   "sigungu": "순천시",
+   "found": "p",
+   "lat": 34.85022,
+   "lng": 127.4158,
+   "km": {
+    "main": 56.7
+   },
+   "transit_min": {}
+  },
+  "jeonnam|해룡초등학교": {
+   "name": "해룡초등학교",
+   "short": "순천해룡초",
+   "region": "jeonnam",
+   "sigungu": "순천시",
+   "found": "p",
+   "lat": 34.91337,
+   "lng": 127.53564,
+   "km": {
+    "main": 62.2
+   },
+   "transit_min": {}
+  },
+  "jeonnam|낙안초등학교": {
+   "name": "낙안초등학교",
+   "short": "순천낙안초",
+   "region": "jeonnam",
+   "sigungu": "순천시",
+   "found": "p",
+   "lat": 34.9089,
+   "lng": 127.34217,
+   "km": {
+    "main": 47.4
+   },
+   "transit_min": {}
+  },
+  "jeonnam|문평초등학교": {
+   "name": "문평초등학교",
+   "short": "나주문평초",
+   "region": "jeonnam",
+   "sigungu": "나주시",
+   "found": "p",
+   "lat": 35.05836,
+   "lng": 126.60449,
+   "km": {
+    "main": 31.5
+   },
+   "transit_min": {}
+  },
+  "jeonnam|남평초등학교": {
+   "name": "남평초등학교",
+   "short": "나주남평초",
+   "region": "jeonnam",
+   "sigungu": "나주시",
+   "found": "p",
+   "lat": 35.04239,
+   "lng": 126.84588,
+   "km": {
+    "main": 15.4
+   },
+   "transit_min": {}
+  },
+  "jeonnam|골약초등학교": {
+   "name": "골약초등학교",
+   "short": "광양골약초",
+   "region": "jeonnam",
+   "sigungu": "광양시",
+   "found": "p",
+   "lat": 34.91011,
+   "lng": 127.66057,
+   "km": {
+    "main": 72.6
+   },
+   "transit_min": {}
+  },
+  "jeonnam|옥곡초등학교": {
+   "name": "옥곡초등학교",
+   "short": "광양옥곡초",
+   "region": "jeonnam",
+   "sigungu": "광양시",
+   "found": "p",
+   "lat": 34.99093,
+   "lng": 127.69536,
+   "km": {
+    "main": 72.7
+   },
+   "transit_min": {}
+  },
+  "jeonnam|고서초등학교": {
+   "name": "고서초등학교",
+   "short": "담양고서초",
+   "region": "jeonnam",
+   "sigungu": "담양군",
+   "found": "p",
+   "lat": 35.2243,
+   "lng": 126.97386,
+   "km": {
+    "main": 7.9
+   },
+   "transit_min": {}
+  },
+  "jeonnam|원촌초등학교": {
+   "name": "원촌초등학교",
+   "short": "구례원촌초",
+   "region": "jeonnam",
+   "sigungu": "구례군",
+   "found": "p",
+   "lat": 35.31685,
+   "lng": 127.43839,
+   "km": {
+    "main": 49.5
+   },
+   "transit_min": {}
+  },
+  "jeonnam|도화초등학교": {
+   "name": "도화초등학교",
+   "short": "고흥도화초",
+   "region": "jeonnam",
+   "sigungu": "고흥군",
+   "found": "p",
+   "lat": 34.51053,
+   "lng": 127.31815,
+   "km": {
+    "main": 81.1
+   },
+   "transit_min": {}
+  },
+  "jeonnam|두원초등학교": {
+   "name": "두원초등학교",
+   "short": "고흥두원초",
+   "region": "jeonnam",
+   "sigungu": "고흥군",
+   "found": "p",
+   "lat": 34.64711,
+   "lng": 127.27505,
+   "km": {
+    "main": 65.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|미력초등학교": {
+   "name": "미력초등학교",
+   "short": "보성미력초",
+   "region": "jeonnam",
+   "sigungu": "보성군",
+   "found": "p",
+   "lat": 34.79956,
+   "lng": 127.08617,
+   "km": {
+    "main": 43.2
+   },
+   "transit_min": {}
+  },
+  "jeonnam|보성남초등학교": {
+   "name": "보성남초등학교",
+   "short": "보성남초등학교",
+   "region": "jeonnam",
+   "sigungu": "보성군",
+   "found": "p",
+   "lat": 34.77044,
+   "lng": 127.07773,
+   "km": {
+    "main": 46.0
+   },
+   "transit_min": {}
+  },
+  "jeonnam|능주초등학교": {
+   "name": "능주초등학교",
+   "short": "화순능주초",
+   "region": "jeonnam",
+   "sigungu": "화순군",
+   "found": "p",
+   "lat": 34.98801,
+   "lng": 126.95695,
+   "km": {
+    "main": 19.9
+   },
+   "transit_min": {}
+  },
+  "jeonnam|아산초등학교": {
+   "name": "아산초등학교",
+   "short": "화순아산초",
+   "region": "jeonnam",
+   "sigungu": "화순군",
+   "found": "p",
+   "lat": 35.16916,
+   "lng": 127.13347,
+   "km": {
+    "main": 18.9
+   },
+   "transit_min": {}
+  },
+  "jeonnam|관산남초등학교": {
+   "name": "관산남초등학교",
+   "short": "장흥관산남초",
+   "region": "jeonnam",
+   "sigungu": "장흥군",
+   "found": "p",
+   "lat": 34.52624,
+   "lng": 126.95473,
+   "km": {
+    "main": 71.0
+   },
+   "transit_min": {}
+  },
+  "jeonnam|마량초등학교": {
+   "name": "마량초등학교",
+   "short": "강진마량초",
+   "region": "jeonnam",
+   "sigungu": "강진군",
+   "found": "p",
+   "lat": 34.45597,
+   "lng": 126.81155,
+   "km": {
+    "main": 79.5
+   },
+   "transit_min": {}
+  },
+  "jeonnam|옥천초등학교": {
+   "name": "옥천초등학교",
+   "short": "해남옥천초",
+   "region": "jeonnam",
+   "sigungu": "해남군",
+   "found": "p",
+   "lat": 34.56793,
+   "lng": 126.64986,
+   "km": {
+    "main": 71.0
+   },
+   "transit_min": {}
+  },
+  "jeonnam|삼산초등학교": {
+   "name": "삼산초등학교",
+   "short": "해남삼산초",
+   "region": "jeonnam",
+   "sigungu": "해남군",
+   "found": "p",
+   "lat": 34.51503,
+   "lng": 126.60776,
+   "km": {
+    "main": 77.9
+   },
+   "transit_min": {}
+  },
+  "jeonnam|학산초등학교": {
+   "name": "학산초등학교",
+   "short": "영암학산초",
+   "region": "jeonnam",
+   "sigungu": "영암군",
+   "found": "p",
+   "lat": 34.72014,
+   "lng": 126.59689,
+   "km": {
+    "main": 57.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|청계초등학교": {
+   "name": "청계초등학교",
+   "short": "무안청계초",
+   "region": "jeonnam",
+   "sigungu": "무안군",
+   "found": "p",
+   "lat": 34.92549,
+   "lng": 126.42873,
+   "km": {
+    "main": 52.5
+   },
+   "transit_min": {}
+  },
+  "jeonnam|청계남초등학교": {
+   "name": "청계남초등학교",
+   "short": "무안청계남초",
+   "region": "jeonnam",
+   "sigungu": "무안군",
+   "found": "p",
+   "lat": 34.88412,
+   "lng": 126.43733,
+   "km": {
+    "main": 54.3
+   },
+   "transit_min": {}
+  },
+  "jeonnam|월야초등학교": {
+   "name": "월야초등학교",
+   "short": "함평월야초",
+   "region": "jeonnam",
+   "sigungu": "함평군",
+   "found": "p",
+   "lat": 35.17703,
+   "lng": 126.63254,
+   "km": {
+    "main": 26.7
+   },
+   "transit_min": {}
+  },
+  "jeonnam|대마초등학교": {
+   "name": "대마초등학교",
+   "short": "영광대마초",
+   "region": "jeonnam",
+   "sigungu": "영광군",
+   "found": "p",
+   "lat": 35.30268,
+   "lng": 126.58155,
+   "km": {
+    "main": 34.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|북일초등학교": {
+   "name": "북일초등학교",
+   "short": "장성북일초",
+   "region": "jeonnam",
+   "sigungu": "장성군",
+   "found": "p",
+   "lat": 35.38474,
+   "lng": 126.7939,
+   "km": {
+    "main": 27.2
+   },
+   "transit_min": {}
+  },
+  "jeonnam|청해초등학교": {
+   "name": "청해초등학교",
+   "short": "완도청해초",
+   "region": "jeonnam",
+   "sigungu": "완도군",
+   "found": "p",
+   "lat": 34.35874,
+   "lng": 126.7283,
+   "km": {
+    "main": 91.4
+   },
+   "transit_min": {}
+  },
+  "jeonnam|신지동초등학교": {
+   "name": "신지동초등학교",
+   "short": "완도신지동초",
+   "region": "jeonnam",
+   "sigungu": "완도군",
+   "found": "p",
+   "lat": 34.32696,
+   "lng": 126.85119,
+   "km": {
+    "main": 93.4
+   },
+   "transit_min": {}
+  },
+  "jeonnam|지산초등학교": {
+   "name": "지산초등학교",
+   "short": "진도지산초",
+   "region": "jeonnam",
+   "sigungu": "진도군",
+   "found": "p",
+   "lat": 34.42179,
+   "lng": 126.1669,
+   "km": {
+    "main": 107.8
+   },
+   "transit_min": {}
+  },
+  "jeonnam|압해서초등학교": {
+   "name": "압해서초등학교",
+   "short": "신안압해서초",
+   "region": "jeonnam",
+   "sigungu": "신안군",
+   "found": "p",
+   "lat": 34.86255,
+   "lng": 126.27342,
+   "km": {
+    "main": 68.2
+   },
+   "transit_min": {}
+  }
+ },
+ "built": "2026-11-24",
+ "missing": [],
+ "notes": [
+  "거리는 캠퍼스에서 학교까지 직선거리",
+  "학교 위치: 공공데이터포털 전국초중등학교위치표준데이터",
+  "캠퍼스 위치: OpenStreetMap"
+ ]
+}
