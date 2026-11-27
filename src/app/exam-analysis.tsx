@@ -362,7 +362,7 @@ export default function ExamAnalysisScreen() {
         ) : (
           <>
             <Txt variant="sub" style={{ fontSize: 12.5 }}>
-              {a.years[0]}~{a.years[a.years.length - 1]}학년도 초등 교육과정 A·B {a.questions.length}문항을 교육과정 원문과 자동으로 이었어요. 참고용이에요 (기준 {a.built}). 지금은 무료로 공개 중이에요.
+              {a.years[0]}~{a.years[a.years.length - 1]}학년도 초등 교육과정 A·B {a.questions.length}문항을 교육과정 원문과 자동으로 이었어요. 참고용이에요 (기준 {a.built}).
             </Txt>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
               {(
