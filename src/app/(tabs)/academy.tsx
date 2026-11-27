@@ -64,7 +64,7 @@ export default function AcademyScreen() {
           [
             { value: 'lectures', icon: 'star-outline', label: '학원·인강 후기' },
             { value: 'mock', icon: 'clipboard-outline', label: '모의고사' },
-            { value: 'public', icon: 'library-outline', label: '공개 자료' },
+            { value: 'public', icon: 'library-outline', label: '공부 자료' },
           ] as const
         ).map((o) => {
           const on = tab === o.value;

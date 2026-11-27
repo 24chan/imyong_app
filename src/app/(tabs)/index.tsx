@@ -95,7 +95,7 @@ export default function HomeScreen() {
     { icon: 'trending-up-outline', label: '추이', cat: 'coral', go: () => router.push('/trend') },
     { icon: 'briefcase-outline', label: '사립 채용', cat: 'amber', go: () => router.push({ pathname: '/news', params: { type: 'jobs' } }), badge: openJobs },
     // 2026-11-24 사용자 요청: '일정'(아래 탭에 있음) 대신 '공개 자료'
-    { icon: 'library-outline', label: '공개 자료', cat: 'pink', go: () => router.navigate({ pathname: '/academy', params: { tab: 'public', t: String(Date.now()) } }) },
+    { icon: 'library-outline', label: '공부', cat: 'pink', go: () => router.navigate({ pathname: '/academy', params: { tab: 'public', t: String(Date.now()) } }) },
     { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate({ pathname: '/community', params: { board: 'study' } }) },
     { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news'), badge: unseen.length },
   ];

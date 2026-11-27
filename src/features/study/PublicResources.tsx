@@ -133,7 +133,7 @@ export function PublicResources() {
 
   return (
     <View style={{ gap: space.lg }}>
-      <Txt variant="sub">공식 기관이 공개한 자료만 모았어요. 앱 안에서 바로 보고, 위의 버튼으로 원문을 열거나 파일을 받을 수 있어요.</Txt>
+      <Txt variant="sub">임용 공부에 필요한 공식 자료를 앱 안에서 바로 봐요. 원문을 열거나 파일도 받을 수 있어요.</Txt>
       {sections.map((s) => (
         <View key={s.key} style={{ gap: space.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
