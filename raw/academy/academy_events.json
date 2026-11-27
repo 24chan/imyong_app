@@ -1,5 +1,5 @@
 {
- "built": "2026-11-27T07:33:30+09:00",
+ "built": "2026-11-28T07:34:02+09:00",
  "events": [
   {
    "source_key": "hackers|2026-12-01|special|secondary|전공생물정단휘2027학년도대비1차시험해설특강안내121화10시확인가능",
@@ -102,57 +102,52 @@
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/",
-   "links": 201
+   "links": 194
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/index.php?c=event_new&evt_cd=48324922",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522",
-   "links": 125
-  },
-  {
-   "site": "hackers",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=47324522",
-   "links": 129
+   "url": "https://mteacher.hackers.com",
+   "links": 194
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/notice/main/notice_main_view/53831",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/notice/main/notice_main_view/53890",
-   "links": 127
+   "links": 125
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57214",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57212",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57185",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57165",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
    "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57164",
-   "links": 125
+   "links": 123
   },
   {
    "site": "hackers",
@@ -160,9 +155,14 @@
    "body_date": null
   },
   {
+   "site": "hackers",
+   "url": "https://mteacher.hackers.com",
+   "body_date": null
+  },
+  {
    "site": "gschool",
    "url": "https://m.g-school.co.kr/",
-   "links": 177
+   "links": 178
   },
   {
    "site": "gschool",
@@ -206,11 +206,6 @@
   },
   {
    "site": "gschool",
-   "url": "https://m.g-school.co.kr/customer/view.jsp?board_cate_code=GBC5&board_num=55977&nowPage=1",
-   "links": 120
-  },
-  {
-   "site": "gschool",
    "url": "https://m.g-school.co.kr/customer/view.jsp?board_cate_code=GBC4&board_num=55898&nowPage=1",
    "body_date": null
   },
@@ -238,11 +233,6 @@
    "site": "ssamplus",
    "url": "https://www.ssamplus.com/inc/fullsize/2026/29391/index.asp",
    "links": 64
-  },
-  {
-   "site": "ssamplus",
-   "url": "https://www.ssamplus.com/inc/fullsize/2026/26470/",
-   "links": 62
   },
   {
    "site": "ssamplus",
@@ -312,7 +302,7 @@
   {
    "site": "pmg",
    "url": "https://www.pmg.co.kr/user/plo/event/event_261030a.asp",
-   "links": 59
+   "links": 58
   },
   {
    "site": "pmg",
@@ -342,16 +332,16 @@
   {
    "site": "pmg",
    "url": "https://www.pmg.co.kr/user/plo/event/event_261110.asp",
-   "links": 59
+   "links": 58
   },
   {
    "site": "pmg",
-   "url": "https://www.pmg.co.kr/User/new-smart/board/board_common2022.asp?bbsid=2656&ID=226600262&NUMBER=2656",
-   "links": 3
+   "url": "https://www.pmg.co.kr/User/new-smart/board/board_common2022.asp?bbsid=202&ID=226600967&NUMBER=202",
+   "links": 6
   },
   {
    "site": "pmg",
-   "url": "https://www.pmg.co.kr/User/new-smart/board/board_common2022.asp?bbsid=3043&ID=226599289&NUMBER=3043",
+   "url": "https://www.pmg.co.kr/User/new-smart/board/board_common2022.asp?bbsid=5176&ID=226598158&NUMBER=5176",
    "links": 2
   },
   {
@@ -378,18 +368,13 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2028학년도 대비 합격전략 설명회",
+   "url": "https://mteacher.hackers.com"
   },
   {
    "site": "hackers",
    "text": "2027학년도 2차 최종합격반",
    "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
-  },
-  {
-   "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
   },
   {
    "site": "hackers",
@@ -408,13 +393,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027학년도 2차 최종합격반",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
-  },
-  {
-   "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2028학년도 대비 합격전략 설명회",
+   "url": "https://mteacher.hackers.com"
   },
   {
    "site": "hackers",
@@ -423,8 +403,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2027학년도 2차 최종합격반",
+   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
   },
   {
    "site": "hackers",
@@ -433,8 +413,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2028학년도 대비 합격전략 설명회",
+   "url": "https://mteacher.hackers.com"
   },
   {
    "site": "hackers",
@@ -443,33 +423,23 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "권영주 전공영어 2027학년도 2차 대비반 안내",
+   "url": "https://teacher.hackers.com/board/?r=teacher&m=bbs&bid=lec_plan&uid=57044&pcmobile=Y"
   },
   {
    "site": "hackers",
-   "text": "2차반 사전예약하러 가기 교육학 고세훈 2차 대비반 사전 예약 할인 이벤트! 2027학년도 2차 대비반",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=47324522"
+   "text": "[전공생물] [정단휘] 2027학년도 대비 1차 시험 해설 특강 안내! -12/1(화) 10시 확인 가능!",
+   "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57214"
   },
   {
    "site": "hackers",
-   "text": "2027학년도 2차 최종합격반",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
+   "text": "[전공수학] [PRISM] [김동희] 2027학년도 대비 김동희 전공수학 1차 시험 해설 특강 안내! [26.11.28(토) 진행]",
+   "url": "https://mteacher.hackers.com/bbs/lec_plan/main/lec_plan_main_view/57212"
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
-  },
-  {
-   "site": "hackers",
-   "text": "2027학년도 2차 최종합격반",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
-  },
-  {
-   "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2028학년도 대비 합격전략 설명회",
+   "url": "https://mteacher.hackers.com"
   },
   {
    "site": "hackers",
@@ -478,8 +448,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2027학년도 2차 최종합격반",
+   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
   },
   {
    "site": "hackers",
@@ -488,8 +458,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2027학년도 2차 최종합격반",
+   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
   },
   {
    "site": "hackers",
@@ -498,8 +468,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
+   "text": "2027학년도 2차 최종합격반",
+   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
   },
   {
    "site": "hackers",
@@ -508,18 +478,8 @@
   },
   {
    "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
-  },
-  {
-   "site": "hackers",
    "text": "2027학년도 2차 최종합격반",
    "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48324622"
-  },
-  {
-   "site": "hackers",
-   "text": "2027 파이널 특강",
-   "url": "https://mteacher.hackers.com/?c=event_new&evt_cd=48323522"
   },
   {
    "site": "gschool",
@@ -560,11 +520,6 @@
    "site": "gschool",
    "text": "[베게너 지구과학 (10월) AtoZ실전모의고사]의 [5주차]",
    "url": "https://m.g-school.co.kr/customer/view.jsp?board_cate_code=GBC5&board_num=55987&nowPage=1"
-  },
-  {
-   "site": "gschool",
-   "text": "[2027대비] 고예윤 지리 (9~11월) 최종 파이널 모의고사 [10주..",
-   "url": "https://m.g-school.co.kr/customer/view.jsp?board_cate_code=GBC5&board_num=55977&nowPage=1"
   },
   {
    "site": "gschool",
@@ -640,16 +595,6 @@
    "site": "gschool",
    "text": "[임대성&김민아 (9~11월) 실전 모의고사 종합반]의 [10주차]",
    "url": "https://m.g-school.co.kr/customer/view.jsp?&board_cate_code=GBC5&board_num=55951&keyField=&keyWord=&nowPage=1"
-  },
-  {
-   "site": "gschool",
-   "text": "[2027대비] 스누팀 역사 (9~11월) [마무리편] 동형 모의고사반 [10-2주차]",
-   "url": "https://m.g-school.co.kr/customer/view.jsp?&board_cate_code=GBC5&board_num=55950&keyField=&keyWord=&nowPage=1"
-  },
-  {
-   "site": "gschool",
-   "text": "[2027대비] 김동해 전공체육 (11월) FINAL 핵심정리 특강의 [4주차]",
-   "url": "https://m.g-school.co.kr/customer/view.jsp?&board_cate_code=GBC5&board_num=55949&keyField=&keyWord=&nowPage=1"
   },
   {
    "site": "gschool",
@@ -852,26 +797,6 @@
    "url": "https://m.g-school.co.kr/ggosi/bbs_list.jsp?locale_idx=&board_idx=20§ion_idxs=4"
   },
   {
-   "site": "gschool",
-   "text": "직강수강신청",
-   "url": "https://m.g-school.co.kr/ggosi/lecture_list.jsp?locale_idx=1"
-  },
-  {
-   "site": "gschool",
-   "text": "직강수강신청",
-   "url": "https://m.g-school.co.kr/include/main_LectureList_off.jsp"
-  },
-  {
-   "site": "gschool",
-   "text": "G스쿨 직강 카톡상담",
-   "url": "http://pf.kakao.com/_uDxmxcn"
-  },
-  {
-   "site": "gschool",
-   "text": "직강1:1상담",
-   "url": "https://m.g-school.co.kr/ggosi/bbs_list.jsp?locale_idx=&board_idx=20§ion_idxs=4"
-  },
-  {
    "site": "ssamplus",
    "text": "2028 희소 티처스 설명회",
    "url": "https://www.ssamplus.com/inc/fullsize/2028_presentation/"
@@ -890,11 +815,6 @@
    "site": "ssamplus",
    "text": "2028 교원임용 희소 티처스 설명회",
    "url": "https://www.ssamplus.com/inc/fullsize/2028_presentation/"
-  },
-  {
-   "site": "ssamplus",
-   "text": "[음악 서정팀] 시크릿 특강",
-   "url": "https://www.ssamplus.com/inc/fullsize/2026/26470/"
   },
   {
    "site": "ssamplus",
@@ -1043,16 +963,6 @@
   },
   {
    "site": "ssamplus",
-   "text": "2028 희소 티처스 설명회",
-   "url": "https://www.ssamplus.com/inc/fullsize/2028_presentation/"
-  },
-  {
-   "site": "ssamplus",
-   "text": "무료강의/특강",
-   "url": "https://www.ssamplus.com/inc/fullsize/230405/"
-  },
-  {
-   "site": "ssamplus",
    "text": "설명회 신청하기",
    "url": "https://www.ssamplus.com/inc/fullsize/2027_presentation/"
   },
@@ -1095,11 +1005,6 @@
    "site": "pmg",
    "text": "전국 모의고사 학원/단체",
    "url": "https://www.pmg.co.kr/user/aca_mktest/main.asp"
-  },
-  {
-   "site": "pmg",
-   "text": "임용 [정승현 전공물리] 2027학년도 임용시험 기출해설 무료특강 안내-11/30 15시 2026.11.26",
-   "url": "https://www.pmg.co.kr/User/new-smart/board/board_common2022.asp?bbsid=2656&ID=226600262&NUMBER=2656"
   },
   {
    "site": "pmg",
