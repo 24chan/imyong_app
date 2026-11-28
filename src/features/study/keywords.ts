@@ -14,7 +14,7 @@ const JOSA = new RegExp(`(${R.josa})$`);
 const END = new RegExp(`(${R.end})$`);
 
 export function core(w: string) {
-  return w.replace(/[()[\]{}.,·:;'"‘’“”?!~…]/g, '').replace(JOSA, '');
+  return w.replace(/[()[\]{}.,:;'"‘’“”?!~…]/g, '').replace(/^·+|·+$/g, '').replace(JOSA, '');
 }
 
 /** 개념어가 될 수 있는 말인지. noun: 지식·이해 칸 낱말이면 '밀기·당기기'처럼 -기 명사 허용 */
@@ -22,7 +22,7 @@ function okCore(c: string, subject: string, noun = false) {
   if (!c || c === subject || STOP.has(c)) return false;
   if (c.length < 2) return ONE.has(c);
   if (/^[0-9A-Za-z]+$/.test(c)) return false;
-  if (END.test(c) && !(noun && c.endsWith('기') && !c.endsWith('하기'))) return false;
+  if (END.test(c) && !(noun && (c.includes('·') || (c.endsWith('기') && !c.endsWith('하기'))))) return false;
   return true;
 }
 
@@ -54,7 +54,7 @@ export function keyIdx(tokens: string[], vocab: Vocab | null) {
       out.add(i);
       return;
     }
-    if (c.endsWith('하기')) {
+    if (c.endsWith('하기') && !c.includes('·')) {
       const st = c.slice(0, -2);
       if (st.length >= 2 && okCore(st, vocab?.subject ?? '')) out.add(i);
     }
