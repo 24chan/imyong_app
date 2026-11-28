@@ -87,21 +87,18 @@ export default function HomeScreen() {
   const onBrand = colors.background; // 브랜드색 위 글자 (라이트: 흰색, 다크: 아주 어두운 색)
   const nextAfter = nextKey ? upcoming.find((e) => e !== nextKey && KEY_EVENTS.includes(e.event)) : undefined;
   const receipt = getReceiptInfo(regionEvents, today);
-  // 색 아이콘 메뉴 (에브리타임 참고, 2026-11-21 시안 승인)
+  // 2026-11-28 개편 승인: 홈 바로가기 4개. 빠진 것은 다른 곳에 그대로 있음
+  // 지역 비교·추이 → 지역·TO 탭 위 바로가기 / 사립 채용 → 임용 소식 '사립 채용' / 스터디 → 커뮤니티 '스터디'
   const menu: { icon: keyof typeof Ionicons.glyphMap; label: string; cat: CatKey; go: () => void; badge?: number }[] = [
-    { icon: 'school-outline', label: '학교 지도(실습초)', cat: 'teal', go: () => router.push('/school-map') },
-    { icon: 'map-outline', label: '선발 지도', cat: 'blue', go: () => router.navigate('/region') },
-    { icon: 'git-compare-outline', label: '지역 비교', cat: 'purple', go: () => router.push('/compare') },
-    { icon: 'trending-up-outline', label: '추이', cat: 'coral', go: () => router.push('/trend') },
-    { icon: 'briefcase-outline', label: '사립 채용', cat: 'amber', go: () => router.push({ pathname: '/news', params: { type: 'jobs' } }), badge: openJobs },
-    // 2026-11-24 사용자 요청: '일정'(아래 탭에 있음) 대신 '공개 자료'
-    { icon: 'library-outline', label: '공부', cat: 'pink', go: () => router.navigate({ pathname: '/academy', params: { tab: 'public', t: String(Date.now()) } }) },
-    { icon: 'people-outline', label: '스터디', cat: 'green', go: () => router.navigate({ pathname: '/community', params: { board: 'study' } }) },
-    { icon: 'megaphone-outline', label: '임용 소식', cat: 'gray', go: () => router.push('/news'), badge: unseen.length },
+    { icon: 'map-outline', label: '지역·TO', cat: 'blue', go: () => router.navigate('/region') },
+    { icon: 'megaphone-outline', label: '임용 소식', cat: 'coral', go: () => router.push('/news'), badge: unseen.length + openJobs },
+    { icon: 'book-outline', label: '공부', cat: 'teal', go: () => router.navigate({ pathname: '/academy', params: { tab: 'public', t: String(Date.now()) } }) },
+    { icon: 'school-outline', label: '학교 지도', cat: 'purple', go: () => router.push('/school-map') },
   ];
+  const dLeft = nextKey ? daysUntil(nextKey.date, today) : 99;
   const SectionHead = ({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 2 }}>
-      <Txt style={{ fontSize: 17, fontWeight: '700' }}>{title}</Txt>
+      <Txt style={{ fontSize: 17.5, fontWeight: '800', letterSpacing: -0.4 }}>{title}</Txt>
       {action && (
         <Pressable onPress={onAction} hitSlop={8} accessibilityRole="button">
           <Txt variant="sub" style={{ fontWeight: '600' }}>
@@ -147,28 +144,36 @@ export default function HomeScreen() {
 
       {/* 시안 A (2026-11-23): 연회색 바탕 + 흰 카드, 섹션 제목은 카드 안 */}
       <View style={{ paddingHorizontal: space.md, gap: space.md - 2, paddingTop: space.xs }}>
-        {/* D-day 카드 */}
-        <View style={{ backgroundColor: colors.brand, borderRadius: 22, padding: 20, gap: 6 }}>
+        {/* D-day 카드 (2026-11-28 개편: 기존 초록 바탕 유지, 왼쪽 일정·오른쪽 큰 D-day) */}
+        <View style={{ backgroundColor: colors.brand, borderRadius: 22, padding: 18, gap: 10 }}>
           {nextKey ? (
-            <>
-              <Txt style={{ color: onBrand, fontSize: 14, opacity: 0.85 }}>
-                {regionByCode(scheduleRegion)?.shortName} · {EVENT_LABEL[nextKey.event]}까지
-              </Txt>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
-                <Txt style={{ color: onBrand, fontSize: 46, fontWeight: '800', letterSpacing: -1.5, lineHeight: 52 }}>{dDayLabel(nextKey.date, today)}</Txt>
-                <Txt style={{ color: onBrand, fontSize: 15, opacity: 0.85 }}>{shortDate(nextKey.date)}</Txt>
-              </View>
-              {nextAfter && (
-                <Txt style={{ color: onBrand, fontSize: 13.5, opacity: 0.85 }}>
-                  다음은 {EVENT_LABEL[nextAfter.event]} {shortDate(nextAfter.date)}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Txt style={{ color: onBrand, fontSize: 12.5, fontWeight: '600', opacity: 0.8 }}>다음 일정</Txt>
+                <Txt style={{ color: onBrand, fontSize: 17, fontWeight: '800', letterSpacing: -0.3 }} numberOfLines={2}>
+                  {EVENT_LABEL[nextKey.event]}
                 </Txt>
-              )}
-            </>
+                <Txt style={{ color: onBrand, fontSize: 12.5, opacity: 0.8 }}>
+                  {regionByCode(scheduleRegion)?.shortName}
+                  {nextAfter ? ` · 다음은 ${EVENT_LABEL[nextAfter.event]} ${shortDate(nextAfter.date)}` : ''}
+                </Txt>
+              </View>
+              <View style={{ alignItems: 'center', gap: 4 }}>
+                <Txt style={{ color: onBrand, fontSize: 40, fontWeight: '900', letterSpacing: -1.5, lineHeight: 44 }}>{dDayLabel(nextKey.date, today)}</Txt>
+                {dLeft <= 7 ? (
+                  <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: colors.hot }}>
+                    <Txt style={{ color: colors.background, fontSize: 11.5, fontWeight: '800' }}>{shortDate(nextKey.date)} 임박</Txt>
+                  </View>
+                ) : (
+                  <Txt style={{ color: onBrand, fontSize: 12.5, opacity: 0.85 }}>{shortDate(nextKey.date)}</Txt>
+                )}
+              </View>
+            </View>
           ) : (
-            <Txt style={{ color: onBrand, fontSize: 19, fontWeight: '800' }}>올해 일정이 모두 끝났어요. 다음 시행계획을 기다려요.</Txt>
+            <Txt style={{ color: onBrand, fontSize: 18, fontWeight: '800' }}>올해 일정이 모두 끝났어요. 다음 시행계획을 기다려요.</Txt>
           )}
           {receipt && (
-            <View style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 11, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: onBrand + '26' }}>
+            <View style={{ alignSelf: 'flex-start', paddingHorizontal: 11, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: onBrand + '26' }}>
               <Txt style={{ color: onBrand, fontSize: 12.5, fontWeight: '800' }}>{receipt.detail}</Txt>
             </View>
           )}
@@ -176,18 +181,18 @@ export default function HomeScreen() {
         </View>
 
         {/* 색 아이콘 메뉴 */}
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', rowGap: 16, backgroundColor: colors.background, borderRadius: radius.xl, paddingVertical: 18 }}>
+        <View style={{ flexDirection: 'row', backgroundColor: colors.background, borderRadius: radius.xl, paddingVertical: 16 }}>
           {menu.map((b) => (
             <Pressable key={b.label} onPress={b.go} accessibilityRole="button" accessibilityLabel={b.label} style={{ width: '25%', alignItems: 'center', gap: 6 }}>
-              <View style={{ width: 54, height: 54, borderRadius: 18, backgroundColor: colors.cat[b.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: colors.cat[b.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name={b.icon} size={26} color={colors.cat[b.cat].fg} />
                 {!!b.badge && (
-                  <View style={{ position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, backgroundColor: colors.down, alignItems: 'center', justifyContent: 'center' }}>
+                  <View style={{ position: 'absolute', top: -4, right: -6, minWidth: 20, height: 20, paddingHorizontal: 5, borderRadius: 10, backgroundColor: colors.hot, alignItems: 'center', justifyContent: 'center' }}>
                     <Txt style={{ color: colors.background, fontSize: 11, fontWeight: '800' }}>{b.badge > 99 ? '99+' : b.badge}</Txt>
                   </View>
                 )}
               </View>
-              <Txt style={{ fontSize: 13, fontWeight: '500' }}>{b.label}</Txt>
+              <Txt style={{ fontSize: 13.5, fontWeight: '700' }}>{b.label}</Txt>
             </Pressable>
           ))}
         </View>

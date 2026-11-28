@@ -11,6 +11,8 @@ export type ColorTokens = {
   up: string; // 증가
   down: string; // 감소
   accent: string;
+  /** 빨간 강조 (2026-11-28 개편 승인): 1시간 안 글의 'N분 전', 공감 많은 수, 임박 D-day, 새 글 배지에만. 한 화면 5곳 이하, 빨간 바탕 카드 금지 */
+  hot: string;
   /** 카테고리 색 (2026-11-21 승인): 메뉴 아이콘·지역 칠하기 등. bg = 연한 바탕, fg = 진한 아이콘·글자 */
   cat: Record<CatKey, { bg: string; fg: string }>;
 };
@@ -28,6 +30,7 @@ export const lightColors: ColorTokens = {
   up: '#1F5E54',
   down: '#C8553D',
   accent: '#E8A33D',
+  hot: '#D63B2F',
   cat: {
     teal: { bg: '#E1F5EE', fg: '#0F6E56' },
     blue: { bg: '#E6F1FB', fg: '#185FA5' },
@@ -51,6 +54,7 @@ export const darkColors: ColorTokens = {
   up: '#5CC9A7',
   down: '#E8826B',
   accent: '#F0B860',
+  hot: '#FF6B5E',
   cat: {
     teal: { bg: '#0E2B25', fg: '#5DCAA5' },
     blue: { bg: '#0F2235', fg: '#85B7EB' },

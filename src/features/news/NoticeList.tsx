@@ -81,7 +81,7 @@ export function NoticeRow({
       })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-        {unread && <View accessibilityLabel="안 본 공고" style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: colors.down }} />}
+        {unread && <View accessibilityLabel="안 본 공고" style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: colors.hot }} />}
         <View style={{ flexShrink: 0, paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, backgroundColor: tint(tone) }}>
           <Txt variant="sub" style={{ color: tone, fontWeight: '800', fontSize: 12 }}>
             {NOTICE_LABEL[item.docType]}
@@ -95,7 +95,7 @@ export function NoticeRow({
           {item.postedAt ? item.postedAt.slice(5).replace('-', '.') : `${item.year}학년도`}
         </Txt>
         {isNew && (
-          <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: colors.down, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: colors.hot, alignItems: 'center', justifyContent: 'center' }}>
             <Txt style={{ color: colors.background, fontSize: 10, fontWeight: '900' }}>N</Txt>
           </View>
         )}

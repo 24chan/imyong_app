@@ -78,13 +78,13 @@ export function PostRow({ post, showBoard, flat }: { post: Post; showBoard?: boo
           </Txt>
         )}
         <LabelBadge label={post.label} small />
-        <Txt variant="sub" style={{ fontSize: 12 }}>
+        <Txt variant="sub" style={Date.now() - new Date(post.createdAt).getTime() < 3600e3 ? { fontSize: 12, color: colors.hot, fontWeight: '800' } : { fontSize: 12 }}>
           {ago(post.createdAt)}
         </Txt>
         <View style={{ flex: 1 }} />
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={14} color={hot ? colors.down : colors.textSub} />
-          <Txt variant="sub" style={{ fontSize: 12, color: hot ? colors.down : colors.textSub, fontWeight: hot ? '800' : '400' }}>
+          <Ionicons name={post.liked ? 'heart' : 'heart-outline'} size={14} color={hot ? colors.hot : colors.textSub} />
+          <Txt variant="sub" style={{ fontSize: 12, color: hot ? colors.hot : colors.textSub, fontWeight: hot ? '800' : '400' }}>
             {post.likeCount}
           </Txt>
         </View>
