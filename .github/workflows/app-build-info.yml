@@ -19,8 +19,8 @@ jobs:
           npx --yes eas-cli@latest build:list --platform android --limit 3 --json --non-interactive > builds.json
           node -e "for(const x of require('./builds.json'))console.log('BUILD',x.id,x.status,x.buildProfile,x.createdAt,(x.error&&x.error.message)||'')"
           node -e "
-          const b=require('./builds.json').find(x=>x.status==='FINISHED'&&x.artifacts&&x.artifacts.buildUrl);
-          if(!b){console.log('끝난 빌드 없음');process.exit(0)}
+          const b0=require('./builds.json')[0];const b=b0&&b0.status==='FINISHED'&&b0.artifacts&&b0.artifacts.buildUrl?b0:null; /* 가장 최근 빌드가 끝났을 때만 */
+          if(!b){console.log('가장 최근 빌드가 아직 안 끝남');process.exit(0)}
           const fs=require('fs');fs.mkdirSync('site-data',{recursive:true});
           const out={android:{apk:b.artifacts.buildUrl,version:b.appVersion,buildId:b.id,finishedAt:b.completedAt||b.updatedAt}};
           const old=fs.existsSync('site-data/app.json')?fs.readFileSync('site-data/app.json','utf8'):'';
