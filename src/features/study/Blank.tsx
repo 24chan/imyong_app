@@ -126,6 +126,7 @@ function SmallBtn({ label, onPress, strong }: { label: string; onPress: () => vo
   );
 }
 
+// 가린 낱말: 안드로이드는 겹친 Text의 'transparent' 글자색을 무시해 글자가 보임 → 글자색을 바탕색과 같게
 // 핵심어만(스마트): 조사·서술어를 뗀 낱말이 2글자 이상이고 흔한 말이 아니면 가림
 const STOP = new Set('하기 이해 활용 탐구 표현 및 등 위한 대한 관련 다양한 여러 기본 방법 과정 태도 의미 있는 하는 통한 따른 같은 우리 자신 생활 경험 상황 활동 알기 갖기 지니기'.split(' '));
 const JOSA = /(으로써|으로서|에서|에게|으로|부터|까지|처럼|보다|과의|와의|의|을|를|은|는|이|가|과|와|로|에|도|만)$/;
@@ -209,7 +210,7 @@ export const BlankText = memo(function BlankText({ text, size = 13.5, bold, grou
         <Text style={base}>
           {tokens.map((t, i) =>
             hide.has(i) && !isShown(i) ? (
-              <Text key={i} onPress={() => reveal(i)} accessibilityLabel="가린 낱말, 눌러서 보기" style={{ color: 'transparent', backgroundColor: colors.cat.amber.bg, textDecorationLine: 'underline', textDecorationColor: colors.cat.amber.fg }}>
+              <Text key={i} onPress={() => reveal(i)} accessibilityLabel="가린 낱말, 눌러서 보기" style={{ color: colors.cat.amber.bg, backgroundColor: colors.cat.amber.bg, textDecorationLine: 'underline', textDecorationColor: colors.cat.amber.fg }}>
                 {t}
               </Text>
             ) : (
