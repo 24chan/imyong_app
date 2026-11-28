@@ -1,11 +1,11 @@
-import { createContext, memo, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, memo, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { Txt } from '../../components/ui';
 import { useAccess } from '../../lib/access';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 import { isDelim, keyIdx, tokenize, Vocab } from './keywords';
-import { clearScope, itemKey, mark, scopeSummary, toggleCustom, useBlankItem, useBlankState } from './blankStore';
+import { cancelDraft, clearScope, commitDraft, itemKey, mark, resetDraft, scopeSummary, startDraft, toggleCustom, useBlankItem, useBlankState } from './blankStore';
 
 // 빈칸 암기 (2026-11-24 처음, 2026-11-28 확장 — 경인교대 인증 회원 전용, lib/access.ts 'blank')
 // 모드: 전체 가리기 / 핵심어만(스마트) / 내 빈칸(직접 고른 낱말, 편집·저장) / 틀린 것만(오답 회독)
@@ -27,27 +27,92 @@ export function useBlank() {
   return { mode, setMode, editing, setEditing, round, reset: () => setRound((r) => r + 1) };
 }
 
-const MODES: { k: BlankMode; label: string; hint: string }[] = [
-  { k: 'off', label: '끄기', hint: '' },
-  { k: 'all', label: '전체 가리기', hint: '칸을 통째로 가려요. 누르면 보여요' },
-  { k: 'smart', label: '핵심어만', hint: '핵심 낱말만 자동으로 가려요' },
-  { k: 'mine', label: '내 빈칸', hint: "'빈칸 편집'을 켜고 가릴 낱말을 눌러 저장해요" },
-  { k: 'wrong', label: '틀린 것만', hint: '틀림을 눌렀던 칸만 가려서 다시 봐요' },
+// 2026-11-28 사용자 요청: 처음엔 '빈칸 암기 모드' 단추 하나 → 누르면 켜지고 1 전체 가리기 · 2 핵심어 가리기 · 3 빈칸 만들기 · 4 오답
+// '빈칸 만들기'를 누르면 바로 편집: 낱말을 한 번 누르면 빈칸, 다시 누르면 없어짐. 단추는 초기화·저장 두 개만
+const MODES: { k: Exclude<BlankMode, 'off'>; label: string; hint: string }[] = [
+  { k: 'all', label: '1 전체 가리기', hint: '칸을 통째로 가려요. 누르면 보여요' },
+  { k: 'smart', label: '2 핵심어 가리기', hint: '교과 핵심어만 가려요. 가린 곳을 누르면 보여요' },
+  { k: 'mine', label: '3 빈칸 만들기', hint: '내가 만든 빈칸만 가려요. 다시 고치려면 「3 빈칸 만들기」를 누르세요' },
+  { k: 'wrong', label: '4 오답', hint: '틀림을 눌렀던 칸만 다시 가려요' },
 ];
 
-/** 모드 고르기·편집·다시 가리기·암기율 (경인교대 인증 회원에게만 보임) */
+/** 빈칸 암기 모드 (경인교대 인증 회원에게만 보임) */
 export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>; scope: string }) {
   const { colors } = useTheme();
   const can = useAccess();
   const st = useBlankState();
   const [open, setOpen] = useState(false);
   const sum = useMemo(() => scopeSummary(st, scope), [st, scope]);
+  const setEditingRef = useRef(blank.setEditing);
+  setEditingRef.current = blank.setEditing;
+  useEffect(
+    () => () => {
+      cancelDraft(); // 화면·탭을 나가면 저장 안 한 편집은 버림
+      setEditingRef.current(false);
+    },
+    [],
+  );
   if (!can('blank')) return null;
-  const on = blank.mode !== 'off';
+
+  if (blank.mode === 'off')
+    return (
+      <Pressable
+        onPress={() => {
+          blank.setMode('all');
+          blank.reset();
+        }}
+        accessibilityRole="button"
+        style={{ alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.accent, backgroundColor: colors.cat.amber.bg }}
+      >
+        <Txt style={{ fontSize: 14, fontWeight: '700', color: colors.cat.amber.fg }}>★ 빈칸 암기 모드</Txt>
+      </Pressable>
+    );
+
+  const box = { gap: space.sm, padding: space.md, borderRadius: radius.lg, borderWidth: 1.5, borderColor: colors.accent, backgroundColor: colors.cat.amber.bg };
+
+  // 빈칸 만들기(편집): 초기화·저장만
+  if (blank.editing)
+    return (
+      <View style={box}>
+        <Txt style={{ fontWeight: '700', color: colors.cat.amber.fg }}>★ 빈칸 만들기</Txt>
+        <Txt variant="sub" style={{ fontSize: 12.5 }}>
+          가릴 낱말을 한 번 누르면 빈칸, 다시 누르면 없어져요.
+        </Txt>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <SmallBtn
+            label="초기화"
+            onPress={() => Alert.alert('초기화', '이 자료에서 만든 빈칸을 모두 없앨까요? (저장을 눌러야 반영돼요)', [{ text: '취소' }, { text: '초기화', style: 'destructive', onPress: resetDraft }])}
+          />
+          <SmallBtn
+            label="저장"
+            strong
+            onPress={() => {
+              commitDraft();
+              blank.setEditing(false);
+              blank.reset();
+            }}
+          />
+        </View>
+      </View>
+    );
+
   const hint = MODES.find((m) => m.k === blank.mode)?.hint;
   return (
-    <View style={{ gap: space.sm, padding: space.md, borderRadius: radius.lg, borderWidth: 1.5, borderColor: on ? colors.accent : colors.line, backgroundColor: on ? colors.cat.amber.bg : colors.background }}>
-      <Txt style={{ fontWeight: '700' }}>★ 빈칸 암기</Txt>
+    <View style={box}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Txt style={{ flex: 1, fontWeight: '700', color: colors.cat.amber.fg }}>★ 빈칸 암기 모드</Txt>
+        <Pressable
+          onPress={() => {
+            blank.setMode('off');
+            blank.setEditing(false);
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="빈칸 암기 모드 끄기"
+          hitSlop={10}
+        >
+          <Txt style={{ fontSize: 13, fontWeight: '700', color: colors.textSub }}>끄기 ✕</Txt>
+        </Pressable>
+      </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
         {MODES.map((m) => {
           const sel = blank.mode === m.k;
@@ -56,12 +121,15 @@ export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>;
               key={m.k}
               onPress={() => {
                 blank.setMode(m.k);
-                if (m.k !== 'mine') blank.setEditing(false);
+                if (m.k === 'mine') {
+                  startDraft(scope);
+                  blank.setEditing(true);
+                } else blank.setEditing(false);
                 blank.reset();
               }}
               accessibilityRole="button"
               accessibilityState={{ selected: sel }}
-              style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, borderWidth: 1, borderColor: sel ? colors.cat.amber.fg : colors.line, backgroundColor: sel ? colors.cat.amber.fg : colors.background }}
+              style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: radius.pill, borderWidth: 1, borderColor: sel ? colors.cat.amber.fg : colors.line, backgroundColor: sel ? colors.cat.amber.fg : colors.background }}
             >
               <Txt style={{ fontSize: 13, fontWeight: '700', color: sel ? colors.background : colors.text }}>{m.label}</Txt>
             </Pressable>
@@ -73,23 +141,14 @@ export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>;
           {hint}
         </Txt>
       )}
-      {on && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-          {blank.mode === 'mine' && <SmallBtn label={blank.editing ? '편집 끝내기' : '빈칸 편집'} onPress={() => blank.setEditing(!blank.editing)} strong={blank.editing} />}
-          <SmallBtn label="다시 가리기" onPress={blank.reset} />
-          {blank.mode === 'mine' && (
-            <SmallBtn
-              label="내 빈칸 지우기"
-              onPress={() => Alert.alert('내 빈칸 지우기', '이 자료에서 고른 빈칸을 모두 지울까요?', [{ text: '취소' }, { text: '지우기', style: 'destructive', onPress: () => clearScope(scope, 'custom') }])}
-            />
-          )}
-        </View>
-      )}
-      <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" hitSlop={6}>
-        <Txt style={{ fontSize: 13, fontWeight: '600', color: colors.cat.amber.fg }}>
-          암기율 {sum.done ? `${Math.round((sum.ok / sum.done) * 100)}% (${sum.ok}/${sum.done}칸)` : '— 칸을 열고 맞음·틀림을 눌러 보세요'} {sum.done ? (open ? '▲' : '영역별 ▼') : ''}
-        </Txt>
-      </Pressable>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <SmallBtn label="다시 가리기" onPress={blank.reset} />
+        <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" hitSlop={6} style={{ flex: 1 }}>
+          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.cat.amber.fg }}>
+            암기율 {sum.done ? `${Math.round((sum.ok / sum.done) * 100)}% (${sum.ok}/${sum.done}칸) ${open ? '▲' : '영역별 ▼'}` : '— 가린 곳을 열고 맞음·틀림을 눌러요'}
+          </Txt>
+        </Pressable>
+      </View>
       {open && sum.done > 0 && (
         <View style={{ gap: 6 }}>
           {sum.groups.map(([g, v]) => (
@@ -158,7 +217,7 @@ export const BlankText = memo(function BlankText({ text, size = 13.5, bold, grou
             <Text
               key={i}
               onPress={() => toggleCustom(key, i)}
-              style={sel.has(i) ? { backgroundColor: colors.cat.amber.bg, color: colors.cat.amber.fg, textDecorationLine: 'underline', fontWeight: '700' } : { textDecorationLine: 'underline', textDecorationColor: colors.line }}
+              style={sel.has(i) ? { backgroundColor: colors.cat.amber.fg, color: colors.background, fontWeight: '700' } : { textDecorationLine: 'underline', textDecorationColor: colors.line }}
             >
               {t}
             </Text>

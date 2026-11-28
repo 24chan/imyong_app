@@ -46,9 +46,42 @@ export function useBlankState(): State {
   return useSyncExternalStore(subscribe, () => state);
 }
 
+// '빈칸 만들기' 편집 중에는 고친 것을 임시(draft)로만 들고 있다가 '저장'을 눌러야 기록 (2026-11-28 사용자 요청)
+let draft: { scope: string; custom: Record<string, number[]> } | null = null;
+const inDraft = (key: string) => !!draft && key.startsWith(`${draft.scope}|`);
+const notify = () => subs.forEach((f) => f());
+
+export function startDraft(scope: string) {
+  const custom: Record<string, number[]> = {};
+  Object.entries(state.custom).forEach(([k, v]) => k.startsWith(`${scope}|`) && (custom[k] = v));
+  draft = { scope, custom };
+  notify();
+}
+/** 초기화: 이 자료에서 고른 빈칸을 모두 없앰(저장 전까지는 임시) */
+export function resetDraft() {
+  if (!draft) return;
+  draft = { scope: draft.scope, custom: {} };
+  notify();
+}
+export function commitDraft() {
+  if (!draft) return;
+  const { scope, custom: d } = draft;
+  const custom: Record<string, number[]> = {};
+  Object.entries(state.custom).forEach(([k, v]) => !k.startsWith(`${scope}|`) && (custom[k] = v));
+  Object.assign(custom, d);
+  draft = null;
+  state = { ...state, custom };
+  emit();
+}
+export function cancelDraft() {
+  if (!draft) return;
+  draft = null;
+  notify();
+}
+
 /** 칸 하나만 지켜봄 — 다른 칸을 눌러도 이 칸은 다시 그리지 않음(성능) */
 export function useBlankItem(key: string): { custom?: number[]; stat?: Stat } {
-  const custom = useSyncExternalStore(subscribe, () => state.custom[key]);
+  const custom = useSyncExternalStore(subscribe, () => (inDraft(key) ? draft!.custom[key] : state.custom[key]));
   const stat = useSyncExternalStore(subscribe, () => state.stats[key]);
   return { custom, stat };
 }
@@ -62,6 +95,17 @@ export function hashText(s: string) {
 export const itemKey = (scope: string, group: string, text: string) => `${scope}|${group}|${hashText(text)}`;
 
 export function toggleCustom(key: string, idx: number) {
+  if (draft && inDraft(key)) {
+    const cur = new Set(draft.custom[key] ?? []);
+    if (cur.has(idx)) cur.delete(idx);
+    else cur.add(idx);
+    const custom = { ...draft.custom };
+    if (cur.size) custom[key] = [...cur].sort((a, b) => a - b);
+    else delete custom[key];
+    draft = { scope: draft.scope, custom };
+    notify();
+    return;
+  }
   const cur = new Set(state.custom[key] ?? []);
   if (cur.has(idx)) cur.delete(idx);
   else cur.add(idx);

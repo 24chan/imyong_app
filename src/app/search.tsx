@@ -6,7 +6,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { TextInput } from '../components/TextField';
 import { Chip, Screen, Txt } from '../components/ui';
-import { searchLectures } from '../data/academy';
+import { EVENT_KIND, listEvents, searchLectures } from '../data/academy';
 import { ago, searchPosts } from '../data/community';
 import { getTeacherJobs, isOpen } from '../data/jobs';
 import { regionByCode } from '../data/regions';
@@ -18,12 +18,13 @@ import { useAppSettings, useToday } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
-type Cat = 'all' | 'school' | 'post' | 'notice' | 'lecture';
+type Cat = 'all' | 'school' | 'post' | 'notice' | 'event' | 'lecture';
 const CATS: { value: Cat; label: string }[] = [
   { value: 'all', label: '전체' },
   { value: 'school', label: '학교' },
   { value: 'post', label: '게시글' },
   { value: 'notice', label: '공고' },
+  { value: 'event', label: '일정' },
   { value: 'lecture', label: '강의' },
 ];
 const PREVIEW = 4;
@@ -54,6 +55,18 @@ export default function SearchScreen() {
   const posts = useAsync(() => (want('post') ? searchPosts(q) : Promise.resolve([])), [q, cat]);
   const lectures = useAsync(() => (want('lecture') ? searchLectures(viewLevel, q) : Promise.resolve([])), [q, cat, viewLevel]);
   const noticesAll = useAsync(() => (want('notice') ? getNotices(viewLevel, 300) : Promise.resolve([])), [cat, viewLevel, ready]);
+  const eventsAll = useAsync(() => {
+    if (!want('event')) return Promise.resolve([]);
+    const d = new Date(today);
+    const from = new Date(d.getTime() - 30 * 864e5).toISOString().slice(0, 10);
+    const to = new Date(d.getTime() + 365 * 864e5).toISOString().slice(0, 10);
+    return listEvents(viewLevel, from, to).catch(() => []);
+  }, [cat, viewLevel, ready]);
+  const events = useMemo(
+    () => (ready ? (eventsAll.data ?? []).filter((e) => has(e.title, t) || has(e.academyName ?? '', t) || has(e.place ?? '', t) || has(EVENT_KIND[e.kind] ?? '', t)) : []),
+    [eventsAll.data, t, ready],
+  );
+  const [menuMore, setMenuMore] = useState(false);
   const jobsAll = useAsync(() => (want('notice') ? getTeacherJobs() : Promise.resolve([])), [cat, ready]);
 
   const notices = useMemo(() => {
@@ -73,14 +86,15 @@ export default function SearchScreen() {
   const subjHits = useMemo(() => (ready ? matchSubjects(q) : []), [q, ready]);
   const csSubjects = menus.some((m) => m.key === 'cs') ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
 
-  const loading = schools.loading || posts.loading || lectures.loading || noticesAll.loading || jobsAll.loading;
+  const loading = schools.loading || posts.loading || lectures.loading || noticesAll.loading || jobsAll.loading || eventsAll.loading;
   const counts = {
     school: schools.data?.length ?? 0,
     post: posts.data?.length ?? 0,
     notice: notices.length,
+    event: events.length,
     lecture: lectures.data?.length ?? 0,
   };
-  const total = counts.school + counts.post + counts.notice + counts.lecture + menus.length;
+  const total = counts.school + counts.post + counts.notice + counts.event + counts.lecture + menus.length;
   const limit = (n: number) => (cat === 'all' ? Math.min(n, PREVIEW) : n);
 
   const Row = ({ onPress, children, link }: { onPress: () => void; children: ReactNode; link?: boolean }) => (
@@ -141,7 +155,7 @@ export default function SearchScreen() {
             autoFocus
             returnKeyType="search"
             onSubmitEditing={() => setQ(input.trim())}
-            placeholder="학교, 글, 공고, 강의, 공부 메뉴(내체표 등)"
+            placeholder="학교, 글, 공고, 일정, 강의, 메뉴·기능(실습초, 내체표 등)"
             placeholderTextColor={colors.textSub}
             accessibilityLabel="검색어"
             style={{ flex: 1, paddingVertical: space.md, color: colors.text, fontSize: 16 }}
@@ -179,10 +193,10 @@ export default function SearchScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.lg, paddingBottom: space.sm }}>
               <Ionicons name="book-outline" size={18} color={colors.brand} />
               <Txt variant="heading" style={{ flex: 1 }}>
-                공부 메뉴
+                메뉴·기능 {menus.length}
               </Txt>
             </View>
-            {menus.map((m) => (
+            {(menuMore ? menus : menus.slice(0, 5)).map((m) => (
               <Row key={m.key} onPress={() => router.push(m.params ? { pathname: m.path as never, params: m.params } : (m.path as never))}>
                 <Txt style={{ fontWeight: '700' }}>{m.title}</Txt>
                 <Txt variant="sub">{m.desc}</Txt>
@@ -195,6 +209,11 @@ export default function SearchScreen() {
                 )}
               </Row>
             ))}
+            {!menuMore && menus.length > 5 && (
+              <Txt color="brand" style={{ fontWeight: '800', padding: space.lg, paddingTop: space.sm }} onPress={() => setMenuMore(true)}>
+                메뉴·기능 더 보기 ›
+              </Txt>
+            )}
           </View>
         )}
 
@@ -243,6 +262,21 @@ export default function SearchScreen() {
                   </Txt>
                   <Txt style={{ fontWeight: '700', opacity: n.closed ? 0.55 : 1 }} numberOfLines={2}>
                     {n.title}
+                  </Txt>
+                </Row>
+              ))}
+            </Section>
+
+            <Section c="event" title="일정" icon="calendar-outline" n={counts.event}>
+              {events.slice(0, limit(counts.event)).map((e) => (
+                <Row key={e.id} onPress={() => router.push('/(tabs)/schedule')}>
+                  <Txt variant="sub" style={{ fontWeight: '700' }}>
+                    {EVENT_KIND[e.kind] ?? '일정'} · {e.startsOn.slice(2).replace(/-/g, '.')}
+                    {e.endsOn && e.endsOn !== e.startsOn ? ` ~ ${e.endsOn.slice(5).replace(/-/g, '.')}` : ''}
+                    {e.academyName ? ` · ${e.academyName}` : ''}
+                  </Txt>
+                  <Txt style={{ fontWeight: '700' }} numberOfLines={2}>
+                    {e.title}
                   </Txt>
                 </Row>
               ))}
