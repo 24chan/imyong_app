@@ -44,7 +44,7 @@ writeFileSync(
 .c{background:#fff;border-radius:20px;padding:28px 22px;max-width:360px;width:86%;text-align:center}h1{font-size:20px;margin:0 0 8px}p{color:#5B6B7C;font-size:14px;line-height:1.6;margin:0 0 18px}
 a.b{display:block;background:#1F5E54;color:#fff;text-decoration:none;font-weight:800;font-size:17px;padding:16px;border-radius:12px}
 @media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
-<body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">앱으로 돌아가는 중이에요. 화면이 그대로면 아래 단추를 눌러 주세요.</p><a class="b" id="go" href="#">앱으로 돌아가기</a></div>
+<body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">앱으로 돌아가는 중이에요. 화면이 그대로면 아래 단추를 눌러 주세요.</p><a class="b" id="go" href="#">앱으로 돌아가기</a><a id="go2" href="#" style="display:block;margin-top:14px;color:#5B6B7C;font-size:14px">안 되면 여기를 눌러 주세요</a></div>
 <p id="d" style="margin-top:14px;font-size:11px;color:#93A3A1;word-break:break-all"></p>
 <script>
 (function(){var q=new URLSearchParams(location.search);var to=q.get('to')||'';
@@ -54,9 +54,10 @@ if(err){document.getElementById('t').textContent='로그인하지 못했어요';
 // 로그인 정보는 ? 뒤로 붙임(안드로이드 intent 주소는 # 을 따로 씀)
 var url=to+(h?(to.indexOf('?')<0?'?':'&')+h:'');
 var m=url.match(/^([a-z][a-z0-9+.-]*):\\/\\/(.*)$/);var link=url;
-if(/Android/i.test(navigator.userAgent)&&m){var pkg=m[1].indexOf('exp')===0?'host.exp.exponent':'com.imyongmongttang.app';
-link='intent://'+m[2]+'#Intent;scheme='+m[1]+';package='+pkg+';end';}
-document.getElementById('go').href=link;document.getElementById('d').textContent='to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
+if(/Android/i.test(navigator.userAgent)&&m){// 앱 이름(패키지)은 설치한 판마다 다를 수 있어 Expo Go 말고는 지정하지 않음
+var pkg=m[1]==='exp'||m[1]==='exps'?';package=host.exp.exponent':'';
+link='intent://'+m[2]+'#Intent;scheme='+m[1]+pkg+';end';}
+document.getElementById('go').href=link;document.getElementById('go2').href=url;document.getElementById('d').textContent='to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
 setTimeout(function(){location.href=link;},150);})();
 </script></body></html>`,
 );
