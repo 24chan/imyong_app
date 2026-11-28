@@ -1,4 +1,4 @@
--- 1분 퀴즈 문제별 오답률 (2026-11-28). 누가 풀었는지는 남기지 않고 문제별 숫자만 셈
+/* 1분 퀴즈 문제별 오답률 (2026-11-28). 누가 풀었는지는 남기지 않고 문제별 숫자만 셈 */
 create table if not exists public.quiz_stats (
   qid text primary key,
   tries integer not null default 0,
@@ -10,7 +10,7 @@ alter table public.quiz_stats enable row level security;
 
 drop policy if exists "quiz_stats read" on public.quiz_stats;
 create policy "quiz_stats read" on public.quiz_stats for select using (true);
--- 직접 쓰기는 막고, 아래 함수로만 1씩 올림
+/* 직접 쓰기는 막고, 아래 함수로만 1씩 올림 */
 
 create or replace function public.record_quiz_answer(p_qid text, p_correct boolean)
 returns void
@@ -27,3 +27,4 @@ as $$
 $$;
 
 grant execute on function public.record_quiz_answer(text, boolean) to anon, authenticated;
+notify pgrst, 'reload schema';
