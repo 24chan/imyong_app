@@ -35,4 +35,22 @@ writeFileSync(
   'site/index.html',
   page(LEGAL.appName, `<p>임용시험을 준비하는 교대생·사범대생을 위한 정보·커뮤니티 앱이에요.</p><p><a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a> · <a href="delete.html">계정 삭제</a></p><p>문의: ${esc(mail)}</p>`),
 );
+// 로그인 돌아오기 페이지 (2026-11-28): 카카오·Google 로그인 뒤 브라우저가 앱(exp://, imyongapp://)을 바로 못 여는 기기가 있어
+// 이 페이지를 거쳐 앱으로 넘김. 자동으로 한 번 시도하고, 안 되면 '앱으로 돌아가기' 단추(누르면 브라우저가 앱을 열어 줌)
+writeFileSync(
+  'site/auth.html',
+  `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>로그인 · ${LEGAL.appName}</title>
+<style>body{font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F2F4F7;color:#1B2A3A}
+.c{background:#fff;border-radius:20px;padding:28px 22px;max-width:360px;width:86%;text-align:center}h1{font-size:20px;margin:0 0 8px}p{color:#5B6B7C;font-size:14px;line-height:1.6;margin:0 0 18px}
+a.b{display:block;background:#1F5E54;color:#fff;text-decoration:none;font-weight:800;font-size:17px;padding:16px;border-radius:12px}
+@media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
+<body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">앱으로 돌아가는 중이에요. 화면이 그대로면 아래 단추를 눌러 주세요.</p><a class="b" id="go" href="#">앱으로 돌아가기</a></div>
+<script>
+(function(){var q=new URLSearchParams(location.search);var to=q.get('to')||'';
+if(!/^(exp|exps|imyongapp):\/\//.test(to)){to='imyongapp://auth-callback';}
+var err=q.get('error_description')||q.get('error');var h=location.hash||'';
+if(err){document.getElementById('t').textContent='로그인하지 못했어요';h='#error_description='+encodeURIComponent(err);}
+var url=to+h;document.getElementById('go').href=url;setTimeout(function(){location.href=url;},150);})();
+</script></body></html>`,
+);
 console.log('site/ 만듦');

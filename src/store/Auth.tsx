@@ -31,6 +31,7 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 /** 마지막 소셜 로그인에서 앱이 돌아오길 기다린 주소(문제 생기면 화면에 보여 줘서 진단) */
 let lastRedirect = '';
+const AUTH_BOUNCE = 'https://24chan.github.io/imyong_app/auth.html';
 export const getLastRedirect = () => lastRedirect;
 
 /** 로그인 후 돌아온 주소(#access_token=…)에서 세션 꺼내기. 처리했으면 true */
@@ -178,7 +179,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithProvider = useCallback(async (provider: 'google' | 'kakao', agreed: boolean) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const WebBrowser = require('expo-web-browser') as typeof import('expo-web-browser');
-    const redirectTo = Linking.createURL('auth-callback');
+    // 앱으로 돌아올 주소. 브라우저가 앱 주소로 바로 못 넘기는 기기가 있어 웹 페이지(auth.html)를 한 번 거침
+    const appReturn = Linking.createURL('auth-callback');
+    const redirectTo = `${AUTH_BOUNCE}?to=${encodeURIComponent(appReturn)}`;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -189,8 +192,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     if (error) throw error;
-    lastRedirect = redirectTo;
-    const res = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
+    lastRedirect = appReturn;
+    const res = await WebBrowser.openAuthSessionAsync(data.url, appReturn);
     if (res.type === 'success') {
       if (!(await applyAuthUrl(res.url))) throw new Error('로그인 정보를 받지 못했어요. 다시 시도해 주세요');
     } else {
