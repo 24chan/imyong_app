@@ -1,0 +1,20 @@
+name: site-deploy
+# 웹페이지(약관·처리방침·계정 삭제·로그인 돌아오기·설치 페이지)를 EAS Hosting 에 올림 (2026-11-28: 저장소 비공개 전환 대비, GitHub Pages 대신)
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['src/legal/**', 'scripts/tools/legal_pages.ts', 'site-data/**']
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx -y tsx scripts/tools/legal_pages.ts
+      - name: EAS Hosting 에 올리기
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx --yes eas-cli@latest deploy --export-dir site --prod --non-interactive
