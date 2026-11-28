@@ -17,7 +17,7 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           npx --yes eas-cli@latest build:list --platform android --limit 3 --json --non-interactive > builds.json
-          jq -r '.[] | "BUILD \(.id) \(.status) \(.buildProfile) \(.createdAt) \(.error.message // "")"' builds.json
+          node -e "for(const x of require('./builds.json'))console.log('BUILD',x.id,x.status,x.buildProfile,x.createdAt,(x.error&&x.error.message)||'')"
           node -e "
           const b=require('./builds.json').find(x=>x.status==='FINISHED'&&x.artifacts&&x.artifacts.buildUrl);
           if(!b){console.log('끝난 빌드 없음');process.exit(0)}
