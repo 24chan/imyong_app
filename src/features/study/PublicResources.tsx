@@ -94,6 +94,19 @@ export function PublicResources() {
               },
             ]
           : []),
+        // 2026-11-28 사용자 승인: 1분 퀴즈 (지금은 모두, 나중에 경인교대 전용 → lib/access.ts 'quiz')
+        ...(elem
+          ? [
+              {
+                pill: '1분 퀴즈',
+                title: '교육과정 5문제씩',
+                desc: '총론·내체표·성취기준·교수·학습·평가에서 낸 3천여 문제. 틀린 건 오답 노트로 모여요.',
+                go: () => router.push('/quiz'),
+                feature: 'quiz' as const,
+                org: '국가교육과정정보센터 원문으로 만듦',
+              },
+            ]
+          : []),
         {
           title: '교과서·지도서 찾기',
           desc: '교과서 발행사와 지도서 안내.',

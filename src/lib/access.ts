@@ -7,19 +7,22 @@ import { useAuth } from '../store/Auth';
 // - 볼 수 없는 사람에게는 메뉴·버튼·안내를 아예 그리지 않음(안내 문구도 없음)
 // 나중에 유료로 바꿀 때: 규칙에 { paid: true } 를 넣고 아래 can() 에 결제 권한 확인만 더하면 됨
 // 2026-11-28 수정: 내용 체계표 자체는 전체 공개, 빈칸 암기(가공 기능)만 경인교대
-export type Feature = 'exam-analysis' | 'concept-tree' | 'blank';
+export type Feature = 'exam-analysis' | 'concept-tree' | 'blank' | 'quiz';
 
-type Rule = { univ?: string[]; paid?: boolean };
+type Rule = { open?: boolean; univ?: string[]; paid?: boolean };
 
 const RULES: Record<Feature, Rule> = {
   'exam-analysis': { univ: ['ginue'] },
   'concept-tree': { univ: ['ginue'] },
   blank: { univ: ['ginue'] },
+  // 1분 퀴즈: 지금은 모두에게, 나중에 경인교대 전용으로 바꿀 때 open 을 지우고 univ: ['ginue']
+  quiz: { open: true },
 };
 
 export function canUse(f: Feature, who: { isAdmin: boolean; univCodes: string[] }): boolean {
   if (who.isAdmin) return true;
   const r = RULES[f];
+  if (r.open) return true;
   if (r.univ && who.univCodes.some((c) => r.univ!.includes(c))) return true;
   return false;
 }

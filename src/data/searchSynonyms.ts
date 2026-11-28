@@ -74,6 +74,7 @@ export const STUDY_MENUS: StudyMenu[] = [
   { key: 'mock', title: '모의고사', desc: '모의고사 후기·내 점수', words: ['모의고사', '모고', '점수', '성적', '내점수'], path: '/(tabs)/academy', params: { tab: 'mock' } },
   { key: 'lectures', title: '학원·인강 후기', desc: '강의별 별점·후기', words: ['학원', '인강', '강의', '후기', '강사', '별점'], path: '/(tabs)/academy', params: { tab: 'lectures' } },
   { key: 'public', title: '공부 자료', desc: '교육과정·기출·2차·법령 모음', words: ['공부자료', '공개자료', '자료', '공부'], path: '/(tabs)/academy', params: { tab: 'public' } },
+  { key: 'quiz', title: '1분 퀴즈', desc: '교육과정 5문제씩 풀고 오답 노트로 복습', words: ['퀴즈', '1분퀴즈', '문제', '문제풀이', '오답노트', '복습', '테스트'], path: '/quiz', level: 'elementary', feature: 'quiz' },
   { key: 'blank', title: '빈칸 암기', desc: '내체표·개념 구조도·기출 분석에서 빈칸 암기 모드', words: ['빈칸', '빈칸암기', '암기', '외우기', '오답', '가리기'], path: '/content-system', level: 'elementary', feature: 'blank' },
   { key: 'note', title: '기출 문항 필기', desc: '기출 분석 → 문항 그림에 펜·형광펜으로 쓰기', words: ['필기', '펜', '형광펜', '메모', '문항필기'], path: '/exam-analysis', level: 'elementary', feature: 'exam-analysis' },
   { key: 'b-hot', title: '커뮤니티 · HOT 게시판', desc: '공감 많은 인기 글', words: ['HOT', '핫', '인기글', '인기'], path: '/(tabs)/community', params: { board: 'hot' } },
