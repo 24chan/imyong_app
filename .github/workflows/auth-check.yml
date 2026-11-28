@@ -1,0 +1,41 @@
+name: auth-check
+# 로그인 진단(2026-11-28): 공개 키로 Supabase 인증 설정·카카오/구글 로그인 주소·이메일 코드 보내기를 시험. 비밀값은 출력 안 함
+on:
+  workflow_dispatch:
+    inputs:
+      otp_email:
+        description: '인증 코드를 보내 볼 메일(비우면 안 보냄)'
+        required: false
+        default: ''
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 진단
+        env:
+          URL: https://wckaybzamhvmhxiacmnx.supabase.co
+          KEY: sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6
+          OTP: ${{ github.event.inputs.otp_email }}
+        run: |
+          echo "== 설정(켜진 로그인 방법)"
+          curl -s "$URL/auth/v1/settings" -H "apikey: $KEY" | python3 -c "import json,sys;d=json.load(sys.stdin);print({k:v for k,v in d.get('external',{}).items() if v});print('disable_signup',d.get('disable_signup'),'autoconfirm',d.get('mailer_autoconfirm'),'otp_len',d.get('mailer_otp_length'))"
+          for p in kakao google; do
+            for r in "imyongapp://auth-callback" "exp://127.0.0.1:8081/--/auth-callback"; do
+              loc=$(curl -s -o /dev/null -w '%{redirect_url}' "$URL/auth/v1/authorize?provider=$p&redirect_to=$(python3 -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=''))" "$r")&scopes=profile_nickname%20profile_image" -H "apikey: $KEY")
+              echo "== $p ($r)"
+              python3 - "$loc" <<'PY'
+          import sys,urllib.parse as u
+          q=u.urlparse(sys.argv[1]);d=u.parse_qs(q.query)
+          print(' host',q.netloc,'scope',d.get('scope'),'redirect_uri',d.get('redirect_uri'))
+          st=d.get('state',[''])[0]
+          import base64,json
+          try:
+              p=st.split('.')[1];p+='='*(-len(p)%4);print(' state.redirect_to',json.loads(base64.urlsafe_b64decode(p)).get('redirect_to'))
+          except Exception as e: print(' state?',e)
+          PY
+            done
+          done
+          if [ -n "$OTP" ]; then
+            echo "== 이메일 코드 보내기"
+            curl -s -X POST "$URL/auth/v1/otp" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"email\":\"$OTP\",\"create_user\":true}" -w '\nHTTP %{http_code}\n'
+          fi
