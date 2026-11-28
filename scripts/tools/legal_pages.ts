@@ -48,15 +48,15 @@ a.b{display:block;background:#1F5E54;color:#fff;text-decoration:none;font-weight
 <p id="d" style="margin-top:14px;font-size:11px;color:#93A3A1;word-break:break-all"></p>
 <script>
 (function(){var q=new URLSearchParams(location.search);var to=q.get('to')||'';
-if(!/^(exp|exps|imyongapp):\\/\\//.test(to)){to='imyongapp://auth-callback';}
+var raw=to;if(!/^[a-z][a-z0-9+.-]*:\\/\\//i.test(to)||/^(https?|javascript|data|file):/i.test(to)){to='imyongapp://auth-callback';}
 var err=q.get('error_description')||q.get('error');var h=(location.hash||'').replace(/^#/,'');
 if(err){document.getElementById('t').textContent='로그인하지 못했어요';h='error_description='+encodeURIComponent(err);}
 // 로그인 정보는 ? 뒤로 붙임(안드로이드 intent 주소는 # 을 따로 씀)
 var url=to+(h?(to.indexOf('?')<0?'?':'&')+h:'');
-var m=url.match(/^([a-z+]+):\\/\\/(.*)$/);var link=url;
+var m=url.match(/^([a-z][a-z0-9+.-]*):\\/\\/(.*)$/);var link=url;
 if(/Android/i.test(navigator.userAgent)&&m){var pkg=m[1].indexOf('exp')===0?'host.exp.exponent':'com.imyongmongttang.app';
 link='intent://'+m[2]+'#Intent;scheme='+m[1]+';package='+pkg+';end';}
-document.getElementById('go').href=link;document.getElementById('d').textContent=to;
+document.getElementById('go').href=link;document.getElementById('d').textContent='to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
 setTimeout(function(){location.href=link;},150);})();
 </script></body></html>`,
 );
