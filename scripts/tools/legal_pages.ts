@@ -90,7 +90,7 @@ a.b{display:block;text-align:center;background:#1F5E54;color:#fff;text-decoratio
 @media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F;border:1px solid #26302F}h1{color:#4FB3A0}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
 <body><div class="w"><h1>${LEGAL.appName}</h1><p>임용 준비 교대생·사범대생을 위한 앱 · <span class="tag">비공개 시험판</span></p>
 <div class="c"><h2>안드로이드</h2>${apk ? `<a class="b" href="${apk}">설치 파일 받기 (APK)</a><p>판 ${esc(app.android?.version ?? '')} · ${esc((app.android?.finishedAt ?? '').slice(0, 10))}</p>` : '<a class="b off">준비 중이에요</a>'}
-<ol><li>받은 파일을 열어요.</li><li>'출처를 알 수 없는 앱' 허용을 물으면 <b>이 출처 허용</b>을 켜요.</li><li><b>설치</b>를 눌러요. 예전 '임용맵' 앱이 있으면 지워도 돼요.</li></ol></div>
+<ol><li>받은 파일을 열어요.</li><li>'출처를 알 수 없는 앱' 허용을 물으면 <b>이 출처 허용</b>을 켜요.</li><li><b>설치</b>를 눌러요.</li><li>'Google Play 프로텍트 · 앱 차단됨'이 뜨면 <b>무시하고 설치하기</b>를 눌러요. 플레이 스토어에 아직 올리지 않은 시험판이라 나오는 안내예요.</li></ol><p>예전 '임용맵' 앱이 있으면 지워도 돼요.</p></div>
 <div class="c"><h2>아이폰</h2><p>아이폰은 애플 정책상 TestFlight(애플 공식 시험판 앱)로만 나눠 줄 수 있어요. 준비되면 이 페이지에 초대 링크가 생겨요.</p></div>
 <p style="margin-top:18px;font-size:12.5px"><a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a></p></div></body></html>`,
 );
