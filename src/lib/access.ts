@@ -15,8 +15,8 @@ const RULES: Record<Feature, Rule> = {
   'exam-analysis': { univ: ['ginue'] },
   'concept-tree': { univ: ['ginue'] },
   blank: { univ: ['ginue'] },
-  // 1분 퀴즈: 지금은 모두에게, 나중에 경인교대 전용으로 바꿀 때 open 을 지우고 univ: ['ginue']
-  quiz: { open: true },
+  // 1분 퀴즈: 2026-11-28 사용자 결정으로 다른 가공 기능과 같이 경인교대 전용
+  quiz: { univ: ['ginue'] },
 };
 
 export function canUse(f: Feature, who: { isAdmin: boolean; univCodes: string[] }): boolean {

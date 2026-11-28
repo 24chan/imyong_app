@@ -33,7 +33,7 @@ export function PublicResources() {
       icon: 'star',
       cat: 'amber',
       items: [
-        // 2026-11-28 사용자 승인: 1분 퀴즈 (지금은 모두, 나중에 경인교대 전용 → lib/access.ts 'quiz')
+        // 2026-11-28 사용자 승인: 1분 퀴즈 (경인교대 인증 회원·운영자만 → lib/access.ts 'quiz')
         ...(elem
           ? [
               {
