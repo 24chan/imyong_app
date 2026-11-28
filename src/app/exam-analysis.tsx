@@ -1,10 +1,10 @@
 import { Gate } from '../features/study/Gate';
 import { BlankBar, BlankScope, BlankText, useBlank } from '../features/study/Blank';
 import { router, Stack } from 'expo-router';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { memo, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
 import { Chip, Screen, Segmented, Txt } from '../components/ui';
-import { examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
+import { Analysis, examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
 import { Sheet } from '../features/community/parts';
 import { QuestionClip } from '../features/analysis/QuestionClip';
@@ -30,126 +30,21 @@ function ExamAnalysisScreenInner() {
   const subj = subject ?? subjects[0] ?? null;
   const subjFile = a?.subjects.find((x) => x.name === subj)?.file ?? null;
   const sd = useAsync(async () => (subjFile ? getAnalysisSubject(level, subjFile) : null), [subjFile]);
-  const hitsOf = (id: number) => sd.data?.hits[String(id)] ?? [];
+  const hitsOf = (id: number) => sd.data?.hits[String(id)] ?? NONE;
   const [era, setEra] = useState<'2022' | '2015'>('2022');
   const [openId, setOpenId] = useState<number | null>(null);
   useEffect(() => setOpenId(null), [subj, era, tab]);
 
-  const openExam = async (h: Hit) => {
-    setOpenId(null);
-    const f = await examPdf(level, h.y, h.p, a);
-    if (!f) return Alert.alert('문제지를 찾지 못했어요');
-    router.push({ pathname: '/pdf', params: { url: f.url, title: `${h.y}학년도 교육과정 ${h.p} ${h.n}번`, page: f.page, pageLabel: '평가원 게시판' } });
-  };
-
-  // 출제 지도 팝업: 나온 문항을 평가원 원본에서 그 문항만 잘라 보여 줌(A안, 문항 그림은 저장 안 함)
-  const HitClips = ({ hs }: { hs: Hit[] }) => {
-    const [more, setMore] = useState(false);
-    const uniq = [...new Map([...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => [`${h.y}${h.p}${h.n}`, h])).values()];
-    const shown = more ? uniq : uniq.slice(0, 3);
-    return (
-      <View style={{ gap: space.md }}>
-        <Txt variant="sub" style={{ fontSize: 12.5 }}>
-          나온 문항 {uniq.length}개 · 평가원 원문에서 그 문항만 보여 줘요
-        </Txt>
-        {shown.map((h) => (
-          <OneClip key={`${h.y}${h.p}${h.n}`} h={h} />
-        ))}
-        {!more && uniq.length > 3 && (
-          <Pressable onPress={() => setMore(true)} accessibilityRole="button" style={{ alignSelf: 'center', padding: space.sm }}>
-            <Txt style={{ fontWeight: '700', color: colors.brand }}>{uniq.length - 3}개 더 보기</Txt>
-          </Pressable>
-        )}
-      </View>
-    );
-  };
-  const OneClip = ({ h }: { h: Hit }) => {
-    const f = useAsync(() => examPdf(level, h.y, h.p, a), [h.y, h.p, a]);
-    const box = a?.boxes?.[`${h.y}${h.p}`]?.[String(h.n)];
-    return (
-      <View style={{ gap: 6 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <View style={{ paddingHorizontal: 9, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}>
-            <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat.coral.fg }}>
-              {h.y}학년도 {h.p} {h.n}번
-            </Txt>
-          </View>
-          <View style={{ flex: 1 }} />
-          <Pressable onPress={() => openExam(h)} accessibilityRole="button" hitSlop={8}>
-            <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.textSub }}>원문 전체 보기 ›</Txt>
-          </Pressable>
-        </View>
-        {box && f.data ? (
-          <>
-            <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} />
-          </>
-        ) : f.loading ? (
-          <ActivityIndicator color={colors.brand} />
-        ) : (
-          <Txt variant="sub" style={{ fontSize: 12.5 }}>
-            이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 원문 전체 보기로 확인해 주세요.
-          </Txt>
-        )}
-      </View>
-    );
-  };
-
-  const HitChips = ({ hs }: { hs: Hit[] }) => (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-      {[...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => (
-        <Pressable
-          key={`${h.y}${h.p}${h.n}`}
-          onPress={() => openExam(h)}
-          accessibilityRole="button"
-          style={{ paddingHorizontal: 9, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}
-        >
-          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.cat.coral.fg }}>
-            {h.y} {h.p}-{h.n}
-          </Txt>
-        </Pressable>
-      ))}
-    </View>
+  const openExam = useCallback(
+    async (h: Hit) => {
+      setOpenId(null);
+      const f = await examPdf(level, h.y, h.p, a);
+      if (!f) return Alert.alert('문제지를 찾지 못했어요');
+      router.push({ pathname: '/pdf', params: { url: f.url, title: `${h.y}학년도 교육과정 ${h.p} ${h.n}번`, page: f.page, pageLabel: '평가원 게시판' } });
+    },
+    [a],
   );
-
-  const UnitCard = ({ u }: { u: Unit }) => {
-    const hs = hitsOf(u.id);
-    const open = openId === u.id;
-    return (
-      <Pressable onPress={() => setOpenId(open ? null : u.id)} style={{ paddingVertical: space.md, paddingHorizontal: space.lg, gap: 6, borderTopWidth: 1, borderTopColor: colors.line }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          {!!u.code && <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat.blue.fg }}>{u.code}</Txt>}
-          {!!u.area && <Txt variant="sub" style={{ fontSize: 12 }}>{u.area}</Txt>}
-          <View style={{ flex: 1 }} />
-          {hs.length > 0 && (
-            <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}>
-              <Txt style={{ fontSize: 12, fontWeight: '700', color: colors.cat.coral.fg }}>{new Set(hs.map((h) => `${h.y}${h.p}${h.n}`)).size}회</Txt>
-            </View>
-          )}
-        </View>
-        <Txt style={{ fontSize: 14.5, lineHeight: 22 }} numberOfLines={open ? undefined : 4}>
-          {highlight(u.text, hs).map((seg, i) => (
-            <Txt
-              key={i}
-              style={{
-                fontSize: 14.5,
-                lineHeight: 22,
-                backgroundColor: seg.heat ? (seg.heat >= 3 ? colors.cat.amber.fg + '55' : colors.cat.amber.bg) : undefined,
-                fontWeight: seg.heat ? '600' : '400',
-              }}
-            >
-              {seg.t}
-            </Txt>
-          ))}
-        </Txt>
-        {open && hs.length > 0 && (
-          <View style={{ gap: 4 }}>
-            <Txt variant="sub" style={{ fontSize: 12.5 }}>나온 문항 (누르면 문제지)</Txt>
-            <HitChips hs={hs} />
-          </View>
-        )}
-      </Pressable>
-    );
-  };
+  const toggleUnit = useCallback((id: number) => setOpenId((o) => (o === id ? null : id)), []);
 
   const body = () => {
     if (!a || !subj) return null;
@@ -172,7 +67,7 @@ function ExamAnalysisScreenInner() {
                 {s} · {bySec.get(s)!.reduce((n, u) => n + (hitsOf(u.id).length ? 1 : 0), 0)}/{bySec.get(s)!.length}칸 출제
               </Txt>
               <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, overflow: 'hidden', marginTop: -1 }}>
-                {bySec.get(s)!.map((u) => <UnitCard key={u.id} u={u} />)}
+                {bySec.get(s)!.map((u) => <UnitCard key={u.id} u={u} hs={hitsOf(u.id)} open={openId === u.id} onToggle={toggleUnit} onExam={openExam} />)}
               </View>
             </View>
           ))}
@@ -287,7 +182,7 @@ function ExamAnalysisScreenInner() {
                 )}
                 {hitsOf(sel.id).length ? (
                   <>
-                    <HitClips hs={hitsOf(sel.id)} />
+                    <HitClips hs={hitsOf(sel.id)} a={a} onExam={openExam} />
                   </>
                 ) : (
                   <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>
@@ -444,3 +339,122 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
     </View>
   );
 }
+
+const NONE: Hit[] = [];
+const LEVEL = 'elementary' as const;
+
+// 출제 지도 팝업: 나온 문항을 평가원 원본에서 그 문항만 잘라 보여 줌(A안, 문항 그림은 저장 안 함)
+// 2026-11-28 최적화: 화면 컴포넌트 밖으로 옮겨 다시 그릴 때마다 새로 만들어지지(잘라낸 그림 다시 그리기) 않게
+function HitClips({ hs, a, onExam }: { hs: Hit[]; a: Analysis | null | undefined; onExam: (h: Hit) => void }) {
+  const { colors } = useTheme();
+  const [more, setMore] = useState(false);
+  const uniq = useMemo(() => [...new Map([...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => [`${h.y}${h.p}${h.n}`, h])).values()], [hs]);
+  const shown = more ? uniq : uniq.slice(0, 3);
+  return (
+    <View style={{ gap: space.md }}>
+      <Txt variant="sub" style={{ fontSize: 12.5 }}>
+        나온 문항 {uniq.length}개 · 평가원 원문에서 그 문항만 보여 줘요
+      </Txt>
+      {shown.map((h) => (
+        <OneClip key={`${h.y}${h.p}${h.n}`} h={h} a={a} onExam={onExam} />
+      ))}
+      {!more && uniq.length > 3 && (
+        <Pressable onPress={() => setMore(true)} accessibilityRole="button" style={{ alignSelf: 'center', padding: space.sm }}>
+          <Txt style={{ fontWeight: '700', color: colors.brand }}>{uniq.length - 3}개 더 보기</Txt>
+        </Pressable>
+      )}
+    </View>
+  );
+}
+
+const OneClip = memo(function OneClip({ h, a, onExam }: { h: Hit; a: Analysis | null | undefined; onExam: (h: Hit) => void }) {
+  const { colors } = useTheme();
+  const f = useAsync(() => examPdf(LEVEL, h.y, h.p, a), [h.y, h.p, a]);
+  const box = a?.boxes?.[`${h.y}${h.p}`]?.[String(h.n)];
+  return (
+    <View style={{ gap: 6 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <View style={{ paddingHorizontal: 9, paddingVertical: 4, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}>
+          <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat.coral.fg }}>
+            {h.y}학년도 {h.p} {h.n}번
+          </Txt>
+        </View>
+        <View style={{ flex: 1 }} />
+        <Pressable onPress={() => onExam(h)} accessibilityRole="button" hitSlop={8}>
+          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.textSub }}>원문 전체 보기 ›</Txt>
+        </Pressable>
+      </View>
+      {box && f.data ? (
+        <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} />
+      ) : f.loading ? (
+        <ActivityIndicator color={colors.brand} />
+      ) : (
+        <Txt variant="sub" style={{ fontSize: 12.5 }}>
+          이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 원문 전체 보기로 확인해 주세요.
+        </Txt>
+      )}
+    </View>
+  );
+});
+
+function HitChips({ hs, onExam }: { hs: Hit[]; onExam: (h: Hit) => void }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+      {[...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => (
+        <Pressable
+          key={`${h.y}${h.p}${h.n}`}
+          onPress={() => onExam(h)}
+          accessibilityRole="button"
+          style={{ paddingHorizontal: 9, paddingVertical: 5, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}
+        >
+          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.cat.coral.fg }}>
+            {h.y} {h.p}-{h.n}
+          </Txt>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
+/** 형광펜 원문 칸 — memo: 다른 칸을 펼쳐도 이 칸의 형광펜 계산을 다시 하지 않음 */
+const UnitCard = memo(function UnitCard({ u, hs, open, onToggle, onExam }: { u: Unit; hs: Hit[]; open: boolean; onToggle: (id: number) => void; onExam: (h: Hit) => void }) {
+  const { colors } = useTheme();
+  const segs = useMemo(() => highlight(u.text, hs), [u.text, hs]);
+  const times = useMemo(() => new Set(hs.map((h) => `${h.y}${h.p}${h.n}`)).size, [hs]);
+  return (
+    <Pressable onPress={() => onToggle(u.id)} style={{ paddingVertical: space.md, paddingHorizontal: space.lg, gap: 6, borderTopWidth: 1, borderTopColor: colors.line }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+        {!!u.code && <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.cat.blue.fg }}>{u.code}</Txt>}
+        {!!u.area && <Txt variant="sub" style={{ fontSize: 12 }}>{u.area}</Txt>}
+        <View style={{ flex: 1 }} />
+        {hs.length > 0 && (
+          <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: colors.cat.coral.bg }}>
+            <Txt style={{ fontSize: 12, fontWeight: '700', color: colors.cat.coral.fg }}>{times}회</Txt>
+          </View>
+        )}
+      </View>
+      <Txt style={{ fontSize: 14.5, lineHeight: 22 }} numberOfLines={open ? undefined : 4}>
+        {segs.map((seg, i) => (
+          <Txt
+            key={i}
+            style={{
+              fontSize: 14.5,
+              lineHeight: 22,
+              backgroundColor: seg.heat ? (seg.heat >= 3 ? colors.cat.amber.fg + '55' : colors.cat.amber.bg) : undefined,
+              fontWeight: seg.heat ? '600' : '400',
+            }}
+          >
+            {seg.t}
+          </Txt>
+        ))}
+      </Txt>
+      {open && hs.length > 0 && (
+        <View style={{ gap: 4 }}>
+          <Txt variant="sub" style={{ fontSize: 12.5 }}>나온 문항 (누르면 문제지)</Txt>
+          <HitChips hs={hs} onExam={onExam} />
+        </View>
+      )}
+    </Pressable>
+  );
+});
