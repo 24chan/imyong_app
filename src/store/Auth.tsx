@@ -31,11 +31,22 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 /** 마지막 소셜 로그인에서 앱이 돌아오길 기다린 주소(문제 생기면 화면에 보여 줘서 진단) */
 let lastRedirect = '';
-/** 긴 무작위 번호(48자). 로그인 정보를 꺼낼 때만 씀 */
-function makeNonce() {
+/** 로그인 정보를 꺼낼 때만 쓰는 무작위 번호(32바이트 → 64자). 암호학적 난수 사용
+ *  expo-crypto 는 새로 설치한 앱(다음 APK)부터 들어 있어서, 예전 앱에서는 기기 내장 crypto → 마지막 수단 Math.random 순서로 씀 */
+function makeNonce(): string {
+  const hex = (b: ArrayLike<number>) => Array.from(b, (x) => (x & 255).toString(16).padStart(2, '0')).join('');
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const C = require('expo-crypto') as typeof import('expo-crypto');
+    return hex(C.getRandomBytes(32));
+  } catch {
+    /* 예전 앱: 모듈 없음 */
+  }
+  const g = (globalThis as { crypto?: { getRandomValues?: (a: Uint8Array) => Uint8Array } }).crypto;
+  if (g?.getRandomValues) return hex(g.getRandomValues(new Uint8Array(32)));
   let out = '';
-  while (out.length < 48) out += Math.random().toString(36).slice(2);
-  return (out + Date.now().toString(36)).slice(0, 56);
+  while (out.length < 64) out += Math.random().toString(16).slice(2);
+  return out.slice(0, 64);
 }
 const AUTH_BOUNCE = 'https://24chan.github.io/imyong_app/auth.html';
 export const getLastRedirect = () => lastRedirect;
@@ -189,7 +200,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const appReturn = Linking.createURL('auth-callback');
     // 브라우저가 앱을 못 여는 기기용: 이 번호로 돌아오기 페이지가 맡긴 로그인 정보를 꺼내 옴
     const nonce = makeNonce();
-    const redirectTo = `${AUTH_BOUNCE}?v=4&to=${encodeURIComponent(appReturn)}&n=${nonce}`; // v: 페이지 캐시 피하기
+    const redirectTo = `${AUTH_BOUNCE}?v=5&to=${encodeURIComponent(appReturn)}&n=${nonce}`; // v: 페이지 캐시 피하기
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {

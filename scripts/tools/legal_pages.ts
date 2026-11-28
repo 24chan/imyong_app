@@ -57,18 +57,23 @@ var m=url.match(/^([a-z][a-z0-9+.-]*):\\/\\/(.*)$/);var link=url;
 if(/Android/i.test(navigator.userAgent)&&m){// 앱 이름(패키지)은 설치한 판마다 다를 수 있어 Expo Go 말고는 지정하지 않음
 var pkg=m[1]==='exp'||m[1]==='exps'?';package=host.exp.exponent':'';
 link='intent://'+m[2]+'#Intent;scheme='+m[1]+pkg+';end';}
-document.getElementById('go').href=link;document.getElementById('go2').href=url;document.getElementById('d').textContent='v4 · to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
-// 앱이 맡긴 번호(n)가 있으면 로그인 정보를 서버 전달함에 맡김 → 앱이 꺼내 감(브라우저가 앱을 못 열어도 됨)
-var n=q.get('n');var M=document.getElementById('m'),E=document.getElementById('e');
-if(err){M.textContent='로그인하지 못했어요: '+err;}
-else if(!n){M.textContent='앱 업데이트가 덜 받아졌어요. 앱을 두 번 껐다 켠 뒤 다시 로그인해 주세요. (아래 단추로도 시도해 볼 수 있어요)';}
-else if(!h){M.textContent='로그인 정보가 없어요. 다시 로그인해 주세요.';}
-else{fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',cache:'no-store',headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
-.then(function(r){if(r.ok){M.textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';return;}
-return r.text().then(function(t){var why=/PGRST202|Could not find the function/i.test(t)?'서버 준비 안 됨: 0011 SQL을 실행해 주세요':/permission denied|42501/i.test(t)?'권한 오류(RLS·실행 권한)':/42P01|does not exist/i.test(t)?'표 없음: 0011 SQL을 실행해 주세요':'서버 오류';
-M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent=why+' (HTTP '+r.status+') '+t.slice(0,160);});})
-.catch(function(x){M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent='인터넷 오류: '+x;});}
-setTimeout(function(){location.href=link;},600);})();
+document.getElementById('go').href=link;document.getElementById('go2').href=url;
+var n=q.get('n');var M=document.getElementById('m'),E=document.getElementById('e'),D=document.getElementById('d');
+// 진단 줄: 판, 돌아갈 주소, 로그인 정보 길이(h), 번호(n) 유무, 전달함 결과
+var st='대기';function dbg(){D.textContent='v5 · to='+(raw||'(없음)')+' · h='+h.length+'자 · n='+(n?'있음':'없음')+' · 전달함='+st;}dbg();
+function go(){location.href=link;}
+if(err){M.textContent='로그인하지 못했어요: '+err;st='건너뜀(로그인 오류)';dbg();setTimeout(go,300);}
+else if(!h){M.textContent='로그인 정보가 비어 있어요. 다시 로그인해 주세요.';E.textContent='주소에 #access_token 이 없어요 (Supabase가 정보를 붙이지 않음)';st='건너뜀(h 없음)';dbg();}
+else if(!n){M.textContent='앱 업데이트가 덜 받아졌어요. 앱을 두 번 껐다 켠 뒤 다시 로그인해 주세요.';st='건너뜀(n 없음)';dbg();setTimeout(go,300);}
+else{st='보내는 중';dbg();
+// 앱 이동은 전달함 저장이 끝난 뒤에(먼저 이동하면 요청이 끊길 수 있음)
+fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',cache:'no-store',keepalive:true,headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
+.then(function(r){if(r.ok){st='성공(HTTP '+r.status+')';M.textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';dbg();return;}
+return r.text().then(function(t){var why=/PGRST202|Could not find the function/i.test(t)?'함수 없음: 0033 SQL을 실행해 주세요':/permission denied|42501/i.test(t)?'권한 오류(실행 권한)':/42P01|does not exist/i.test(t)?'표 없음: 0033 SQL을 실행해 주세요':/bad input/i.test(t)?'번호·정보 길이 오류':'서버 오류';
+st='실패(HTTP '+r.status+', '+why+')';M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent=why+' — '+t.slice(0,160);dbg();});})
+.catch(function(x){st='실패(인터넷: '+x+')';M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent='인터넷 오류: '+x;dbg();})
+.finally(function(){setTimeout(go,300);});}
+})();
 </script></body></html>`,
 );
 console.log('site/ 만듦');

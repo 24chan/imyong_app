@@ -10,7 +10,7 @@ export default function OnboardingLayout() {
         headerTintColor: colors.text,
         headerShadowVisible: false,
         headerTitleStyle: { fontFamily: 'Pretendard-Bold' },
-        headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
+        headerBackTitleStyle: { fontFamily: 'Pretendard-SemiBold' },
         headerBackTitle: '이전',
         contentStyle: { backgroundColor: colors.canvas },
       }}

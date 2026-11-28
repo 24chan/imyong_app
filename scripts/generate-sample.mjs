@@ -1,5 +1,5 @@
 // 샘플 데이터 생성기 — 실제 수치가 아닙니다. 화면 개발·확인용.
-// 실행: node scripts/generate-sample.mjs  → src/data/sample/*.json 을 다시 만듭니다.
+// 실행: node scripts/generate-sample.mjs  → scripts/sample-data/*.json 을 다시 만듭니다.
 // 같은 시드(seed)를 쓰므로 여러 번 실행해도 결과가 같습니다.
 import { writeFileSync } from 'node:fs';
 
@@ -121,7 +121,7 @@ const sources = [
 ];
 
 const out = (name, data) =>
-  writeFileSync(new URL(`../src/data/sample/${name}.json`, import.meta.url), JSON.stringify(data));
+  writeFileSync(new URL(`./sample-data/${name}.json`, import.meta.url), JSON.stringify(data));
 out('selection_counts', selection);
 out('exam_results', results);
 out('sources', sources);

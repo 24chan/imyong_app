@@ -43,3 +43,7 @@ docs/.plan_upload.md
 site/
 __pycache__/
 docs_tmp/
+
+# Python
+__pycache__/
+*.pyc

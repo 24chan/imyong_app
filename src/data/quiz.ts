@@ -24,7 +24,7 @@ export function getQuizBank(): Promise<QuizBank | null> {
 export const MIN_TRIES = 20;
 export type QuizStat = { tries: number; wrong: number };
 
-/** 문제별 푼 사람 수·틀린 수 (서버 SQL 0010 실행 전이면 빈 값) */
+/** 문제별 푼 사람 수·틀린 수 (서버 SQL 0032 실행 전이면 빈 값) */
 export async function getQuizStats(ids: string[]): Promise<Record<string, QuizStat>> {
   try {
     const { data, error } = await supabase.from('quiz_stats').select('qid,tries,wrong').in('qid', ids);

@@ -57,7 +57,7 @@ function RootStack() {
           headerStyle: { backgroundColor: colors.canvas },
           headerTintColor: colors.text,
           headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold', fontSize: 18 },
-          headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
+          headerBackTitleStyle: { fontFamily: 'Pretendard-SemiBold' },
           headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.canvas },
         }}
