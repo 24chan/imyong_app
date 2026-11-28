@@ -48,6 +48,8 @@ def main():
     now, todo = {}, []
     for p in files(root):
         rel = p.relative_to(root).as_posix()
+        if '/debug/' in rel or not rel.isascii():
+            continue  # 진단용·한글 이름 파일은 앱이 안 씀
         h = hashlib.sha1(p.read_bytes()).hexdigest()
         now[rel] = h
         if old.get(rel) != h:
