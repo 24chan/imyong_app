@@ -70,6 +70,7 @@ async function applyAuthUrl(url: string): Promise<boolean> {
 export function authErrorText(e: unknown): string {
   const m = (e as { message?: string; status?: number })?.message ?? String(e);
   const status = (e as { status?: number })?.status;
+  if (m.startsWith('[소셜]')) return m.slice(4).trim(); // 소셜 로그인 진단 문구는 그대로
   if (status === 429 || /rate limit|security purposes|too many/i.test(m)) return '메일을 너무 자주 보냈어요. 1~2분 뒤에 다시 해 주세요.';
   if (/expired|invalid|token/i.test(m)) return '코드가 맞지 않거나 시간이 지났어요. 메일의 숫자를 다시 확인해 주세요.';
   if (/email.*(invalid|valid)|invalid.*email/i.test(m)) return '이메일 주소 형식을 확인해 주세요.';
@@ -212,23 +213,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) throw error;
     lastRedirect = appReturn;
+    // 전달함은 1회용(꺼내면 지워짐) → 동시에 두 번 꺼내지 않게 진행 중인 꺼내기를 함께 기다림
     let relayed = false;
-    const take = async () => {
-      if (relayed) return true;
-      const { data: payload } = await supabase.rpc('take_auth_relay', { p_nonce: nonce });
-      if (typeof payload === 'string' && payload) {
-        relayed = await applyAuthUrl(`auth-callback#${payload}`);
-        if (relayed) {
-          // 안드로이드에서 못 닫으면 사용자가 X
-          Promise.resolve()
-            .then(() => WebBrowser.dismissBrowser())
-            .catch(() => {});
+    let inflight: Promise<boolean> | null = null;
+    let lastProblem = '';
+    const take = (): Promise<boolean> => {
+      if (relayed) return Promise.resolve(true);
+      if (inflight) return inflight;
+      inflight = (async () => {
+        const { data: payload, error: rpcErr } = await supabase.rpc('take_auth_relay', { p_nonce: nonce });
+        if (rpcErr) {
+          lastProblem = `전달함 꺼내기 오류: ${rpcErr.message}${rpcErr.code ? ` (${rpcErr.code})` : ''}`;
+          return false;
         }
-      }
-      return relayed;
+        if (typeof payload !== 'string' || !payload) {
+          lastProblem = '전달함이 비어 있음(null): 아직 안 맡겨졌거나 이미 꺼냄';
+          return false;
+        }
+        try {
+          // 꺼낸 정보로 세션 저장이 끝날 때까지 기다림
+          relayed = await applyAuthUrl(`auth-callback#${payload}`);
+        } catch (e) {
+          lastProblem = `세션 저장 실패(setSession): ${(e as Error)?.message ?? e}`;
+          throw new Error(`[소셜] ${lastProblem}`);
+        }
+        if (!relayed) {
+          lastProblem = `꺼낸 정보에 access_token·refresh_token이 없음 (길이 ${payload.length})`;
+          throw new Error(`[소셜] ${lastProblem}`);
+        }
+        Promise.resolve()
+          .then(() => WebBrowser.dismissBrowser())
+          .catch(() => {}); // 안드로이드에서 못 닫으면 사용자가 X
+        return true;
+      })().finally(() => {
+        inflight = null;
+      });
+      return inflight;
     };
+    let fatal: Error | null = null;
     const timer = setInterval(() => {
-      take().catch(() => {});
+      take().catch((e: Error) => {
+        fatal = e;
+      });
     }, 1500);
     let res: Awaited<ReturnType<typeof WebBrowser.openAuthSessionAsync>>;
     try {
@@ -238,10 +264,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     if (res.type === 'success' && (await applyAuthUrl(res.url))) {
       // 앱으로 바로 돌아온 경우
-    } else if (!(await take().catch(() => false))) {
-      // 브라우저가 앱을 열어 줬거나(위 주소 받기), 전달함에도 없으면 실패
-      await new Promise((r) => setTimeout(r, 800));
-      if (!(await supabase.auth.getSession()).data.session) return false;
+    } else {
+      if (fatal) throw fatal;
+      // 브라우저를 닫은 직후: 진행 중인 꺼내기를 기다리고, 없으면 몇 번 더 시도(맡기는 게 조금 늦을 수 있음)
+      let ok = false;
+      for (let i = 0; i < 4 && !ok; i++) {
+        ok = await take(); // 세션 저장 실패는 그대로 위로 올라감
+        if (!ok) await new Promise((r) => setTimeout(r, 1000));
+      }
+      if (!ok && !(await supabase.auth.getSession()).data.session) {
+        throw new Error(`[소셜] 로그인 정보를 받지 못했어요. ${lastProblem || '이유 모름'} · 번호 ${nonce.slice(0, 6)}…`);
+      }
     }
     const s2 = { user: (await supabase.auth.getUser()).data.user };
     if (agreed && !hasConsented(s2.user?.user_metadata)) await supabase.auth.updateUser({ data: consentRecord() }).catch(() => {});
