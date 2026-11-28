@@ -22,11 +22,12 @@ export function Txt({ variant = 'body', color, style, ...rest }: TxtProps) {
 }
 
 const textStyles = StyleSheet.create({
-  title: { fontSize: 24, fontWeight: '700', letterSpacing: -0.5 },
-  heading: { fontSize: 17, fontWeight: '700', letterSpacing: -0.3 },
+  // 2026-11-28 개편: 화면 제목 24·800 / 카드 제목 17·800 / 본문 15.5 / 보조 13·500
+  title: { fontSize: 24, fontWeight: '800', letterSpacing: -0.6 },
+  heading: { fontSize: 17, fontWeight: '800', letterSpacing: -0.4 },
   body: { fontSize: 15.5, lineHeight: 23 },
-  sub: { fontSize: 13.5, lineHeight: 20 },
-  number: { fontSize: 28, fontWeight: '700', letterSpacing: -0.5 },
+  sub: { fontSize: 13, lineHeight: 19, fontWeight: '500' },
+  number: { fontSize: 28, fontWeight: '800', letterSpacing: -0.8 },
 });
 
 export function Screen({ children, scroll = true }: { children: ReactNode; scroll?: boolean }) {

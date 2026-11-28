@@ -60,9 +60,9 @@ export function PostRow({ post, showBoard, flat }: { post: Post; showBoard?: boo
             <Txt style={{ fontSize: 11, fontWeight: '800', color: colors.cat.coral.fg }}>HOT</Txt>
           </View>
         )}
-        <Txt style={{ fontWeight: '600', fontSize: 15.5, flex: 1 }} numberOfLines={1}>
+        <Txt style={{ fontWeight: '700', fontSize: 16, flex: 1 }} numberOfLines={1}>
           {post.status === 'hidden' ? '🔒 ' : ''}
-          {tagName(post) ? <Txt style={{ fontWeight: '600', fontSize: 15.5, color: colors.cat.blue.fg }}>[{tagName(post)}] </Txt> : null}
+          {tagName(post) ? <Txt style={{ fontWeight: '700', fontSize: 16, color: colors.cat.blue.fg }}>[{tagName(post)}] </Txt> : null}
           {post.title}
         </Txt>
       </View>

@@ -13,7 +13,7 @@ import { useTheme } from '../../theme/useTheme';
 // 파일을 앱에 올리지 않음(교재·강의 PDF 공유 금지 규칙). 주소는 교육청 시행계획 공고의 '참고 사이트'와 같은 공식 사이트.
 // pill: 직접 만든 기능 이름(★ + 동그란 테두리로 감싸 보임). pillFeature: 이 이름표를 볼 수 있는 사람(없으면 모두)
 type Item = { title: string; desc: string; url?: string; go?: () => void; org: string; feature?: Feature; pill?: string; pillFeature?: Feature };
-type Section = { key: string; title: string; icon: keyof typeof Ionicons.glyphMap; cat: CatKey; items: Item[] };
+type Section = { key: string; title: string; sub?: string; icon: keyof typeof Ionicons.glyphMap; cat: CatKey; items: Item[] };
 
 const law = (name: string) => `https://www.law.go.kr/법령/${encodeURIComponent(name)}`;
 
@@ -25,18 +25,27 @@ export function PublicResources() {
   const can = useAccess();
 
   const sections: Section[] = [
+    // 2026-11-28 개편 승인: 직접 다듬은 학습 도구를 맨 위 '정리 도구'로 모음 (공식 자료는 아래 그대로)
     {
-      key: 'past',
-      title: '기출문제',
-      icon: 'document-text-outline',
-      cat: 'coral',
+      key: 'tools',
+      title: '정리 도구',
+      sub: '기출·교육과정을 다듬은 학습 도구',
+      icon: 'star',
+      cat: 'amber',
       items: [
-        {
-          title: elem ? '초등 임용 1차 기출 (교직논술·교육과정)' : `중등 임용 1차 기출 (교육학·${subj ?? '전공'})`,
-          desc: '평가원이 공개한 연도별 문제지와 정답. 앱 안에서 바로 보고 파일도 받아요.',
-          go: () => router.push('/past-exams'),
-          org: '한국교육과정평가원',
-        },
+        // 2026-11-28 사용자 승인: 1분 퀴즈 (지금은 모두, 나중에 경인교대 전용 → lib/access.ts 'quiz')
+        ...(elem
+          ? [
+              {
+                pill: '1분 퀴즈',
+                title: '교육과정 5문제씩',
+                desc: '총론·내체표·성취기준·교수·학습·평가에서 낸 3천여 문제. 틀린 건 오답 노트로 모여요.',
+                go: () => router.push('/quiz'),
+                feature: 'quiz' as const,
+                org: '국가교육과정정보센터 원문으로 만듦',
+              },
+            ]
+          : []),
         // 2026-11-24 사용자 요청: 초등 기출 분석은 초등 모드에서만 (중등 기출 분석은 따로 준비)
         ...(elem
           ? [
@@ -50,28 +59,6 @@ export function PublicResources() {
               },
             ]
           : []),
-        {
-          title: elem ? '2차 문제 (면접·수업실연)' : '2차 문제 (지도안·수업실연·면접)',
-          desc: elem
-            ? '지역마다 방식이 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.'
-            : '지도안 작성·수업실연(수업나눔)·심층면접, 과목에 따라 실기·실험·외국어 면접까지 지역마다 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.',
-          go: () => router.push('/second-exam'),
-          org: '시도교육청',
-        },
-      ],
-    },
-    {
-      key: 'curr',
-      title: '교육과정',
-      icon: 'library-outline',
-      cat: 'teal',
-      items: [
-        {
-          title: elem ? '초등 교육과정 총론·교과별 각론 원문' : `${subj ? `${subj} ` : ''}교육과정 각론·총론 원문`,
-          desc: '2022·2015 개정 고시문을 교과별로 앱 안에서 바로 봐요. 성격·목표, 내용 체계·성취기준, 교수·학습 및 평가(교육론)가 들어 있어요.',
-          go: () => router.push('/curriculum'),
-          org: '국가교육과정정보센터',
-        },
         // 2026-11-24 사용자 요청: 원문 카드 바로 아래 내체표 → 그 아래 개념 구조도 (초등 2022 데이터)
         ...(elem
           ? [
@@ -94,19 +81,42 @@ export function PublicResources() {
               },
             ]
           : []),
-        // 2026-11-28 사용자 승인: 1분 퀴즈 (지금은 모두, 나중에 경인교대 전용 → lib/access.ts 'quiz')
-        ...(elem
-          ? [
-              {
-                pill: '1분 퀴즈',
-                title: '교육과정 5문제씩',
-                desc: '총론·내체표·성취기준·교수·학습·평가에서 낸 3천여 문제. 틀린 건 오답 노트로 모여요.',
-                go: () => router.push('/quiz'),
-                feature: 'quiz' as const,
-                org: '국가교육과정정보센터 원문으로 만듦',
-              },
-            ]
-          : []),
+      ],
+    },
+    {
+      key: 'past',
+      title: '기출문제',
+      icon: 'document-text-outline',
+      cat: 'coral',
+      items: [
+        {
+          title: elem ? '초등 임용 1차 기출 (교직논술·교육과정)' : `중등 임용 1차 기출 (교육학·${subj ?? '전공'})`,
+          desc: '평가원이 공개한 연도별 문제지와 정답. 앱 안에서 바로 보고 파일도 받아요.',
+          go: () => router.push('/past-exams'),
+          org: '한국교육과정평가원',
+        },
+        {
+          title: elem ? '2차 문제 (면접·수업실연)' : '2차 문제 (지도안·수업실연·면접)',
+          desc: elem
+            ? '지역마다 방식이 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.'
+            : '지도안 작성·수업실연(수업나눔)·심층면접, 과목에 따라 실기·실험·외국어 면접까지 지역마다 달라요. 지역별 시행계획·1차 합격 공고를 앱 안에서 바로 봐요.',
+          go: () => router.push('/second-exam'),
+          org: '시도교육청',
+        },
+      ],
+    },
+    {
+      key: 'curr',
+      title: '교육과정',
+      icon: 'library-outline',
+      cat: 'teal',
+      items: [
+        {
+          title: elem ? '초등 교육과정 총론·교과별 각론 원문' : `${subj ? `${subj} ` : ''}교육과정 각론·총론 원문`,
+          desc: '2022·2015 개정 고시문을 교과별로 앱 안에서 바로 봐요. 성격·목표, 내용 체계·성취기준, 교수·학습 및 평가(교육론)가 들어 있어요.',
+          go: () => router.push('/curriculum'),
+          org: '국가교육과정정보센터',
+        },
         {
           title: '교과서·지도서 찾기',
           desc: '교과서 발행사와 지도서 안내.',
@@ -152,13 +162,16 @@ export function PublicResources() {
   return (
     <View style={{ gap: space.lg }}>
       <Txt variant="sub">임용 공부에 필요한 공식 자료를 앱 안에서 바로 봐요. 원문을 열거나 파일도 받을 수 있어요.</Txt>
-      {sections.map((s) => (
+      {sections.filter((s) => s.items.some((it) => !it.feature || can(it.feature))).map((s) => (
         <View key={s.key} style={{ gap: space.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
             <View style={{ width: 30, height: 30, borderRadius: 10, backgroundColor: colors.cat[s.cat].bg, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name={s.icon} size={17} color={colors.cat[s.cat].fg} />
             </View>
-            <Txt variant="heading">{s.title}</Txt>
+            <View style={{ flex: 1 }}>
+              <Txt variant="heading">{s.title}</Txt>
+              {!!s.sub && <Txt variant="sub" style={{ fontSize: 12.5 }}>{s.sub}</Txt>}
+            </View>
           </View>
           <View style={{ borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
             {s.items.filter((it) => !it.feature || can(it.feature)).map((it, i) => (
@@ -172,7 +185,7 @@ export function PublicResources() {
                   {/* 2026-11-28 사용자 요청: 직접 만든 기능 이름은 노란 별 + 동그란 테두리로 감싸 아이콘처럼 */}
                   <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
                     {!!it.pill && (it.feature || !it.pillFeature || can(it.pillFeature)) && <FeaturePill name={it.pill} />}
-                    <Txt style={{ fontWeight: '700' }}>{it.title}</Txt>
+                    <Txt style={{ fontSize: 16, fontWeight: '700' }}>{it.title}</Txt>
                   </View>
                   <Txt variant="sub">{it.desc}</Txt>
                   <Txt variant="sub" style={{ fontSize: 12, color: colors.cat[s.cat].fg, fontWeight: '700' }}>

@@ -11,6 +11,7 @@ export type FontName = keyof typeof FONT_FILES;
 
 export function fontFor(weight?: string | number | null): FontName {
   const w = weight === 'bold' ? 700 : weight === 'normal' || weight == null ? 400 : Number(weight) || 400;
+  if (w >= 800) return 'Pretendard-ExtraBold'; // 2026-11-28 개편: 제목·큰 숫자
   if (w >= 700) return 'Pretendard-Bold';
   if (w >= 600) return 'Pretendard-SemiBold';
   if (w >= 500) return 'Pretendard-Medium';

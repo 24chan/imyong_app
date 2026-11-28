@@ -56,7 +56,7 @@ function RootStack() {
         screenOptions={{
           headerStyle: { backgroundColor: colors.canvas },
           headerTintColor: colors.text,
-          headerTitleStyle: { fontFamily: 'Pretendard-Bold' },
+          headerTitleStyle: { fontFamily: 'Pretendard-ExtraBold', fontSize: 18 },
           headerBackTitleStyle: { fontFamily: 'Pretendard-Medium' },
           headerShadowVisible: false,
           contentStyle: { backgroundColor: colors.canvas },
