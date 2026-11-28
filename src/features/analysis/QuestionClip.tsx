@@ -42,7 +42,8 @@ post({ready:1});
 
 type State = { k: 'wait' } | { k: 'render'; b64: string } | { k: 'done'; img: Crop } | { k: 'live' } | { k: 'err'; why: string };
 
-export function QuestionClip({ url, box, cacheKey, title }: { url: string; box: Box; cacheKey: string; title: string }) {
+/** fitH: 그 높이 안에 맞춰 보여 줌(넓은 화면 한눈에 보기). onPress: 누를 때 할 일(없으면 그림 크게 보기) */
+export function QuestionClip({ url, box, cacheKey, title, fitH, onPress }: { url: string; box: Box; cacheKey: string; title: string; fitH?: number; onPress?: () => void }) {
   const { colors } = useTheme();
   const W = webview();
   const name = cropName(cacheKey, box, url);
@@ -71,8 +72,8 @@ export function QuestionClip({ url, box, cacheKey, title }: { url: string; box: 
 
   if (st.k === 'done') {
     return (
-      <Pressable onPress={() => router.push({ pathname: '/image', params: { url: st.img.uri, title } })} accessibilityLabel={`${title} 크게 보기`} style={frame}>
-        <Image source={{ uri: st.img.uri }} style={{ width: '100%', aspectRatio: st.img.w / st.img.h }} resizeMode="contain" />
+      <Pressable onPress={onPress ?? (() => router.push({ pathname: '/image', params: { url: st.img.uri, title } }))} accessibilityLabel={`${title} 크게 보기`} style={frame}>
+        <Image source={{ uri: st.img.uri }} style={fitH ? { width: '100%', height: fitH } : { width: '100%', aspectRatio: st.img.w / st.img.h }} resizeMode="contain" />
       </Pressable>
     );
   }
@@ -86,7 +87,7 @@ export function QuestionClip({ url, box, cacheKey, title }: { url: string; box: 
   if (st.k === 'live' && W) return <LiveClip url={url} box={box} />;
 
   return (
-    <View style={[frame, { height: 150, alignItems: 'center', justifyContent: 'center', gap: space.xs }]}>
+    <View style={[frame, { height: fitH ?? 150, alignItems: 'center', justifyContent: 'center', gap: space.xs }]}>
       <ActivityIndicator color={colors.brand} />
       <Txt variant="sub" style={{ fontSize: 12 }}>
         {st.k === 'wait' ? '평가원 원문을 받는 중… (한 번 받으면 다음부터 바로 떠요)' : '문항 부분만 잘라내는 중…'}

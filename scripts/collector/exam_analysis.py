@@ -418,8 +418,47 @@ def boxes_from_lines(pages, src):
             y1 = max(y1, min(1.0, nxt[2] - 0.005))  # 그림·표(글자 없는 부분)도 다음 번호 앞까지
         out[n] = {'p': pg, 'r': [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)], 'src': src}
         if not same and y1 > 0.88:
-            out[n]['more'] = True  # 단·쪽 끝까지 감 → 다음 단·쪽으로 이어질 수 있음(앱에 안내)
+            out[n]['more'] = True  # 단·쪽 끝까지 감 → 다음 단·쪽으로 이어질 수 있음
+            nx = cont_parts(by_pg, pg, col, nxt)
+            if nx:
+                out[n]['next'] = nx
     return out
+
+
+def cont_parts(by_pg, pg, col, nq, src_max=3):
+    """2026-11-28 사용자 요청: 지문만 말고 물음까지 — 단·쪽 끝까지 간 문항이 이어지는 다음 단(오른쪽 단, 다음 쪽 왼쪽 단)의
+    자리를 다음 문항 번호 앞까지 찾음. [{'p', 'r'}] 최대 3칸"""
+    parts, cur = [], (pg, col)
+    for _ in range(src_max):
+        two = by_pg[cur[0]][1]
+        if two and cur[1] == 0:
+            cur = (cur[0], 1)
+        elif cur[0] + 1 in by_pg:
+            cur = (cur[0] + 1, 0)
+        else:
+            break
+        lines, two = by_pg[cur[0]]
+        lo, hi = (0.5, 1.0) if (two and cur[1]) else (0.0, 0.5 if two else 1.0)
+        col_lines = [ln for ln in lines if lo - 0.005 <= ln[0] < hi and 0.04 <= ln[1] < 0.95 and not (two and ln[0] < 0.48 and ln[2] > 0.52)]
+        if not col_lines:
+            break
+        top = min(ln[1] for ln in col_lines)
+        stop = nq[2] if nq and (nq[0], nq[1]) == cur else None
+        seg = [ln for ln in col_lines if stop is None or ln[1] < stop - 0.002]
+        if not seg or (stop is not None and stop - top < 0.03):
+            break  # 다음 문항이 그 단 맨 위에서 시작 → 이어지는 부분 없음
+        x0 = max(0.0, min(ln[0] for ln in seg) - 0.012)
+        x1 = min(1.0, max(ln[2] for ln in seg) + 0.012)
+        y0 = max(0.0, top - 0.01)
+        y1 = min(1.0, max(ln[3] for ln in seg) + 0.012)
+        if stop is not None:
+            y1 = max(y1, min(1.0, stop - 0.005))
+        parts.append({'p': cur[0], 'r': [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)]})
+        if stop is not None or y1 <= 0.88:
+            break
+        if nq and (nq[0], nq[1]) < cur:
+            break
+    return parts
 
 
 def manual_boxes():
@@ -933,6 +972,7 @@ def main():
     man = manual_boxes()
     for key, qs in man.items():
         boxes.setdefault(key, {}).update(qs)
+    log('이어지는 자리(물음 부분)', sum(1 for v in boxes.values() for b in v.values() if b.get('next')), '/ 끝까지 간 문항', sum(1 for v in boxes.values() for b in v.values() if b.get('more')))
     log('문항 자리: 자동', sum(1 for v in boxes.values() for b in v.values() if b['src'] != 'manual'), '수동', sum(len(v) for v in man.values()))
     result = {
         'level': 'elementary',

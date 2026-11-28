@@ -9,7 +9,9 @@ const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/
 export type Unit = { id: number; subject: string; era: '2022' | '2015'; section: string; area: string; code: string; text: string; file?: { name: string; url: string } | null };
 /** 문항 자리 (2026-11-24): 쪽(1부터) + [왼쪽, 위, 오른쪽, 아래]를 쪽 크기에 대한 비율(0~1)로.
  *  src: text(글자 PDF 위치) / ocr(그림 PDF 글자 읽기) / manual(사람이 넣은 값) — 모두 같은 구조 */
-export type Box = { p: number; r: [number, number, number, number]; src?: 'text' | 'ocr' | 'manual'; more?: boolean };
+export type Region = { p: number; r: [number, number, number, number] };
+/** 문항 자리. next: 다음 단·쪽으로 이어지는 부분(물음 등, 2026-11-28) */
+export type Box = Region & { src?: 'text' | 'ocr' | 'manual'; more?: boolean; next?: Region[] };
 export type Hit = { y: number; p: string; n: number; s: number; h: [number, number][] };
 export type Analysis = {
   level: Level;

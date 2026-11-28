@@ -44,6 +44,11 @@ function ExamAnalysisScreenInner() {
     },
     [a],
   );
+  // 2026-11-28: 형광펜 원문 칩·출제 지도 문항 → 한눈에 보기 화면(지문 왼쪽·물음 오른쪽), 거기서 문제지 전체
+  const openQuestion = useCallback((h: Hit) => {
+    setOpenId(null);
+    router.push({ pathname: '/exam-question', params: { y: String(h.y), p: h.p, n: String(h.n) } });
+  }, []);
   const toggleUnit = useCallback((id: number) => setOpenId((o) => (o === id ? null : id)), []);
 
   const body = () => {
@@ -67,7 +72,7 @@ function ExamAnalysisScreenInner() {
                 {s} · {bySec.get(s)!.reduce((n, u) => n + (hitsOf(u.id).length ? 1 : 0), 0)}/{bySec.get(s)!.length}칸 출제
               </Txt>
               <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, overflow: 'hidden', marginTop: -1 }}>
-                {bySec.get(s)!.map((u) => <UnitCard key={u.id} u={u} hs={hitsOf(u.id)} open={openId === u.id} onToggle={toggleUnit} onExam={openExam} />)}
+                {bySec.get(s)!.map((u) => <UnitCard key={u.id} u={u} hs={hitsOf(u.id)} open={openId === u.id} onToggle={toggleUnit} onExam={openQuestion} />)}
               </View>
             </View>
           ))}
@@ -182,7 +187,7 @@ function ExamAnalysisScreenInner() {
                 )}
                 {hitsOf(sel.id).length ? (
                   <>
-                    <HitClips hs={hitsOf(sel.id)} a={a} onExam={openExam} />
+                    <HitClips hs={hitsOf(sel.id)} a={a} onExam={openExam} onQuestion={openQuestion} />
                   </>
                 ) : (
                   <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>
@@ -345,7 +350,7 @@ const LEVEL = 'elementary' as const;
 
 // 출제 지도 팝업: 나온 문항을 평가원 원본에서 그 문항만 잘라 보여 줌(A안, 문항 그림은 저장 안 함)
 // 2026-11-28 최적화: 화면 컴포넌트 밖으로 옮겨 다시 그릴 때마다 새로 만들어지지(잘라낸 그림 다시 그리기) 않게
-function HitClips({ hs, a, onExam }: { hs: Hit[]; a: Analysis | null | undefined; onExam: (h: Hit) => void }) {
+function HitClips({ hs, a, onExam, onQuestion }: { hs: Hit[]; a: Analysis | null | undefined; onExam: (h: Hit) => void; onQuestion: (h: Hit) => void }) {
   const { colors } = useTheme();
   const [more, setMore] = useState(false);
   const uniq = useMemo(() => [...new Map([...hs].sort((x, y) => y.y - x.y || x.n - y.n).map((h) => [`${h.y}${h.p}${h.n}`, h])).values()], [hs]);
@@ -353,10 +358,10 @@ function HitClips({ hs, a, onExam }: { hs: Hit[]; a: Analysis | null | undefined
   return (
     <View style={{ gap: space.md }}>
       <Txt variant="sub" style={{ fontSize: 12.5 }}>
-        나온 문항 {uniq.length}개 · 평가원 원문에서 그 문항만 보여 줘요
+        나온 문항 {uniq.length}개 · 누르면 지문·물음을 한 화면에 크게 보여 줘요
       </Txt>
       {shown.map((h) => (
-        <OneClip key={`${h.y}${h.p}${h.n}`} h={h} a={a} onExam={onExam} />
+        <OneClip key={`${h.y}${h.p}${h.n}`} h={h} a={a} onExam={onExam} onQuestion={onQuestion} />
       ))}
       {!more && uniq.length > 3 && (
         <Pressable onPress={() => setMore(true)} accessibilityRole="button" style={{ alignSelf: 'center', padding: space.sm }}>
@@ -367,7 +372,7 @@ function HitClips({ hs, a, onExam }: { hs: Hit[]; a: Analysis | null | undefined
   );
 }
 
-const OneClip = memo(function OneClip({ h, a, onExam }: { h: Hit; a: Analysis | null | undefined; onExam: (h: Hit) => void }) {
+const OneClip = memo(function OneClip({ h, a, onExam, onQuestion }: { h: Hit; a: Analysis | null | undefined; onExam: (h: Hit) => void; onQuestion: (h: Hit) => void }) {
   const { colors } = useTheme();
   const f = useAsync(() => examPdf(LEVEL, h.y, h.p, a), [h.y, h.p, a]);
   const box = a?.boxes?.[`${h.y}${h.p}`]?.[String(h.n)];
@@ -380,17 +385,20 @@ const OneClip = memo(function OneClip({ h, a, onExam }: { h: Hit; a: Analysis | 
           </Txt>
         </View>
         <View style={{ flex: 1 }} />
+        <Pressable onPress={() => onQuestion(h)} accessibilityRole="button" hitSlop={8}>
+          <Txt style={{ fontSize: 12.5, fontWeight: '700', color: colors.brand }}>물음까지 크게 보기 ›</Txt>
+        </Pressable>
         <Pressable onPress={() => onExam(h)} accessibilityRole="button" hitSlop={8}>
-          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.textSub }}>원문 전체 보기 ›</Txt>
+          <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.textSub }}>문제지 전체 ›</Txt>
         </Pressable>
       </View>
       {box && f.data ? (
-        <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} />
+        <QuestionClip url={f.data.url} box={box} cacheKey={`${h.y}${h.p}-${h.n}`} title={`${h.y}학년도 교육과정 ${h.p} ${h.n}번`} fitH={280} onPress={() => onQuestion(h)} />
       ) : f.loading ? (
         <ActivityIndicator color={colors.brand} />
       ) : (
         <Txt variant="sub" style={{ fontSize: 12.5 }}>
-          이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 원문 전체 보기로 확인해 주세요.
+          이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 문제지 전체로 확인해 주세요.
         </Txt>
       )}
     </View>
@@ -451,7 +459,7 @@ const UnitCard = memo(function UnitCard({ u, hs, open, onToggle, onExam }: { u: 
       </Txt>
       {open && hs.length > 0 && (
         <View style={{ gap: 4 }}>
-          <Txt variant="sub" style={{ fontSize: 12.5 }}>나온 문항 (누르면 문제지)</Txt>
+          <Txt variant="sub" style={{ fontSize: 12.5 }}>나온 문항 (누르면 그 문항 크게)</Txt>
           <HitChips hs={hs} onExam={onExam} />
         </View>
       )}
