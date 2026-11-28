@@ -45,12 +45,19 @@ writeFileSync(
 a.b{display:block;background:#1F5E54;color:#fff;text-decoration:none;font-weight:800;font-size:17px;padding:16px;border-radius:12px}
 @media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
 <body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">앱으로 돌아가는 중이에요. 화면이 그대로면 아래 단추를 눌러 주세요.</p><a class="b" id="go" href="#">앱으로 돌아가기</a></div>
+<p id="d" style="margin-top:14px;font-size:11px;color:#93A3A1;word-break:break-all"></p>
 <script>
 (function(){var q=new URLSearchParams(location.search);var to=q.get('to')||'';
-if(!/^(exp|exps|imyongapp):\/\//.test(to)){to='imyongapp://auth-callback';}
-var err=q.get('error_description')||q.get('error');var h=location.hash||'';
-if(err){document.getElementById('t').textContent='로그인하지 못했어요';h='#error_description='+encodeURIComponent(err);}
-var url=to+h;document.getElementById('go').href=url;setTimeout(function(){location.href=url;},150);})();
+if(!/^(exp|exps|imyongapp):\\/\\//.test(to)){to='imyongapp://auth-callback';}
+var err=q.get('error_description')||q.get('error');var h=(location.hash||'').replace(/^#/,'');
+if(err){document.getElementById('t').textContent='로그인하지 못했어요';h='error_description='+encodeURIComponent(err);}
+// 로그인 정보는 ? 뒤로 붙임(안드로이드 intent 주소는 # 을 따로 씀)
+var url=to+(h?(to.indexOf('?')<0?'?':'&')+h:'');
+var m=url.match(/^([a-z+]+):\\/\\/(.*)$/);var link=url;
+if(/Android/i.test(navigator.userAgent)&&m){var pkg=m[1].indexOf('exp')===0?'host.exp.exponent':'com.imyongmongttang.app';
+link='intent://'+m[2]+'#Intent;scheme='+m[1]+';package='+pkg+';end';}
+document.getElementById('go').href=link;document.getElementById('d').textContent=to;
+setTimeout(function(){location.href=link;},150);})();
 </script></body></html>`,
 );
 console.log('site/ 만듦');
