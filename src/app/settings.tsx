@@ -5,7 +5,7 @@ import { RegionPicker, SubjectPicker } from '../components/pickers';
 import { AccountCard } from '../features/account/AccountCard';
 import { AlertSettingsCard } from '../features/alerts/AlertSettings';
 import { CommunitySettings } from '../features/account/CommunitySettings';
-import { Card, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
+import { Card, ListRow, Screen, Segmented, Txt } from '../components/ui';
 import { Level, ThemePref, useAppSettings } from '../store/AppSettings';
 import { checkServer, clearDataCache } from '../data/repository';
 import { fill, LEGAL } from '../legal/info';
@@ -103,9 +103,12 @@ export default function SettingsScreen() {
           서버(Supabase)에서 불러와요.{' '}
           {server.loading ? '연결 확인 중…' : server.data?.ok ? `연결됨 · ${server.data.message}` : `연결 안 됨 · ${server.data?.message ?? server.error?.message ?? ''}`}
         </Txt>
-        <PrimaryButton
+        <ListRow
+          first
+          icon="refresh-outline"
+          cat="teal"
           label="데이터 새로고침"
-          variant="ghost"
+          sub="새 공고·통계를 바로 다시 불러와요"
           onPress={() => {
             clearDataCache();
             bumpDataVersion();
@@ -115,18 +118,20 @@ export default function SettingsScreen() {
 
       <Card>
         <Txt variant="heading">약관 · 정책</Txt>
-        <View style={{ gap: space.xs }}>
-          <PrimaryButton label="이용약관" variant="ghost" onPress={() => router.push('/legal/terms')} />
-          <PrimaryButton label="개인정보처리방침" variant="ghost" onPress={() => router.push('/legal/privacy')} />
-          <PrimaryButton label="커뮤니티 이용 규칙" variant="ghost" onPress={() => router.push('/rules')} />
-          <PrimaryButton label="자료 출처 · 오픈소스" variant="ghost" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'credits' } })} />
+        <View>
+          <ListRow first icon="document-text-outline" cat="blue" label="이용약관" onPress={() => router.push('/legal/terms')} />
+          <ListRow icon="lock-closed-outline" cat="purple" label="개인정보처리방침" onPress={() => router.push('/legal/privacy')} />
+          <ListRow icon="people-outline" cat="teal" label="커뮤니티 이용 규칙" onPress={() => router.push('/rules')} />
+          <ListRow icon="library-outline" cat="amber" label="자료 출처 · 오픈소스" onPress={() => router.push({ pathname: '/legal/[doc]', params: { doc: 'credits' } })} />
         </View>
         <Txt variant="sub">
           문의 · 개인정보 요청: {fill(LEGAL.contactEmail, '문의 메일')}
         </Txt>
       </Card>
 
-      <PrimaryButton label="처음 화면부터 다시 하기" variant="ghost" onPress={confirmReset} />
+      <Card>
+        <ListRow first icon="refresh-circle-outline" danger label="처음 화면부터 다시 하기" sub="시험 구분·관심 지역을 다시 골라요" onPress={confirmReset} />
+      </Card>
     </Screen>
   );
 }

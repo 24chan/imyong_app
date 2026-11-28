@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, View } from 'react-native';
-import { Card, PrimaryButton, Txt } from '../../components/ui';
+import { Card, ListRow, PrimaryButton, Txt } from '../../components/ui';
 import { useAsync } from '../../data/useAsync';
 import { getMyVerifications } from '../../data/verify';
 import { authErrorText, useAuth } from '../../store/Auth';
@@ -57,15 +57,14 @@ export function AccountCard({ compact }: { compact?: boolean }) {
         <Txt variant="sub">{pending ? '인증 확인 중이에요.' : '아직 인증 전이에요. 인증하면 글·댓글·쪽지를 쓸 수 있어요.'}</Txt>
       )}
       <Txt variant="sub">{isAdmin ? '운영자 · ' : ''}다른 사람에게는 이메일이 보이지 않고 라벨만 보여요.</Txt>
-      <PrimaryButton label={labels.length ? '인증 관리' : '학교·교사 인증하기'} variant={labels.length ? 'ghost' : 'solid'} onPress={() => router.push('/verify')} />
-      <PrimaryButton label="닉네임 (글·댓글에서 익명 대신 고를 때)" variant="ghost" onPress={() => router.push('/nickname')} />
-      {isAdmin && <PrimaryButton label="운영자 메뉴 (인증 검수)" variant="ghost" onPress={() => router.push('/admin')} />}
-      {!compact && (
-        <View style={{ gap: space.xs }}>
-          <PrimaryButton label="로그아웃" variant="ghost" onPress={() => signOut()} />
-          <PrimaryButton label="계정 삭제" variant="ghost" onPress={confirmDelete} />
-        </View>
-      )}
+      {!labels.length && <PrimaryButton label="학교·교사 인증하기" onPress={() => router.push('/verify')} />}
+      <View style={{ marginTop: space.xs }}>
+        {!!labels.length && <ListRow first icon="shield-checkmark-outline" cat="teal" label="인증 관리" sub="학교·교사 라벨 추가·확인" onPress={() => router.push('/verify')} />}
+        <ListRow first={!labels.length} icon="person-circle-outline" cat="blue" label="닉네임" sub="글·댓글에서 익명 대신 고를 때" onPress={() => router.push('/nickname')} />
+        {isAdmin && <ListRow icon="construct-outline" cat="purple" label="운영자 메뉴" sub="인증 검수·신고·통계" onPress={() => router.push('/admin')} />}
+        {!compact && <ListRow icon="log-out-outline" cat="gray" label="로그아웃" onPress={() => signOut()} />}
+        {!compact && <ListRow icon="trash-outline" danger label="계정 삭제" sub="되돌릴 수 없어요" onPress={confirmDelete} />}
+      </View>
     </Card>
   );
 }
