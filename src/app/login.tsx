@@ -6,7 +6,7 @@ import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, View } fr
 import { TextInput } from '../components/TextField';
 import { Card, PrimaryButton, Screen, Txt } from '../components/ui';
 import { allAgreed, ConsentBox, NO_CONSENT } from '../features/account/ConsentBox';
-import { authErrorText, useAuth } from '../store/Auth';
+import { authErrorText, getLastRedirect, useAuth } from '../store/Auth';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -69,7 +69,7 @@ export default function LoginScreen() {
     setError(null);
     try {
       const ok = await signInWithProvider(provider, true);
-      if (!ok) setError('로그인 창이 닫혔어요. 계정을 고른 뒤에도 앱으로 돌아오지 않으면 잠시 뒤 다시 해 주세요.');
+      if (!ok) setError(`로그인 창이 닫혔어요. 계정을 고른 뒤 흰 화면에 멈췄다면 이 화면을 캡처해 주세요.\n(돌아올 주소: ${getLastRedirect()})`);
     } catch (e) {
       setError(authErrorText(e));
     } finally {

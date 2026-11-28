@@ -29,6 +29,25 @@ type AuthValue = {
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+/** 마지막 소셜 로그인에서 앱이 돌아오길 기다린 주소(문제 생기면 화면에 보여 줘서 진단) */
+let lastRedirect = '';
+export const getLastRedirect = () => lastRedirect;
+
+/** 로그인 후 돌아온 주소(#access_token=…)에서 세션 꺼내기. 처리했으면 true */
+async function applyAuthUrl(url: string): Promise<boolean> {
+  if (!url.includes('auth-callback')) return false;
+  const frag = url.split('#')[1] ?? url.split('?')[1] ?? '';
+  const q = new URLSearchParams(frag);
+  const err = q.get('error_description') || q.get('error');
+  if (err) throw new Error(decodeURIComponent(err));
+  const access_token = q.get('access_token');
+  const refresh_token = q.get('refresh_token');
+  if (!access_token || !refresh_token) return false;
+  const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+  if (error) throw error;
+  return true;
+}
+
 /** Supabase 오류 → 쉬운 한국어 */
 export function authErrorText(e: unknown): string {
   const m = (e as { message?: string; status?: number })?.message ?? String(e);
@@ -62,6 +81,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [univCodes, setUnivCodes] = useState<string[]>([]);
   const [accessTick, setAccessTick] = useState(0);
   const refreshAccess = useCallback(() => setAccessTick((t) => t + 1), []);
+
+  // 브라우저가 앱을 직접 열어 준 경우(Expo Go 등)에도 로그인 처리
+  useEffect(() => {
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      applyAuthUrl(url).catch(() => {});
+    });
+    Linking.getInitialURL().then((u) => { if (u) applyAuthUrl(u).catch(() => {}); });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -161,17 +189,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     if (error) throw error;
+    lastRedirect = redirectTo;
     const res = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
-    if (res.type !== 'success') return false;
-    const frag = res.url.split('#')[1] ?? res.url.split('?')[1] ?? '';
-    const q = new URLSearchParams(frag);
-    const err = q.get('error_description') || q.get('error');
-    if (err) throw new Error(decodeURIComponent(err));
-    const access_token = q.get('access_token');
-    const refresh_token = q.get('refresh_token');
-    if (!access_token || !refresh_token) throw new Error('로그인 정보를 받지 못했어요. 다시 시도해 주세요');
-    const { data: s2, error: e2 } = await supabase.auth.setSession({ access_token, refresh_token });
-    if (e2) throw e2;
+    if (res.type === 'success') {
+      if (!(await applyAuthUrl(res.url))) throw new Error('로그인 정보를 받지 못했어요. 다시 시도해 주세요');
+    } else {
+      // 브라우저 창이 앱으로 넘겨주지 못했어도, 앱이 주소를 따로 받았으면 이미 로그인돼 있음
+      await new Promise((r) => setTimeout(r, 800));
+      if (!(await supabase.auth.getSession()).data.session) return false;
+    }
+    const s2 = { user: (await supabase.auth.getUser()).data.user };
     if (agreed && !hasConsented(s2.user?.user_metadata)) await supabase.auth.updateUser({ data: consentRecord() }).catch(() => {});
     return true;
   }, []);
