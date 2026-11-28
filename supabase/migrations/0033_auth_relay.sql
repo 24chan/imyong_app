@@ -32,3 +32,9 @@ end $$;
 
 grant execute on function public.put_auth_relay(text, text) to anon, authenticated;
 grant execute on function public.take_auth_relay(text) to anon, authenticated;
+
+-- 앱·웹이 새 함수를 바로 찾게 서버 목록 새로 고침
+notify pgrst, 'reload schema';
+
+-- 확인: 아래 결과에 put_auth_relay, take_auth_relay 두 줄이 보이면 성공
+select proname from pg_proc where proname in ('put_auth_relay', 'take_auth_relay');
