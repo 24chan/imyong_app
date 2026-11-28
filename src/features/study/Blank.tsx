@@ -4,7 +4,7 @@ import { Txt } from '../../components/ui';
 import { useAccess } from '../../lib/access';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
-import { keyIdx, Vocab } from './keywords';
+import { isDelim, keyIdx, tokenize, Vocab } from './keywords';
 import { clearScope, itemKey, mark, scopeSummary, toggleCustom, useBlankItem, useBlankState } from './blankStore';
 
 // 빈칸 암기 (2026-11-24 처음, 2026-11-28 확장 — 경인교대 인증 회원 전용, lib/access.ts 'blank')
@@ -138,8 +138,8 @@ export const BlankText = memo(function BlankText({ text, size = 13.5, bold, grou
   useEffect(() => setShown(new Set()), [mode, round]);
   const key = itemKey(scope, group, text);
   const { custom, stat } = useBlankItem(key);
-  const tokens = useMemo(() => text.split(/(\s+)/).filter((x) => x.length), [text]);
-  const words = useMemo(() => tokens.map((t, i) => (/^\s+$/.test(t) ? -1 : i)).filter((i) => i >= 0), [tokens]);
+  const tokens = useMemo(() => tokenize(text), [text]);
+  const words = useMemo(() => tokens.map((t, i) => (isDelim(t) ? -1 : i)).filter((i) => i >= 0), [tokens]);
   const lineH = size * 1.5;
   const base = { fontSize: size, lineHeight: lineH, fontWeight: (bold ? '600' : '400') as '600' | '400', color: colors.text };
 
@@ -152,7 +152,7 @@ export const BlankText = memo(function BlankText({ text, size = 13.5, bold, grou
     return (
       <Text style={base}>
         {tokens.map((t, i) =>
-          /^\s+$/.test(t) ? (
+          isDelim(t) ? (
             t
           ) : (
             <Text

@@ -206,6 +206,44 @@ def norm(t):
 JOIN_RE = re.compile(r'^(\(|에서|에|을|를|의|과|와|로|으로|하기|및|등)')
 
 
+# 2026-11-28 핵심어 정제: 원문 한글 파일에서 줄 구분이 사라져 붙은 항목·띄어쓰기 (교과, 틀린 글, 바른 글 — '\n'이면 항목을 나눔)
+ERRATA = [
+    ('과학', '화석의 생성과거 생물과 환경', '화석의 생성\n과거 생물과 환경'),
+    ('실과', '디지털 콘텐츠의 종류로봇의 개념과 작동 원리로봇 융합기술의 이해', '디지털 콘텐츠의 종류\n로봇의 개념과 작동 원리\n로봇 융합기술의 이해'),
+    ('영어', '광고 등)의견 전달·교환이나', '광고 등)\n의견 전달·교환이나'),
+    ('미술', '표현 방법을 익히기의도를 가지고', '표현 방법을 익히기\n의도를 가지고'),
+    ('미술', '탐색하여 활용하기과정을 돌아보며', '탐색하여 활용하기\n과정을 돌아보며'),
+    ('사회', '지도의 종류와 쓰임 (디지털)지도와 공간자료', '지도의 종류와 쓰임\n(디지털)지도와 공간자료'),
+    ('사회', '파악 하기', '파악하기'),
+    ('사회', '민주 주의', '민주주의'),
+    ('사회', '자연- 인간', '자연-인간'),
+    ('통합교과', '계절과 생활과거-현재-미래', '계절과 생활\n과거-현재-미래'),
+    ('국어', '듣고 말하기의견 교환하기', '듣고 말하기\n의견 교환하기'),
+    ('국어', '참여하기의견 비교하기', '참여하기\n의견 비교하기'),
+    ('사회', '비교하기 (디지털)지도', '비교하기\n(디지털)지도'),
+    ('실과', '가치 인식로봇에', '가치 인식\n로봇에'),
+]
+
+
+def fix_errata(subj, tables):
+    """붙은 항목 나누기 + '사회· 문화적'처럼 가운뎃점 뒤 띄어쓰기 없앰(모든 교과)"""
+    rules = [(o, n) for s_, o, n in ERRATA if s_ == subj]
+
+    def fx(t):
+        t = re.sub(r'·\s+', '·', t)
+        for o, n in rules:
+            t = t.replace(o, n)
+        return t
+    for a in tables:
+        if a.get('area'):
+            a['area'] = fx(a['area']).replace('\n', ' ')
+        a['ideas'] = [p.strip() for x in a.get('ideas', []) for p in fx(x).split('\n') if p.strip()]
+        for r in a.get('rows', []):
+            r['sub'] = fx(r.get('sub') or '').replace('\n', ' ')
+            for c in r['cells']:
+                c['items'] = [p.strip() for x in c['items'] for p in fx(x).split('\n') if p.strip()]
+
+
 GLUED_SCI = re.compile(r'(?<=[가-힣])(?<![명구연])(?=과학)')
 
 
@@ -418,6 +456,7 @@ def main():
         print(subj, school, '내용 체계 표', len(tables), [t['area'] for t in tables])
         if subj == '과학':
             split_glued(tables)
+        fix_errata(subj, tables)
         result.append({'subject': subj, 'era': '2022', 'school': school, 'file': {'name': hwp['name'], 'url': hwp['url']}, 'areas': tables})
     if not probe:
         json.dump({'built': time.strftime('%Y-%m-%d'), 'source': 'NCIC 국가교육과정정보센터 교육과정 고시문(한글 파일)', 'subjects': result},
