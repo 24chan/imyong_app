@@ -58,7 +58,10 @@ if(/Android/i.test(navigator.userAgent)&&m){// 앱 이름(패키지)은 설치�
 var pkg=m[1]==='exp'||m[1]==='exps'?';package=host.exp.exponent':'';
 link='intent://'+m[2]+'#Intent;scheme='+m[1]+pkg+';end';}
 document.getElementById('go').href=link;document.getElementById('go2').href=url;document.getElementById('d').textContent='to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
-setTimeout(function(){location.href=link;},150);})();
+// 앱이 맡긴 번호(n)가 있으면 로그인 정보를 서버 전달함에 맡김 → 앱이 꺼내 감(브라우저가 앱을 못 열어도 됨)
+var n=q.get('n');if(n&&h&&!err){fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
+.then(function(r){if(r.ok){document.getElementById('m').textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';}}).catch(function(){});}
+setTimeout(function(){location.href=link;},600);})();
 </script></body></html>`,
 );
 console.log('site/ 만듦');

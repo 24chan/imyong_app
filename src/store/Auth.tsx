@@ -31,6 +31,12 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 /** 마지막 소셜 로그인에서 앱이 돌아오길 기다린 주소(문제 생기면 화면에 보여 줘서 진단) */
 let lastRedirect = '';
+/** 긴 무작위 번호(48자). 로그인 정보를 꺼낼 때만 씀 */
+function makeNonce() {
+  let out = '';
+  while (out.length < 48) out += Math.random().toString(36).slice(2);
+  return (out + Date.now().toString(36)).slice(0, 56);
+}
 const AUTH_BOUNCE = 'https://24chan.github.io/imyong_app/auth.html';
 export const getLastRedirect = () => lastRedirect;
 
@@ -181,7 +187,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const WebBrowser = require('expo-web-browser') as typeof import('expo-web-browser');
     // 앱으로 돌아올 주소. 브라우저가 앱 주소로 바로 못 넘기는 기기가 있어 웹 페이지(auth.html)를 한 번 거침
     const appReturn = Linking.createURL('auth-callback');
-    const redirectTo = `${AUTH_BOUNCE}?to=${encodeURIComponent(appReturn)}`;
+    // 브라우저가 앱을 못 여는 기기용: 이 번호로 돌아오기 페이지가 맡긴 로그인 정보를 꺼내 옴
+    const nonce = makeNonce();
+    const redirectTo = `${AUTH_BOUNCE}?to=${encodeURIComponent(appReturn)}&n=${nonce}`;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -193,11 +201,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) throw error;
     lastRedirect = appReturn;
-    const res = await WebBrowser.openAuthSessionAsync(data.url, appReturn);
-    if (res.type === 'success') {
-      if (!(await applyAuthUrl(res.url))) throw new Error('로그인 정보를 받지 못했어요. 다시 시도해 주세요');
-    } else {
-      // 브라우저 창이 앱으로 넘겨주지 못했어도, 앱이 주소를 따로 받았으면 이미 로그인돼 있음
+    let relayed = false;
+    const take = async () => {
+      if (relayed) return true;
+      const { data: payload } = await supabase.rpc('take_auth_relay', { p_nonce: nonce });
+      if (typeof payload === 'string' && payload) {
+        relayed = await applyAuthUrl(`auth-callback#${payload}`);
+        if (relayed) {
+          // 안드로이드에서 못 닫으면 사용자가 X
+          Promise.resolve()
+            .then(() => WebBrowser.dismissBrowser())
+            .catch(() => {});
+        }
+      }
+      return relayed;
+    };
+    const timer = setInterval(() => {
+      take().catch(() => {});
+    }, 1500);
+    let res: Awaited<ReturnType<typeof WebBrowser.openAuthSessionAsync>>;
+    try {
+      res = await WebBrowser.openAuthSessionAsync(data.url, appReturn);
+    } finally {
+      clearInterval(timer);
+    }
+    if (res.type === 'success' && (await applyAuthUrl(res.url))) {
+      // 앱으로 바로 돌아온 경우
+    } else if (!(await take().catch(() => false))) {
+      // 브라우저가 앱을 열어 줬거나(위 주소 받기), 전달함에도 없으면 실패
       await new Promise((r) => setTimeout(r, 800));
       if (!(await supabase.auth.getSession()).data.session) return false;
     }
