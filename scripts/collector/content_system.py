@@ -89,6 +89,8 @@ class Doc(HTMLParser):
             self.cell = {'t': [], 'rs': int(a.get('rowspan', 1) or 1), 'cs': int(a.get('colspan', 1) or 1)}
         elif tag in ('p', 'br') and self.cell is not None:
             self.cell['t'].append('\n')
+        elif self.depth >= 2 and tag in ('tr', 'td', 'th') and self.cell is not None:
+            self.cell['t'].append('\n')  # 2026-11-28: 칸 안 작은 표의 칸 경계('가치' | '과학 유용성')가 붙어 '가치과학'이 되던 문제
         elif tag == 'p' and self.depth == 0:
             self.flush()
 
