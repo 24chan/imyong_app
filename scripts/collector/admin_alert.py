@@ -93,7 +93,11 @@ def main():
 
     if not KEY or (not items and not warns):
         return
-    tokens = [r['token'] for r in (rest('admin_push?select=token') or []) if r.get('token')]
+    try:
+        tokens = [r['token'] for r in (rest('admin_push?select=token') or []) if r.get('token')]
+    except Exception as e:  # noqa: BLE001
+        print('운영자 기기 목록을 못 읽음(SQL 0031 실행 전?)', str(e)[:80])
+        return
     if not tokens:
         print('운영자 기기 토큰 없음(앱 운영자 화면을 한 번 열면 등록)')
         return
