@@ -4,17 +4,19 @@ import { Txt } from '../../components/ui';
 import { useAccess } from '../../lib/access';
 import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
+import { keyIdx, Vocab } from './keywords';
 import { clearScope, itemKey, mark, scopeSummary, toggleCustom, useBlankItem, useBlankState } from './blankStore';
 
 // 빈칸 암기 (2026-11-24 처음, 2026-11-28 확장 — 경인교대 인증 회원 전용, lib/access.ts 'blank')
 // 모드: 전체 가리기 / 핵심어만(스마트) / 내 빈칸(직접 고른 낱말, 편집·저장) / 틀린 것만(오답 회독)
 // 칸을 열고 맞음·틀림을 누르면 기록 → 영역별 암기율. 기록·내 빈칸은 이 기기에만 저장
 export type BlankMode = 'off' | 'all' | 'smart' | 'mine' | 'wrong';
-type Ctx = { mode: BlankMode; editing: boolean; round: number; scope: string };
-const BlankCtx = createContext<Ctx>({ mode: 'off', editing: false, round: 0, scope: '' });
+type Ctx = { mode: BlankMode; editing: boolean; round: number; scope: string; vocab: Vocab | null };
+const BlankCtx = createContext<Ctx>({ mode: 'off', editing: false, round: 0, scope: '', vocab: null });
 
-export function BlankScope({ blank, scope, children }: { blank: ReturnType<typeof useBlank>; scope: string; children: ReactNode }) {
-  const value = useMemo(() => ({ mode: blank.mode, editing: blank.editing, round: blank.round, scope }), [blank.mode, blank.editing, blank.round, scope]);
+/** vocab: 그 교과 개념어 사전(keywords.ts buildVocab) — '핵심어만'이 이 낱말만 가림. 없으면 일반 규칙 */
+export function BlankScope({ blank, scope, vocab = null, children }: { blank: ReturnType<typeof useBlank>; scope: string; vocab?: Vocab | null; children: ReactNode }) {
+  const value = useMemo(() => ({ mode: blank.mode, editing: blank.editing, round: blank.round, scope, vocab }), [blank.mode, blank.editing, blank.round, scope, vocab]);
   return <BlankCtx.Provider value={value}>{children}</BlankCtx.Provider>;
 }
 
@@ -127,25 +129,9 @@ function SmallBtn({ label, onPress, strong }: { label: string; onPress: () => vo
 }
 
 // 가린 낱말: 안드로이드는 겹친 Text의 'transparent' 글자색을 무시해 글자가 보임 → 글자색을 바탕색과 같게
-// 핵심어만(스마트): 조사·서술어를 뗀 낱말이 2글자 이상이고 흔한 말이 아니면 가림
-const STOP = new Set('하기 이해 활용 탐구 표현 및 등 위한 대한 관련 다양한 여러 기본 방법 과정 태도 의미 있는 하는 통한 따른 같은 우리 자신 생활 경험 상황 활동 알기 갖기 지니기'.split(' '));
-const JOSA = /(으로써|으로서|에서|에게|으로|부터|까지|처럼|보다|과의|와의|의|을|를|은|는|이|가|과|와|로|에|도|만)$/;
-function core(w: string) {
-  return w.replace(/[()[\]{}.,·:;'"‘’“”?!~]/g, '').replace(JOSA, '');
-}
-function smartIdx(tokens: string[]) {
-  const out = new Set<number>();
-  tokens.forEach((t, i) => {
-    const c = core(t);
-    if (c.length >= 2 && !STOP.has(c) && !/(하기|한다|하고|하며|하는|있다|이다|하여|되는|된다)$/.test(c)) out.add(i);
-  });
-  if (!out.size && tokens.length) out.add(tokens.reduce((bi, t, i, a) => (core(t).length > core(a[bi]).length ? i : bi), 0));
-  return out;
-}
-
 /** 가릴 수 있는 글. group: 암기율을 묶을 이름(영역 등) */
 export const BlankText = memo(function BlankText({ text, size = 13.5, bold, group = '' }: { text: string; size?: number; bold?: boolean; group?: string }) {
-  const { mode, editing, round, scope } = useContext(BlankCtx);
+  const { mode, editing, round, scope, vocab } = useContext(BlankCtx);
   const can = useAccess();
   const { colors } = useTheme();
   const [shown, setShown] = useState<Set<number> | 'all'>(new Set());
@@ -185,7 +171,7 @@ export const BlankText = memo(function BlankText({ text, size = 13.5, bold, grou
   // 어떤 낱말을 가릴지
   let hide: Set<number>;
   if (mode === 'all') hide = new Set(words);
-  else if (mode === 'smart') hide = new Set([...smartIdx(tokens)].filter((i) => words.includes(i)));
+  else if (mode === 'smart') hide = keyIdx(tokens, vocab);
   else if (mode === 'mine') hide = new Set(custom ?? []);
   else hide = stat?.last === 'w' ? new Set(words) : new Set(); // 틀린 것만
   if (!hide.size) return <Txt style={[base, mode === 'wrong' ? { opacity: 0.45 } : null]}>{text}</Txt>;

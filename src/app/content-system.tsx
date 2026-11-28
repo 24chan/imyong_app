@@ -5,6 +5,7 @@ import { Chip, Screen, Txt } from '../components/ui';
 import { CsArea, getContentSystem } from '../data/contentSystem';
 import { useAsync } from '../data/useAsync';
 import { BlankBar, BlankScope, BlankText, useBlank } from '../features/study/Blank';
+import { buildVocab } from '../features/study/keywords';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -17,6 +18,7 @@ export default function ContentSystemScreen() {
   const subjects = data.data?.subjects ?? [];
   const [pick, setPick] = useState<string | null>(params.subject ?? null);
   const subj = subjects.find((s) => s.subject === pick) ?? subjects.find((s) => params.subject && s.subject.includes(params.subject)) ?? subjects[0];
+  const vocab = useMemo(() => (subj ? buildVocab(subj) : null), [subj]);
   const blank = useBlank();
 
   return (
@@ -38,7 +40,7 @@ export default function ContentSystemScreen() {
               ))}
             </ScrollView>
             <BlankBar blank={blank} scope={`cs/${subj.subject}`} />
-            <BlankScope blank={blank} scope={`cs/${subj.subject}`}>
+            <BlankScope blank={blank} scope={`cs/${subj.subject}`} vocab={vocab}>
               {subj.areas.map((a, i) => (
                 <AreaCard key={`${subj.subject}-${i}`} a={a} />
               ))}

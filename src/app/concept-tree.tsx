@@ -7,6 +7,7 @@ import { Chip, Screen, Txt } from '../components/ui';
 import { allIds, buildTree, getContentSystem, TreeNode } from '../data/contentSystem';
 import { useAsync } from '../data/useAsync';
 import { BlankBar, BlankScope, BlankText, useBlank } from '../features/study/Blank';
+import { buildVocab } from '../features/study/keywords';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
@@ -23,6 +24,7 @@ function ConceptTreeScreenInner() {
   const [pick, setPick] = useState<string | null>(params.subject ?? null);
   const subj = subjects.find((s) => s.subject === pick) ?? subjects[0];
   const tree = useMemo(() => (subj ? buildTree(subj) : null), [subj]);
+  const vocab = useMemo(() => (subj ? buildVocab(subj) : null), [subj]);
   const ids = useMemo(() => (tree ? allIds(tree) : []), [tree]);
   // 처음엔 교과와 영역까지만 펼침
   const [open, setOpen] = useState<Set<string> | null>(null);
@@ -67,7 +69,7 @@ function ConceptTreeScreenInner() {
               <Chip label="전체 접기" selected={false} onPress={() => setOpen(new Set())} />
             </View>
             <BlankBar blank={blank} scope={`tree/${subj.subject}`} />
-            <BlankScope blank={blank} scope={`tree/${subj.subject}`}>
+            <BlankScope blank={blank} scope={`tree/${subj.subject}`} vocab={vocab}>
               <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, padding: space.md }}>
                 <Node n={tree} depth={0} opened={opened} toggle={toggle} />
               </View>

@@ -1,5 +1,7 @@
 import { Gate } from '../features/study/Gate';
 import { BlankBar, BlankScope, BlankText, useBlank } from '../features/study/Blank';
+import { buildVocab } from '../features/study/keywords';
+import { getContentSystem } from '../data/contentSystem';
 import { router, Stack } from 'expo-router';
 import { memo, type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
@@ -31,6 +33,11 @@ function ExamAnalysisScreenInner() {
   const subjFile = a?.subjects.find((x) => x.name === subj)?.file ?? null;
   const sd = useAsync(async () => (subjFile ? getAnalysisSubject(level, subjFile) : null), [subjFile]);
   const hitsOf = (id: number) => sd.data?.hits[String(id)] ?? NONE;
+  const cs = useAsync(() => getContentSystem(), []);
+  const vocab = useMemo(() => {
+    const s = cs.data?.subjects.find((x) => x.subject === subj);
+    return s ? buildVocab(s) : null;
+  }, [cs.data, subj]);
   const [era, setEra] = useState<'2022' | '2015'>('2022');
   const [openId, setOpenId] = useState<number | null>(null);
   useEffect(() => setOpenId(null), [subj, era, tab]);
@@ -177,7 +184,7 @@ function ExamAnalysisScreenInner() {
                     {subj} · {sel.area}
                   </Txt>
                 )}
-                <BlankScope blank={blank} scope={`ana/${subj}`}>
+                <BlankScope blank={blank} scope={`ana/${subj}`} vocab={vocab}>
                   <BlankText text={sel.text.split(' ▶ ')[0]} size={15} group={sel.area || '기타'} />
                 </BlankScope>
                 {sel.text.includes(' ▶ ') && (
@@ -238,7 +245,7 @@ function ExamAnalysisScreenInner() {
     return (
       <>
         <BlankBar blank={blank} scope={`ana/${subj}`} />
-        <BlankScope blank={blank} scope={`ana/${subj}`}>
+        <BlankScope blank={blank} scope={`ana/${subj}`} vocab={vocab}>
           <Card title={`최근 5년 안 나온 성취기준 (2022 개정) · ${un.length}개`}>
             {un.length === 0 && <Txt variant="sub">없어요.</Txt>}
             {un.slice(0, 80).map((x) => (

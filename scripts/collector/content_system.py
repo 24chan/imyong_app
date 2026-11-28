@@ -206,6 +206,20 @@ def norm(t):
 JOIN_RE = re.compile(r'^(\(|에서|에|을|를|의|과|와|로|으로|하기|및|등)')
 
 
+GLUED_SCI = re.compile(r'(?<=[가-힣])(?<![명구연])(?=과학)')
+
+
+def split_glued(tables):
+    """2026-11-28 사용자 검토: 과학 가치·태도 칸은 줄마다 한 항목인데 원문 한글 파일에 줄 구분이 없어
+    '가치과학 유용성', '감수성과학 창의성'처럼 붙어 나옴 → '과학' 앞에서 나눔(생명과학·지구과학·자연과학은 그대로)"""
+    for a in tables:
+        for r in a.get('rows', []):
+            if not r.get('cat', '').startswith('가치'):
+                continue
+            for c in r['cells']:
+                c['items'] = [p.strip() for it in c['items'] for p in GLUED_SCI.split(it) if p.strip()]
+
+
 def items_of(t):
     """칸 글 → 내용 요소 목록. 2026-11-24 검토 반영: 글머리표(⋅)가 있으면 글머리표마다 하나, 줄바꿈으로 쪼개진 조각
     ('글 수준\\n에서 고쳐쓰기', '시각과 시간\\n(시, 분)')은 앞 줄에 붙임. 각도 기호 복구"""
@@ -402,6 +416,8 @@ def main():
             if fixed:
                 t['area'] = (pre + ' · ' if pre else '') + fixed
         print(subj, school, '내용 체계 표', len(tables), [t['area'] for t in tables])
+        if subj == '과학':
+            split_glued(tables)
         result.append({'subject': subj, 'era': '2022', 'school': school, 'file': {'name': hwp['name'], 'url': hwp['url']}, 'areas': tables})
     if not probe:
         json.dump({'built': time.strftime('%Y-%m-%d'), 'source': 'NCIC 국가교육과정정보센터 교육과정 고시문(한글 파일)', 'subjects': result},
