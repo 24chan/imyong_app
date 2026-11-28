@@ -1,4 +1,3 @@
-import { Gate } from '../features/study/Gate';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
@@ -11,7 +10,7 @@ import { useTheme } from '../theme/useTheme';
 
 // 내용 체계표(내체표) 모아보기 + 빈칸 암기 (2026-11-24 사용자 요청)
 // 2022 개정 초등 교육과정 고시문의 '내용 체계' 표만 교과별로. 빈칸 모드: 내용 요소 칸을 가리고 눌러서 확인
-function ContentSystemScreenInner() {
+export default function ContentSystemScreen() {
   const { colors } = useTheme();
   const params = useLocalSearchParams<{ subject?: string }>();
   const data = useAsync(() => getContentSystem(), []);
@@ -38,8 +37,8 @@ function ContentSystemScreenInner() {
                 <Chip key={s.subject} label={s.subject} selected={s.subject === subj.subject} onPress={() => setPick(s.subject)} />
               ))}
             </ScrollView>
-            <BlankBar on={blank.on} onToggle={blank.setOn} onReset={blank.reset} />
-            <BlankScope on={blank.on} round={blank.round}>
+            <BlankBar blank={blank} scope={`cs/${subj.subject}`} />
+            <BlankScope blank={blank} scope={`cs/${subj.subject}`}>
               {subj.areas.map((a, i) => (
                 <AreaCard key={`${subj.subject}-${i}`} a={a} />
               ))}
@@ -85,7 +84,7 @@ function AreaCard({ a }: { a: CsArea }) {
             <View key={i} style={{ flexDirection: 'row', gap: 6 }}>
               <Txt variant="sub">•</Txt>
               <View style={{ flex: 1 }}>
-                <BlankText text={t} size={13} />
+                <BlankText text={t} size={13} group={a.area} />
               </View>
             </View>
           ))}
@@ -116,7 +115,7 @@ function AreaCard({ a }: { a: CsArea }) {
                       –
                     </Txt>
                   ) : (
-                    c.items.map((t, ti) => <BlankText key={ti} text={t} />)
+                    c.items.map((t, ti) => <BlankText key={ti} text={t} group={a.area} />)
                   )}
                 </View>
               ))}
@@ -128,12 +127,3 @@ function AreaCard({ a }: { a: CsArea }) {
   );
 }
 
-
-// 2026-11-28: 경인교대 인증 회원·운영자만 (lib/access.ts)
-export default function ContentSystemScreen() {
-  return (
-    <Gate feature="content-system">
-      <ContentSystemScreenInner />
-    </Gate>
-  );
-}

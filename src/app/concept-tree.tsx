@@ -66,8 +66,8 @@ function ConceptTreeScreenInner() {
               <Chip label="전체 펼치기" selected={false} onPress={() => setOpen(new Set(ids))} />
               <Chip label="전체 접기" selected={false} onPress={() => setOpen(new Set())} />
             </View>
-            <BlankBar on={blank.on} onToggle={blank.setOn} onReset={blank.reset} hint="맨 끝 내용 요소를 가리고, 누르면 하나씩 보여요" />
-            <BlankScope on={blank.on} round={blank.round}>
+            <BlankBar blank={blank} scope={`tree/${subj.subject}`} />
+            <BlankScope blank={blank} scope={`tree/${subj.subject}`}>
               <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, padding: space.md }}>
                 <Node n={tree} depth={0} opened={opened} toggle={toggle} />
               </View>
@@ -82,7 +82,7 @@ function ConceptTreeScreenInner() {
   );
 }
 
-function Node({ n, depth, opened, toggle }: { n: TreeNode; depth: number; opened: Set<string>; toggle: (id: string) => void }) {
+function Node({ n, depth, opened, toggle, area = '' }: { n: TreeNode; depth: number; opened: Set<string>; toggle: (id: string) => void; area?: string }) {
   const { colors } = useTheme();
   const c = colors.cat[KIND_COLOR[n.kind]];
   if (n.kind === 'leaf') {
@@ -90,7 +90,7 @@ function Node({ n, depth, opened, toggle }: { n: TreeNode; depth: number; opened
       <View style={{ flexDirection: 'row', gap: 6, paddingLeft: depth * 14, paddingVertical: 3 }}>
         <Txt style={{ color: colors.textSub }}>·</Txt>
         <View style={{ flex: 1 }}>
-          <BlankText text={n.label} />
+          <BlankText text={n.label} group={area} />
         </View>
       </View>
     );
@@ -118,7 +118,7 @@ function Node({ n, depth, opened, toggle }: { n: TreeNode; depth: number; opened
       {isOpen && (
         <View style={{ borderLeftWidth: 1, borderLeftColor: colors.line, marginLeft: depth * 14 + 7 }}>
           {n.children.map((k) => (
-            <Node key={k.id} n={k} depth={1} opened={opened} toggle={toggle} />
+            <Node key={k.id} n={k} depth={1} opened={opened} toggle={toggle} area={n.kind === 'area' ? n.label : area} />
           ))}
         </View>
       )}

@@ -6,14 +6,15 @@ import { useAuth } from '../store/Auth';
 // - 자료를 가공해 임용에 더 도움이 되게 만든 것: 경인교대 인증 회원만(운영자는 확인용으로 항상)
 // - 볼 수 없는 사람에게는 메뉴·버튼·안내를 아예 그리지 않음(안내 문구도 없음)
 // 나중에 유료로 바꿀 때: 규칙에 { paid: true } 를 넣고 아래 can() 에 결제 권한 확인만 더하면 됨
-export type Feature = 'exam-analysis' | 'content-system' | 'concept-tree';
+// 2026-11-28 수정: 내용 체계표 자체는 전체 공개, 빈칸 암기(가공 기능)만 경인교대
+export type Feature = 'exam-analysis' | 'concept-tree' | 'blank';
 
 type Rule = { univ?: string[]; paid?: boolean };
 
 const RULES: Record<Feature, Rule> = {
   'exam-analysis': { univ: ['ginue'] },
-  'content-system': { univ: ['ginue'] },
   'concept-tree': { univ: ['ginue'] },
+  blank: { univ: ['ginue'] },
 };
 
 export function canUse(f: Feature, who: { isAdmin: boolean; univCodes: string[] }): boolean {

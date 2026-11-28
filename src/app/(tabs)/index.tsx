@@ -89,7 +89,7 @@ export default function HomeScreen() {
   const receipt = getReceiptInfo(regionEvents, today);
   // 색 아이콘 메뉴 (에브리타임 참고, 2026-11-21 시안 승인)
   const menu: { icon: keyof typeof Ionicons.glyphMap; label: string; cat: CatKey; go: () => void; badge?: number }[] = [
-    { icon: 'school-outline', label: '학교 지도', cat: 'teal', go: () => router.push('/school-map') },
+    { icon: 'school-outline', label: '학교 지도(실습초)', cat: 'teal', go: () => router.push('/school-map') },
     { icon: 'map-outline', label: '선발 지도', cat: 'blue', go: () => router.navigate('/region') },
     { icon: 'git-compare-outline', label: '지역 비교', cat: 'purple', go: () => router.push('/compare') },
     { icon: 'trending-up-outline', label: '추이', cat: 'coral', go: () => router.push('/trend') },

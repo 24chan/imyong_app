@@ -1,4 +1,5 @@
 import { Gate } from '../features/study/Gate';
+import { BlankBar, BlankScope, BlankText, useBlank } from '../features/study/Blank';
 import { router, Stack } from 'expo-router';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-native';
@@ -17,6 +18,7 @@ type Tab = 'text' | 'stats' | 'map' | 'terms' | 'gaps';
 const SECTION_ORDER = ['성격', '목표', '성격·목표', '내용 체계', '성취기준', '교수·학습', '교수·학습 및 평가', '평가', '앞부분'];
 
 function ExamAnalysisScreenInner() {
+  const blank = useBlank();
   const { colors } = useTheme();
   const { viewLevel } = useAppSettings();
   const level = 'elementary'; // 1단계는 초등만
@@ -245,6 +247,7 @@ function ExamAnalysisScreenInner() {
         <>
           <Segmented options={[{ value: '2022', label: '2022 개정' }, { value: '2015', label: '2015 개정' }]} value={era} onChange={setEra} compact />
           <Txt variant="sub" style={{ fontSize: 12.5 }}>성취기준 하나가 한 칸이에요. 진할수록 많이 나왔고, 빈칸은 안 나온 곳이에요. 칸을 누르면 바로 내용이 떠요.</Txt>
+          <BlankBar blank={blank} scope={`ana/${subj}`} />
           {std.length === 0 && <Txt variant="sub">성취기준을 찾지 못했어요.</Txt>}
           {areas.map((ar) => (
             <Card key={ar} title={ar}>
@@ -274,7 +277,14 @@ function ExamAnalysisScreenInner() {
                     {subj} · {sel.area}
                   </Txt>
                 )}
-                <Txt style={{ fontSize: 15, lineHeight: 23 }}>{sel.text}</Txt>
+                <BlankScope blank={blank} scope={`ana/${subj}`}>
+                  <BlankText text={sel.text.split(' ▶ ')[0]} size={15} group={sel.area || '기타'} />
+                </BlankScope>
+                {sel.text.includes(' ▶ ') && (
+                  <Txt variant="sub" style={{ fontSize: 13, lineHeight: 20 }}>
+                    {sel.text.split(' ▶ ').slice(1).join(' ')}
+                  </Txt>
+                )}
                 {hitsOf(sel.id).length ? (
                   <>
                     <HitClips hs={hitsOf(sel.id)} />
@@ -327,28 +337,23 @@ function ExamAnalysisScreenInner() {
     const un = a.stats.untouched_recent5[subj] ?? [];
     return (
       <>
-        <Card title={`최근 5년 안 나온 성취기준 (2022 개정) · ${un.length}개`}>
-          {un.length === 0 && <Txt variant="sub">없어요.</Txt>}
-          {un.slice(0, 80).map((x) => (
-            <Txt key={x.id} style={{ fontSize: 13.5, lineHeight: 20 }}>
-              <Txt style={{ fontSize: 13.5, fontWeight: '700', color: colors.cat.blue.fg }}>{x.code} </Txt>
-              {x.text}
-            </Txt>
-          ))}
-        </Card>
+        <BlankBar blank={blank} scope={`ana/${subj}`} />
+        <BlankScope blank={blank} scope={`ana/${subj}`}>
+          <Card title={`최근 5년 안 나온 성취기준 (2022 개정) · ${un.length}개`}>
+            {un.length === 0 && <Txt variant="sub">없어요.</Txt>}
+            {un.slice(0, 80).map((x) => (
+              <View key={x.id} style={{ gap: 2 }}>
+                <Txt style={{ fontSize: 13, fontWeight: '700', color: colors.cat.blue.fg }}>{x.code}</Txt>
+                <BlankText text={x.text.split(' ▶ ')[0]} group={x.area || '기타'} />
+              </View>
+            ))}
+          </Card>
+        </BlankScope>
         {/* 2026-11-24 검토 반영: '2022 새 용어'는 자동 추출 잡음이 많아 1차 배포에서 숨김(데이터는 그대로 둠) */}
       </>
     );
   };
 
-  function Card({ title, children }: { title: string; children: ReactNode }) {
-    return (
-      <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, padding: space.lg, gap: space.sm }}>
-        <Txt style={{ fontSize: 16, fontWeight: '700' }}>{title}</Txt>
-        {children}
-      </View>
-    );
-  }
 
   return (
     <>
@@ -426,5 +431,16 @@ export default function ExamAnalysisScreen() {
     <Gate feature="exam-analysis">
       <ExamAnalysisScreenInner />
     </Gate>
+  );
+}
+
+/** 카드 틀 (컴포넌트 밖에 두어 다시 그릴 때 안의 상태가 지워지지 않게) */
+function Card({ title, children }: { title: string; children: ReactNode }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ backgroundColor: colors.background, borderRadius: radius.xl, padding: space.lg, gap: space.sm }}>
+      <Txt style={{ fontSize: 16, fontWeight: '700' }}>{title}</Txt>
+      {children}
+    </View>
   );
 }

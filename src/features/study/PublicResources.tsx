@@ -11,7 +11,8 @@ import { useTheme } from '../../theme/useTheme';
 
 // 공부 탭 '공개 자료' (2026-11-21 사용자 승인): 임용에 필요한 공식 공개 자료를 링크로만 모음.
 // 파일을 앱에 올리지 않음(교재·강의 PDF 공유 금지 규칙). 주소는 교육청 시행계획 공고의 '참고 사이트'와 같은 공식 사이트.
-type Item = { title: string; desc: string; url?: string; go?: () => void; org: string; feature?: Feature };
+// pill: 직접 만든 기능 이름(★ + 동그란 테두리로 감싸 보임). pillFeature: 이 이름표를 볼 수 있는 사람(없으면 모두)
+type Item = { title: string; desc: string; url?: string; go?: () => void; org: string; feature?: Feature; pill?: string; pillFeature?: Feature };
 type Section = { key: string; title: string; icon: keyof typeof Ionicons.glyphMap; cat: CatKey; items: Item[] };
 
 const law = (name: string) => `https://www.law.go.kr/법령/${encodeURIComponent(name)}`;
@@ -40,11 +41,12 @@ export function PublicResources() {
         ...(elem
           ? [
               {
-                title: '기출 분석 (초등 교육과정 A·B)',
-                desc: '기출이 교육과정 원문 어디서 나왔는지 형광펜으로 표시하고, 칸별 비율·연도별 교과·출제 지도·핵심어·안 나온 곳을 보여줘요. 자동 분석·참고용.',
+                pill: '기출 분석',
+                title: '초등 교육과정 A·B',
+                desc: '기출이 교육과정 원문 어디서 나왔는지 형광펜으로 표시하고, 칸별 비율·연도별 교과·출제 지도·핵심 개념·안 나온 곳을 보여줘요. 자동 분석·참고용.',
                 go: () => router.push('/exam-analysis'),
                 feature: 'exam-analysis' as const,
-                org: '임용몽땅 분석',
+                org: '평가원 기출 × 교육과정 원문',
               },
             ]
           : []),
@@ -74,14 +76,17 @@ export function PublicResources() {
         ...(elem
           ? [
               {
-                title: '내용 체계표(내체표) 모아보기 · 빈칸 암기',
-                desc: '2022 개정 교과별 내용 체계 표만 모았어요. 빈칸 암기 모드로 내용 요소를 가리고 눌러서 확인해요.',
+                // 2026-11-28: 내체표 자체는 모두, '빈칸 암기' 이름표·기능은 경인교대
+                title: '내용 체계표(내체표) 모아보기',
+                desc: '2022 개정 교과별 내용 체계 표만 모았어요.',
                 go: () => router.push('/content-system'),
-                feature: 'content-system' as const,
+                pill: '빈칸 암기',
+                pillFeature: 'blank' as const,
                 org: '국가교육과정정보센터 원문으로 만듦',
               },
               {
-                title: '과목별 개념 구조도',
+                pill: '개념 구조도',
+                title: '과목별',
                 desc: '교과 → 영역 → 범주 → 학년군 → 내용 요소를 접고 펼치는 구조도. 전체 접기로 떠올리기 연습을 해요.',
                 go: () => router.push('/concept-tree'),
                 feature: 'concept-tree' as const,
@@ -151,13 +156,11 @@ export function PublicResources() {
                 style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderTopWidth: i ? 1 : 0, borderTopColor: colors.line, backgroundColor: pressed ? colors.surface : 'transparent' })}
               >
                 <View style={{ flex: 1, gap: 2 }}>
-                  {/* 직접 가공한 자료는 일반 조회 메뉴와 구분(브랜드 색·조금 큰 제목·작은 표시) */}
-                  {it.feature && (
-                    <View style={{ alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill, backgroundColor: colors.brand }}>
-                      <Txt style={{ fontSize: 11, fontWeight: '700', color: colors.background }}>임용몽땅 정리</Txt>
-                    </View>
-                  )}
-                  <Txt style={{ fontWeight: '700', fontSize: it.feature ? 16.5 : undefined, color: it.feature ? colors.brand : undefined }}>{it.title}</Txt>
+                  {/* 2026-11-28 사용자 요청: 직접 만든 기능 이름은 노란 별 + 동그란 테두리로 감싸 아이콘처럼 */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+                    {!!it.pill && (it.feature || !it.pillFeature || can(it.pillFeature)) && <FeaturePill name={it.pill} />}
+                    <Txt style={{ fontWeight: '700' }}>{it.title}</Txt>
+                  </View>
                   <Txt variant="sub">{it.desc}</Txt>
                   <Txt variant="sub" style={{ fontSize: 12, color: colors.cat[s.cat].fg, fontWeight: '700' }}>
                     {it.org}
@@ -169,6 +172,17 @@ export function PublicResources() {
           </View>
         </View>
       ))}
+    </View>
+  );
+}
+
+/** 직접 만든 기능 이름표: ★ + 동그란 테두리 (accent 토큰) */
+function FeaturePill({ name }: { name: string }) {
+  const { colors } = useTheme();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.accent, backgroundColor: colors.cat.amber.bg }}>
+      <Ionicons name="star" size={12} color={colors.accent} />
+      <Txt style={{ fontSize: 13.5, fontWeight: '700', color: colors.cat.amber.fg }}>{name}</Txt>
     </View>
   );
 }

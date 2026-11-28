@@ -71,7 +71,7 @@ export default function SearchScreen() {
   const can = useAccess();
   const menus = useMemo(() => (ready ? matchStudyMenus(q, viewLevel, can) : []), [q, ready, viewLevel, can]);
   const subjHits = useMemo(() => (ready ? matchSubjects(q) : []), [q, ready]);
-  const csSubjects = menus.some((m) => m.key === 'cs' && can('content-system')) ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
+  const csSubjects = menus.some((m) => m.key === 'cs') ? (subjHits.length ? subjHits : ELEM_SUBJECTS_FOR_CS) : [];
 
   const loading = schools.loading || posts.loading || lectures.loading || noticesAll.loading || jobsAll.loading;
   const counts = {

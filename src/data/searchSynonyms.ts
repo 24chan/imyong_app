@@ -8,12 +8,11 @@ export type StudyMenu = { key: string; title: string; desc: string; words: strin
 export const STUDY_MENUS: StudyMenu[] = [
   {
     key: 'cs',
-    title: '내용 체계표(내체표) 모아보기 · 빈칸 암기',
+    title: '내용 체계표(내체표) 모아보기',
     desc: '2022 개정 교과별 내용 체계 표',
     words: ['내체표', '내용체계표', '내용체계', '체계표', '내용요소', '핵심아이디어', '빈칸암기', '빈칸'],
     path: '/content-system',
     level: 'elementary',
-    feature: 'content-system',
   },
   {
     key: 'tree',
