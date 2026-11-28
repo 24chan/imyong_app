@@ -189,7 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const appReturn = Linking.createURL('auth-callback');
     // 브라우저가 앱을 못 여는 기기용: 이 번호로 돌아오기 페이지가 맡긴 로그인 정보를 꺼내 옴
     const nonce = makeNonce();
-    const redirectTo = `${AUTH_BOUNCE}?to=${encodeURIComponent(appReturn)}&n=${nonce}`;
+    const redirectTo = `${AUTH_BOUNCE}?v=4&to=${encodeURIComponent(appReturn)}&n=${nonce}`; // v: 페이지 캐시 피하기
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {

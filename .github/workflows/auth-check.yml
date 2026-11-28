@@ -39,3 +39,8 @@ jobs:
             echo "== 이메일 코드 보내기"
             curl -s -X POST "$URL/auth/v1/otp" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"email\":\"$OTP\",\"create_user\":true}" -w '\nHTTP %{http_code}\n'
           fi
+          echo "== 로그인 전달함(0011) 확인"
+          curl -s -X POST "$URL/rest/v1/rpc/take_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d '{"p_nonce":"check-only-0000000000000000000000000000"}' -w '\nHTTP %{http_code}\n'
+          echo "== 배포된 auth.html"
+          curl -s "https://24chan.github.io/imyong_app/auth.html?x=$RANDOM" | grep -o 'v4 · to=\|put_auth_relay' | sort | uniq -c
+          curl -sI "https://24chan.github.io/imyong_app/auth.html" | grep -i 'cache-control\|age:'

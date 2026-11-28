@@ -39,12 +39,12 @@ writeFileSync(
 // 이 페이지를 거쳐 앱으로 넘김. 자동으로 한 번 시도하고, 안 되면 '앱으로 돌아가기' 단추(누르면 브라우저가 앱을 열어 줌)
 writeFileSync(
   'site/auth.html',
-  `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>로그인 · ${LEGAL.appName}</title>
+  `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>로그인 · ${LEGAL.appName}</title>
 <style>body{font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#F2F4F7;color:#1B2A3A}
 .c{background:#fff;border-radius:20px;padding:28px 22px;max-width:360px;width:86%;text-align:center}h1{font-size:20px;margin:0 0 8px}p{color:#5B6B7C;font-size:14px;line-height:1.6;margin:0 0 18px}
 a.b{display:block;background:#1F5E54;color:#fff;text-decoration:none;font-weight:800;font-size:17px;padding:16px;border-radius:12px}
 @media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
-<body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">앱으로 돌아가는 중이에요. 화면이 그대로면 아래 단추를 눌러 주세요.</p><a class="b" id="go" href="#">앱으로 돌아가기</a><a id="go2" href="#" style="display:block;margin-top:14px;color:#5B6B7C;font-size:14px">안 되면 여기를 눌러 주세요</a></div>
+<body><div class="c"><h1 id="t">로그인됐어요</h1><p id="m">로그인 정보를 앱에 보내는 중이에요…</p><p id="e" style="color:#D63B2F;font-size:13px;font-weight:700"></p><a class="b" id="go" href="#">앱으로 돌아가기</a><a id="go2" href="#" style="display:block;margin-top:14px;color:#5B6B7C;font-size:14px">안 되면 여기를 눌러 주세요</a></div>
 <p id="d" style="margin-top:14px;font-size:11px;color:#93A3A1;word-break:break-all"></p>
 <script>
 (function(){var q=new URLSearchParams(location.search);var to=q.get('to')||'';
@@ -57,10 +57,17 @@ var m=url.match(/^([a-z][a-z0-9+.-]*):\\/\\/(.*)$/);var link=url;
 if(/Android/i.test(navigator.userAgent)&&m){// 앱 이름(패키지)은 설치한 판마다 다를 수 있어 Expo Go 말고는 지정하지 않음
 var pkg=m[1]==='exp'||m[1]==='exps'?';package=host.exp.exponent':'';
 link='intent://'+m[2]+'#Intent;scheme='+m[1]+pkg+';end';}
-document.getElementById('go').href=link;document.getElementById('go2').href=url;document.getElementById('d').textContent='to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
+document.getElementById('go').href=link;document.getElementById('go2').href=url;document.getElementById('d').textContent='v4 · to='+(raw||'(없음)')+' · '+location.search.slice(0,120);
 // 앱이 맡긴 번호(n)가 있으면 로그인 정보를 서버 전달함에 맡김 → 앱이 꺼내 감(브라우저가 앱을 못 열어도 됨)
-var n=q.get('n');if(n&&h&&!err){fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
-.then(function(r){if(r.ok){document.getElementById('m').textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';}}).catch(function(){});}
+var n=q.get('n');var M=document.getElementById('m'),E=document.getElementById('e');
+if(err){M.textContent='로그인하지 못했어요: '+err;}
+else if(!n){M.textContent='앱 업데이트가 덜 받아졌어요. 앱을 두 번 껐다 켠 뒤 다시 로그인해 주세요. (아래 단추로도 시도해 볼 수 있어요)';}
+else if(!h){M.textContent='로그인 정보가 없어요. 다시 로그인해 주세요.';}
+else{fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',cache:'no-store',headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
+.then(function(r){if(r.ok){M.textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';return;}
+return r.text().then(function(t){var why=/PGRST202|Could not find the function/i.test(t)?'서버 준비 안 됨: 0011 SQL을 실행해 주세요':/permission denied|42501/i.test(t)?'권한 오류(RLS·실행 권한)':/42P01|does not exist/i.test(t)?'표 없음: 0011 SQL을 실행해 주세요':'서버 오류';
+M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent=why+' (HTTP '+r.status+') '+t.slice(0,160);});})
+.catch(function(x){M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent='인터넷 오류: '+x;});}
 setTimeout(function(){location.href=link;},600);})();
 </script></body></html>`,
 );
