@@ -1,3 +1,4 @@
+import { SocialButtons } from '../features/auth/SocialButtons';
 import { router, Stack } from 'expo-router';
 import { ComponentRef, useEffect, useRef, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -67,7 +68,8 @@ export default function LoginScreen() {
     setBusy(true);
     setError(null);
     try {
-      await signInWithProvider(provider, true);
+      const ok = await signInWithProvider(provider, true);
+      if (!ok) setError('로그인 창이 닫혔어요. 계정을 고른 뒤에도 앱으로 돌아오지 않으면 잠시 뒤 다시 해 주세요.');
     } catch (e) {
       setError(authErrorText(e));
     } finally {
@@ -107,7 +109,7 @@ export default function LoginScreen() {
           <Txt variant="sub">
             {step === 'email'
               ? '약관에 동의하고 카카오·Google 계정으로 바로 시작하거나, 이메일 코드로 시작해요. 처음이면 자동으로 가입돼요. 로그인하지 않아도 자료는 모두 볼 수 있어요.'
-              : `${email.trim()} 로 보낸 6자리 숫자를 넣어 주세요. 코드는 1시간 동안 쓸 수 있어요. 메일이 안 보이면 스팸함도 확인해 주세요.`}
+              : `${email.trim()} 로 보낸 숫자 코드를 넣어 주세요. 코드는 1시간 동안 쓸 수 있어요. 메일이 안 보이면 스팸함도 확인해 주세요.`}
           </Txt>
 
           {step === 'email' && (
@@ -118,23 +120,7 @@ export default function LoginScreen() {
 
           {step === 'email' && (
             <View style={{ gap: space.sm }}>
-              {(
-                [
-                  { p: 'kakao' as const, label: '카카오로 시작하기', icon: 'chatbubble' as const },
-                  { p: 'google' as const, label: 'Google로 시작하기', icon: 'logo-google' as const },
-                ]
-              ).map((b) => (
-                <Pressable
-                  key={b.p}
-                  onPress={() => social(b.p)}
-                  disabled={busy}
-                  accessibilityRole="button"
-                  style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, paddingVertical: 15, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, backgroundColor: pressed ? colors.surface : colors.background, opacity: allAgreed(consent) ? 1 : 0.45 })}
-                >
-                  <Ionicons name={b.icon} size={19} color={colors.text} />
-                  <Txt style={{ fontWeight: '800', fontSize: 16 }}>{b.label}</Txt>
-                </Pressable>
-              ))}
+              <SocialButtons onPress={social} disabled={busy} dim={!allAgreed(consent)} />
               <Txt variant="sub" style={{ textAlign: 'center', marginTop: space.sm }}>
                 또는 이메일로 시작 (학교 메일이면 로그인과 동시에 학교 인증까지 돼요)
               </Txt>
@@ -169,18 +155,17 @@ export default function LoginScreen() {
                   ref={codeRef}
                   value={code}
                   onChangeText={(t) => {
-                    const v = t.replace(/\D/g, '').slice(0, 6);
-                    setCode(v);
-                    if (v.length === 6) verify(v);
+                    // 2026-11-28: Supabase 설정에 따라 6~10자리라 자동 확인은 안 하고 '확인'으로
+                    setCode(t.replace(/\D/g, '').slice(0, 10));
                   }}
-                  placeholder="6자리 숫자"
+                  placeholder="메일에 온 숫자"
                   placeholderTextColor={colors.textSub}
                   keyboardType="number-pad"
                   textContentType="oneTimeCode"
                   autoComplete="one-time-code"
-                  maxLength={6}
+                  maxLength={10}
                   style={[inputStyle, { fontSize: 24, letterSpacing: 8, textAlign: 'center' }]}
-                  accessibilityLabel="인증 코드 6자리"
+                  accessibilityLabel="인증 코드"
                 />
               </>
             )}

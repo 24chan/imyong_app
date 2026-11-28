@@ -34,7 +34,7 @@ export function authErrorText(e: unknown): string {
   const m = (e as { message?: string; status?: number })?.message ?? String(e);
   const status = (e as { status?: number })?.status;
   if (status === 429 || /rate limit|security purposes|too many/i.test(m)) return '메일을 너무 자주 보냈어요. 1~2분 뒤에 다시 해 주세요.';
-  if (/expired|invalid|token/i.test(m)) return '코드가 맞지 않거나 시간이 지났어요. 메일의 6자리 숫자를 다시 확인해 주세요.';
+  if (/expired|invalid|token/i.test(m)) return '코드가 맞지 않거나 시간이 지났어요. 메일의 숫자를 다시 확인해 주세요.';
   if (/email.*(invalid|valid)|invalid.*email/i.test(m)) return '이메일 주소 형식을 확인해 주세요.';
   if (/network|fetch/i.test(m)) return '인터넷 연결을 확인해 주세요.';
   if (/delete_my_account|function/i.test(m)) return '서버 준비가 덜 됐어요 (0009 SQL 실행 필요).';

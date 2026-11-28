@@ -160,6 +160,10 @@ def keep_text(t):
 BAND_RE = re.compile(r'^\[?\s*(초등학교|중학교|고등학교)\s*\d')
 
 
+# 2026-11-28: 국어 2022 '듣기·말하기' 성취기준([n국01-..])에 영역 이름이 앞 칸 것('매체'·빈칸)으로 붙던 문제 → 코드 번호로 영역 고정
+AREA_BY_CODE = {'국어': {'01': '듣기·말하기', '02': '읽기', '03': '쓰기', '04': '문법', '05': '문학', '06': '매체'}}
+
+
 def split_units(text, subject, era):
     """원문 글 → 칸 목록. 성취기준은 코드 하나가 한 칸, 나머지는 문단 묶음(최대 600자)
     한 파일에 중학교·고등학교 과목이 같이 들어 있어서(국어과 교육과정 등) 초등 부분만 남김:
@@ -213,7 +217,8 @@ def split_units(text, subject, era):
             if cm.start() > 0 or re.match(r'[)\]’”,]|(과|와|에서|에|을|를|의|은|는|로|으로|이|가|도)\s', rest):
                 buf.append(s)  # 줄 가운데 코드 또는 인용 조각('…])과 연계할 수 있는')은 성취기준 칸이 아님
                 continue
-            units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': area, 'code': code, 'text': s[cm.start():], 'block': block})
+            ar = AREA_BY_CODE.get(subject, {}).get(re.sub(r'\D', '', code)[1:3], area) if era == '2022' else area
+            units.append({'subject': subject, 'era': era, 'section': '성취기준', 'area': ar, 'code': code, 'text': s[cm.start():], 'block': block})
             continue
         if units and units[-1].get('drop') and not buf and sec == '성취기준' and not s.startswith(('(', '[', '①')):
             continue  # 뺀 코드 문장의 이어지는 줄
