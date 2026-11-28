@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { router, Stack } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, Switch, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Switch, View } from 'react-native';
 import { TextInput } from '../components/TextField';
 import { SubjectPicker } from '../components/pickers';
 import { Card, Chip, PrimaryButton, Screen, Segmented, Txt } from '../components/ui';
@@ -255,8 +255,9 @@ export default function VerifyScreen() {
                       placeholderTextColor={colors.textSub}
                       style={inputStyle(colors)}
                     />
-                    <View style={{ maxHeight: 260 }}>
-                      {univList.slice(0, 12).map((u) => (
+                    {/* 2026-11-28 고침: 칸 밖으로 삐져나오고 끌어도 안 움직이던 목록 → 안에서 스크롤(바깥 화면 안의 스크롤) */}
+                    <ScrollView nestedScrollEnabled keyboardShouldPersistTaps="handled" style={{ maxHeight: 300, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md }} contentContainerStyle={{ paddingHorizontal: space.md }}>
+                      {univList.slice(0, 80).map((u) => (
                         <Pressable
                           key={u.code}
                           onPress={() => setUniv(u)}
@@ -276,7 +277,7 @@ export default function VerifyScreen() {
                           {univ?.code === u.code && <Ionicons name="checkmark-circle" size={22} color={colors.brand} />}
                         </Pressable>
                       ))}
-                    </View>
+                    </ScrollView>
                     <PrimaryButton label="목록에 없어요 (직접 입력)" variant="ghost" onPress={() => setNotListed(true)} />
                   </>
                 ) : (
