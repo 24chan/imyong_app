@@ -1,4 +1,7 @@
 import { supabase } from '../lib/supabase';
+
+/** 공개 자료 저장소 (2026-11-28: GitHub 저장소 비공개 전환으로 Supabase 공개 저장소 pub 로 옮김) */
+export const PUB_ROOT = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/';
 import type { Level } from '../store/AppSettings';
 import type {
   DataQuery,
@@ -150,6 +153,9 @@ export async function getNotices(level: Level, limit = 100): Promise<Notice[]> {
       throw new DataError('임용 소식', error.message);
     }
     type Raw = { name?: string; url?: string; view?: string; images?: string[] };
+    // 2026-11-28: 예전에 GitHub(raw-files) 주소로 저장된 그림·PDF 주소를 공개 저장소(pub) 주소로 바꿔 읽음
+    const gh = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/';
+    const pub = (u?: string) => (u && u.startsWith(gh) ? PUB_ROOT + u.slice(gh.length) : u);
     return (data ?? []).map(
       (x: { url: string; region: string; level: Level; year: number; doc_type: Notice['docType']; title: string; posted_at: string | null; files: Raw[] | null }) => ({
         url: x.url,
@@ -159,8 +165,10 @@ export async function getNotices(level: Level, limit = 100): Promise<Notice[]> {
         docType: x.doc_type,
         title: x.title,
         postedAt: x.posted_at,
-        files: (x.files ?? []).filter((f): f is { name: string; url: string; view?: string } => !!f.name && !!f.url),
-        images: (x.files ?? []).flatMap((f) => f.images ?? []),
+        files: (x.files ?? [])
+          .filter((f): f is { name: string; url: string; view?: string } => !!f.name && !!f.url)
+          .map((f) => ({ ...f, view: pub(f.view) })),
+        images: (x.files ?? []).flatMap((f) => (f.images ?? []).map((u) => pub(u) as string)),
       }),
     );
   });
@@ -287,7 +295,7 @@ export async function checkServer(): Promise<{ ok: boolean; message: string }> {
 
 // ───── 학교 위치 (수집기가 GitHub raw-files 브랜치에 올린 JSON) ─────
 
-const SCHOOLS_BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/schools';
+const SCHOOLS_BASE = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/schools';
 
 /** 지역의 초·중·고 위치 목록. 매달 자동 갱신 */
 export async function getSchools(region: string): Promise<School[]> {
@@ -312,7 +320,7 @@ export async function getSchoolMeta(): Promise<SchoolMeta | null> {
 
 // ───── 사립 위탁 채용 (수집기가 공고문 표에서 뽑아 raw-files 브랜치에 올린 JSON) ─────
 
-const PRIVATE_BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/private';
+const PRIVATE_BASE = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/private';
 
 /** 사립 위탁 채용 자료가 있는 지역 → 학년도 목록 */
 export async function getPrivateRegions(): Promise<Record<string, number[]>> {
@@ -344,7 +352,7 @@ export type RegionDong = { version: string; dong: { n: string; g: string; c?: [n
 export async function getRegionDong(region: string): Promise<RegionDong | null> {
   return cached(`dong:${region}`, async () => {
     try {
-      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/dong/${region}.json`);
+      const res = await fetch(`https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/geo/dong/${region}.json`);
       return res.ok ? ((await res.json()) as RegionDong) : null;
     } catch {
       return null;
@@ -354,7 +362,7 @@ export async function getRegionDong(region: string): Promise<RegionDong | null> 
 export async function getRegionGeo(region: string): Promise<RegionGeo | null> {
   return cached(`geo:${region}`, async () => {
     try {
-      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/${region}.json`);
+      const res = await fetch(`https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/geo/${region}.json`);
       return res.ok ? ((await res.json()) as RegionGeo) : null;
     } catch {
       return null;
@@ -392,7 +400,7 @@ export type SidoGeo = { sido: { r: string; c: [number, number]; p: [number, numb
 export async function getSidoGeo(): Promise<SidoGeo | null> {
   return cached('geo:sido', async () => {
     try {
-      const res = await fetch('https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/geo/sido.json');
+      const res = await fetch('https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/geo/sido.json');
       return res.ok ? ((await res.json()) as SidoGeo) : null;
     } catch {
       return null;
@@ -419,7 +427,7 @@ export type SchoolInfoFile = { year: number; s: Record<string, SchoolInfo> };
 export async function getSchoolInfoFile(region: string): Promise<SchoolInfoFile | null> {
   return cached(`schoolinfo:${region}`, async () => {
     try {
-      const res = await fetch(`https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/schoolinfo/${region}.json`);
+      const res = await fetch(`https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/schoolinfo/${region}.json`);
       return res.ok ? ((await res.json()) as SchoolInfoFile) : null;
     } catch {
       return null;

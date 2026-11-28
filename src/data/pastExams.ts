@@ -5,7 +5,7 @@ export type PastExamFile = { name: string; key: string };
 export type PastExam = { id: string; year: number; kind: string; title: string; date: string; files: PastExamFile[] };
 export type PastExamList = { level: Level; source: string; page: string; file_url: string; updated: string; items: PastExam[] };
 
-const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/resources';
+const BASE = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/resources';
 const cache = new Map<Level, { at: number; data: PastExamList }>();
 
 export async function getPastExams(level: Level): Promise<PastExamList | null> {

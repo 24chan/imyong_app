@@ -8,7 +8,7 @@ import { radius, space } from '../../theme/tokens';
 import { useTheme } from '../../theme/useTheme';
 
 // 운영자 알림 (2026-11-28): admin-alert 워크플로가 하루 두 번 모은 변경·경고(raw/changes/latest.json)
-const URL = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/changes/latest.json';
+const URL = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/changes/latest.json';
 type Entry = { checked: string; changes: { kind: string; n: number; examples: string[] }[]; warnings: string[] };
 
 async function load(): Promise<(Entry & { history: Entry[] }) | null> {

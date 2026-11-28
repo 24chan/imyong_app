@@ -1,7 +1,7 @@
 import { cached } from './repository';
 
 // 교육과정 원문 (2026-11-24 사용자 승인): NCIC 원문 인벤토리 목록을 수집(ncic 워크플로)해 raw-files에 둔 것
-const URL = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/ncic/curriculum.json';
+const URL = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/ncic/curriculum.json';
 
 export type CurFile = { name: string; ext: string; seq: string; year: string; url: string };
 export type CurDoc = {

@@ -59,7 +59,7 @@ def notices(raw):
     """수집한 공고 목록(raw/<지역>/posts.json) → notices 테이블 (제목·링크만이라 바로 올림)"""
     import glob
     rows = []
-    base = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/'
+    base = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/'  # 2026-11-28: GitHub 비공개 전환 → Supabase 공개 저장소
     for f in sorted(glob.glob(os.path.join(raw, '*', 'posts.json'))):
         region_dir = os.path.dirname(f)
         mf = os.path.join(region_dir, 'manifest.json')

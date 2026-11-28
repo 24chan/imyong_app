@@ -15,7 +15,7 @@ export type TeacherJob = {
   tip?: boolean; // 이용자 제보(운영자 승인)
 };
 
-const JOBS_URL = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/jobs/teacher_jobs.json';
+const JOBS_URL = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/jobs/teacher_jobs.json';
 let cache: { at: number; data: TeacherJob[] } | null = null;
 
 /** 자동 수집(나라일터) + 승인된 제보를 합쳐 최신순 */

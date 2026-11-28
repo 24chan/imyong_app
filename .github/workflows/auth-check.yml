@@ -49,3 +49,8 @@ jobs:
           curl -s -X POST "$URL/rest/v1/rpc/put_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\",\"p_payload\":\"access_token=a&refresh_token=b\"}" -w ' put HTTP %{http_code}\n'
           curl -s -X POST "$URL/rest/v1/rpc/take_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\"}" -w ' take1 HTTP %{http_code}\n'
           curl -s -X POST "$URL/rest/v1/rpc/take_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\"}" -w ' take2 HTTP %{http_code}\n'
+          echo "== 새 주소 확인(공개 저장소·웹페이지)"
+          curl -s -o /dev/null -w 'pub jobs HTTP %{http_code} %{content_type}\n' "$URL/storage/v1/object/public/pub/raw/jobs/teacher_jobs.json"
+          curl -s -o /dev/null -w 'pro(로그인 없이) HTTP %{http_code}\n' "$URL/storage/v1/object/public/pro/quiz/quiz_elementary.json"
+          for p in auth.html install.html privacy.html; do curl -s -o /dev/null -w "expo.app/$p HTTP %{http_code} %{content_type}\n" "https://imyongapp.expo.app/$p"; done
+          curl -s "https://imyongapp.expo.app/auth.html" | grep -c put_auth_relay

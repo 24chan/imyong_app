@@ -2,7 +2,7 @@ import { cached } from './repository';
 
 // 내용 체계표(내체표) + 개념 구조도 (2026-11-24 사용자 요청)
 // content-system 워크플로가 교육과정 고시문(NCIC 한글 파일)의 '내용 체계' 표를 뽑아 만든 raw-files/raw/curriculum/content_system_elementary.json
-const URL = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/curriculum/content_system_elementary.json';
+const URL = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/curriculum/content_system_elementary.json';
 
 export type CsCell = { items: string[]; span: number };
 export type CsRow = { cat: string; sub: string; cells: CsCell[] };

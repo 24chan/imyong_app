@@ -51,7 +51,7 @@ export const PRACTICE_UNIVS: { code: string; name: string }[] = [
   { code: 'jeju_elem', name: '제주대' },
 ];
 
-const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/practice';
+const BASE = 'https://wckaybzamhvmhxiacmnx.supabase.co/storage/v1/object/public/pub/raw/practice';
 
 export async function getPractice(univ: string): Promise<PracticeData | null> {
   return cached(`practice:${univ}`, async () => {

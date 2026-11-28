@@ -48,7 +48,7 @@ function makeNonce(): string {
   while (out.length < 64) out += Math.random().toString(16).slice(2);
   return out.slice(0, 64);
 }
-const AUTH_BOUNCE = 'https://24chan.github.io/imyong_app/auth.html';
+const AUTH_BOUNCE = 'https://imyongapp.expo.app/auth.html'; // 2026-11-28: GitHub Pages → EAS Hosting
 export const getLastRedirect = () => lastRedirect;
 
 /** 로그인 후 돌아온 주소(#access_token=…)에서 세션 꺼내기. 처리했으면 true */
