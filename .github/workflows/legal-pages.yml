@@ -1,11 +1,9 @@
 name: legal-pages
 # 약관·처리방침·계정 삭제 안내 웹페이지 (GitHub Pages). src/legal 이 바뀌면 자동으로 다시 올림
 # 처음 한 번: 저장소 Settings → Pages → Source 를 "GitHub Actions" 로
+# 2026-11-28: 저장소 비공개 전환으로 GitHub Pages 대신 site-deploy(EAS Hosting) 사용 → 수동 실행만 남김
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['src/legal/**', 'scripts/tools/legal_pages.ts', 'site-data/**']
 permissions:
   contents: read
   pages: write
