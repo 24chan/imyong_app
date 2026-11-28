@@ -1,0 +1,32 @@
+name: app-build-info
+# 최근 EAS 빌드 상태와 설치 파일(APK) 주소를 보여 줌. 끝난 빌드가 있으면 site-data/app.json 에 적어 설치 페이지(install.html)가 그 주소를 씀
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: 최근 빌드
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx --yes eas-cli@latest build:list --platform android --limit 3 --json --non-interactive > builds.json
+          node -e "const b=require('./builds.json');for(const x of b)console.log(x.id,x.status,x.buildProfile,x.appVersion,x.createdAt,x.artifacts&&x.artifacts.buildUrl||'-')"
+          node -e "
+          const b=require('./builds.json').find(x=>x.status==='FINISHED'&&x.artifacts&&x.artifacts.buildUrl);
+          if(!b){console.log('끝난 빌드 없음');process.exit(0)}
+          const fs=require('fs');fs.mkdirSync('site-data',{recursive:true});
+          const out={android:{apk:b.artifacts.buildUrl,version:b.appVersion,buildId:b.id,finishedAt:b.completedAt||b.updatedAt}};
+          const old=fs.existsSync('site-data/app.json')?fs.readFileSync('site-data/app.json','utf8'):'';
+          const s=JSON.stringify(out,null,2)+'\n';if(old!==s){fs.writeFileSync('site-data/app.json',s);console.log('바뀜',s)}"
+      - name: 설치 페이지 주소 저장
+        run: |
+          if [ -n "$(git status --porcelain site-data)" ]; then
+            git config user.name "github-actions[bot]"; git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add site-data && git commit -m "설치 파일 주소 갱신" && git push
+          fi

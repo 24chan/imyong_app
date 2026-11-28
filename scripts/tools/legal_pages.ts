@@ -1,6 +1,6 @@
 // 약관·개인정보처리방침·계정 삭제 안내를 웹페이지로 (GitHub Pages). 앱과 같은 원문(src/legal)을 써서 내용이 늘 같음.
 // Google Play: 계정을 만들 수 있는 앱은 '웹에서 계정 삭제를 요청하는 주소'가 있어야 함 → delete.html
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fill, LEGAL } from '../../src/legal/info';
 import { privacySections } from '../../src/legal/privacy';
 import { termsSections } from '../../src/legal/terms';
@@ -75,5 +75,23 @@ st='실패(HTTP '+r.status+', '+why+')';M.textContent='앱에 로그인 정보�
 .finally(function(){setTimeout(go,300);});}
 })();
 </script></body></html>`,
+);
+// 설치 페이지 (2026-11-28): 링크·QR 하나로 안드로이드 설치 파일 받기. 주소는 app-build-info 워크플로가 site-data/app.json 에 적음
+const app = existsSync('site-data/app.json') ? (JSON.parse(readFileSync('site-data/app.json', 'utf8')) as { android?: { apk: string; version?: string; finishedAt?: string } }) : {};
+const apk = app.android?.apk;
+writeFileSync(
+  'site/install.html',
+  `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-cache"><title>설치 · ${LEGAL.appName}</title>
+<style>body{font-family:-apple-system,'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;margin:0;background:#F2F4F7;color:#1B2A3A}
+.w{max-width:440px;margin:0 auto;padding:36px 18px 60px}.c{background:#fff;border-radius:20px;padding:22px;margin-top:14px}
+h1{font-size:26px;margin:0 0 4px;color:#1F5E54}h2{font-size:17px;margin:0 0 8px}p,li{color:#5B6B7C;font-size:14.5px;line-height:1.65;margin:4px 0}
+a.b{display:block;text-align:center;background:#1F5E54;color:#fff;text-decoration:none;font-weight:800;font-size:17px;padding:16px;border-radius:12px;margin:12px 0 6px}
+.off{background:#C9D1D9!important}.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:9px;background:#E1F5EE;color:#0F6E56}
+@media(prefers-color-scheme:dark){body{background:#0F1514;color:#E8EEED}.c{background:#18201F;border:1px solid #26302F}h1{color:#4FB3A0}a.b{background:#4FB3A0;color:#0F1514}}</style></head>
+<body><div class="w"><h1>${LEGAL.appName}</h1><p>임용 준비 교대생·사범대생을 위한 앱 · <span class="tag">비공개 시험판</span></p>
+<div class="c"><h2>안드로이드</h2>${apk ? `<a class="b" href="${apk}">설치 파일 받기 (APK)</a><p>판 ${esc(app.android?.version ?? '')} · ${esc((app.android?.finishedAt ?? '').slice(0, 10))}</p>` : '<a class="b off">준비 중이에요</a>'}
+<ol><li>받은 파일을 열어요.</li><li>'출처를 알 수 없는 앱' 허용을 물으면 <b>이 출처 허용</b>을 켜요.</li><li><b>설치</b>를 눌러요. 예전 '임용맵' 앱이 있으면 지워도 돼요.</li></ol></div>
+<div class="c"><h2>아이폰</h2><p>아이폰은 애플 정책상 TestFlight(애플 공식 시험판 앱)로만 나눠 줄 수 있어요. 준비되면 이 페이지에 초대 링크가 생겨요.</p></div>
+<p style="margin-top:18px;font-size:12.5px"><a href="privacy.html">개인정보처리방침</a> · <a href="terms.html">이용약관</a></p></div></body></html>`,
 );
 console.log('site/ 만듦');

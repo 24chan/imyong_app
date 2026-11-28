@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['src/legal/**', 'scripts/tools/legal_pages.ts']
+    paths: ['src/legal/**', 'scripts/tools/legal_pages.ts', 'site-data/**']
 permissions:
   contents: read
   pages: write
