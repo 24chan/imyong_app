@@ -1,10 +1,10 @@
-import { cached } from './repository';
+import { cached, proJson } from './repository';
 import { fileUrl, getPastExams } from './pastExams';
 import type { Level } from '../store/AppSettings';
 
 // 기출 분석 (2026-11-24 사용자 승인): exam-analysis 워크플로가 만든 raw-files/raw/analysis/<level>.json
 // 교육과정 원문 칸(고시문) + 칸마다 출제 기록(연도·A/B·번호, 원문에서 겹친 곳) + 통계. 문항 글은 들어 있지 않음
-const BASE = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/analysis';
+// 2026-11-28 보안 보강: 공개 GitHub 대신 Supabase 비공개 저장소 pro/analysis (경인교대 인증 회원·운영자만)
 
 export type Unit = { id: number; subject: string; era: '2022' | '2015'; section: string; area: string; code: string; text: string; file?: { name: string; url: string } | null };
 /** 문항 자리 (2026-11-24): 쪽(1부터) + [왼쪽, 위, 오른쪽, 아래]를 쪽 크기에 대한 비율(0~1)로.
@@ -35,10 +35,9 @@ export type Analysis = {
 
 export function getAnalysis(level: Level): Promise<Analysis | null> {
   return cached(`analysis:${level}`, async () => {
-    const res = await fetch(`${BASE}/${level}.json`);
-    if (res.status === 404) return null;
-    if (!res.ok) throw new Error(`기출 분석을 불러오지 못했어요 (${res.status})`);
-    return (await res.json()) as Analysis;
+    const d = await proJson<Analysis>(`analysis/${level}.json`);
+    if (!d) throw new Error('기출 분석을 불러오지 못했어요. 로그인·인증 상태를 확인해 주세요'); // 실패는 저장하지 않아 다음에 다시 시도
+    return d;
   });
 }
 
@@ -46,9 +45,9 @@ export function getAnalysis(level: Level): Promise<Analysis | null> {
 export type SubjectData = { subject: string; units: Unit[]; hits: Record<string, Hit[]> };
 export function getAnalysisSubject(level: Level, file: string): Promise<SubjectData | null> {
   return cached(`analysis:${level}:${file}`, async () => {
-    const res = await fetch(`${BASE}/${level}/${file}`);
-    if (!res.ok) return null;
-    return (await res.json()) as SubjectData;
+    const d = await proJson<SubjectData>(`analysis/${level}/${file}`);
+    if (!d) throw new Error('교과 자료를 불러오지 못했어요');
+    return d;
   });
 }
 

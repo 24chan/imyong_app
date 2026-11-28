@@ -1,9 +1,9 @@
-import { cached } from './repository';
+import { cached, proJson } from './repository';
 import { supabase } from '../lib/supabase';
 
 // 1분 퀴즈 문제은행 (2026-11-28 승인: 출제 기준·15유형, 초등 전체 시험 범위)
 // review/quizgen.py 가 교육과정 원문·내체표 핵심어·기출 연결로 만들고 자동 검증한 문제 → raw-files/raw/quiz/quiz_elementary.json
-const URL = 'https://raw.githubusercontent.com/24chan/imyong_app/raw-files/raw/quiz/quiz_elementary.json';
+// 2026-11-28 보안 보강: 공개 GitHub 대신 Supabase 비공개 저장소 pro/quiz (경인교대 인증 회원·운영자만)
 
 /** id, t 유형, s 교과, q 문제, c 선지, a 정답 번호, f 원문 근거, g 위치, x 기출 빈출(1) */
 export type QuizItem = { id: string; t: string; s: string; q: string; c: string[]; a: number; f: string; g: string; x: 0 | 1 };
@@ -13,10 +13,9 @@ export const QUIZ_SUBJECTS = ['총론', '국어', '사회', '도덕', '수학', 
 
 export function getQuizBank(): Promise<QuizBank | null> {
   return cached('quiz:elementary', async () => {
-    const res = await fetch(URL);
-    if (res.status === 404) return null;
-    if (!res.ok) throw new Error(`퀴즈를 불러오지 못했어요 (${res.status})`);
-    return (await res.json()) as QuizBank;
+    const d = await proJson<QuizBank>('quiz/quiz_elementary.json');
+    if (!d) throw new Error('퀴즈를 불러오지 못했어요. 로그인·인증 상태를 확인해 주세요');
+    return d;
   });
 }
 

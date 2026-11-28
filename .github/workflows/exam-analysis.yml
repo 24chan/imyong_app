@@ -1,5 +1,5 @@
 name: exam-analysis
-# 기출 분석(초등 교육과정 A·B): 교육과정 원문 칸 ↔ 기출 문항 연결 + 통계 → raw-files/raw/analysis (문항 글은 저장 안 함)
+# 기출 분석(초등 교육과정 A·B): 교육과정 원문 칸 ↔ 기출 문항 연결 + 통계 → Supabase 비공개 저장소 pro/analysis (문항 글은 저장 안 함, 공개 GitHub에는 올리지 않음)
 on:
   workflow_dispatch:
     inputs:
@@ -10,7 +10,7 @@ on:
   schedule:
     - cron: '17 21 * * 1'   # 매주 화 06:17 KST (교육과정 목록 갱신 다음 날)
 permissions:
-  contents: write
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,11 +26,8 @@ jobs:
       - run: python -I -u app/scripts/collector/exam_analysis.py raw raw/analysis
         env:
           DEBUG_BOXES: ${{ github.event.inputs.debug_boxes }}
-      - name: raw-files 브랜치에 저장
-        if: always()
-        run: |
-          git config user.name "imyong-collector"
-          git config user.email "actions@users.noreply.github.com"
-          git add raw/analysis || exit 0
-          git commit -qm "기출 분석 $(date +%F)" || exit 0
-          ok=0; for i in 1 2 3 4 5; do if git pull -q --rebase -X theirs origin raw-files && git push -q origin HEAD:raw-files; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep $((i*5)); done; [ "$ok" = 1 ]
+      # 2026-11-28 보안 보강: 정제 자료는 공개 GitHub에 두지 않고 Supabase 비공개 저장소(pro)에만 올림
+      - name: 비공개 저장소(pro)에 올리기
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python -I -u app/scripts/tools/pro_upload.py raw/analysis analysis

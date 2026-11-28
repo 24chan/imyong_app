@@ -22,7 +22,7 @@ STALE = [
     ('교육청 공고 수집(서울 예시)', 'raw/seoul', 3),
     ('평가원 기출 목록', 'raw/resources/kice_elementary.json', 10),
     ('교육과정 원문 목록', 'raw/ncic/curriculum.json', 10),
-    ('기출 분석', 'raw/analysis/elementary.json', 10),
+    # 기출 분석은 2026-11-28부터 비공개 저장소(pro)에 올려서 여기서 확인하지 않음
     ('실습학교 목록', 'raw/practice', 40),
 ]
 

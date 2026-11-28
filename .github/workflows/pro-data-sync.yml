@@ -1,0 +1,34 @@
+name: pro-data-sync
+# 정제 자료(기출 분석·1분 퀴즈)를 Supabase 비공개 저장소 pro 로 옮기고, 공개 raw-files 에서는 지움 (2026-11-28 보안 보강)
+# 먼저 0034 SQL(비공개 저장소 'pro' 만들기)을 실행한 뒤 수동으로 실행
+on:
+  workflow_dispatch:
+    inputs:
+      remove_public:
+        description: '올린 뒤 공개 raw-files 에서 지울까요 (yes/no)'
+        required: true
+        default: 'yes'
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - name: 비공개 저장소에 올리기
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          [ -d raw/analysis ] && python -I -u app/scripts/tools/pro_upload.py raw/analysis analysis
+          [ -d raw/quiz ] && python -I -u app/scripts/tools/pro_upload.py raw/quiz quiz
+          echo 끝
+      - name: 공개 raw-files 에서 지우기
+        if: github.event.inputs.remove_public == 'yes'
+        run: |
+          git config user.name "imyong-collector"; git config user.email "actions@users.noreply.github.com"
+          git rm -r -q --ignore-unmatch raw/analysis raw/quiz
+          git commit -qm "정제 자료를 비공개 저장소로 옮김(공개 GitHub에서 삭제)" || exit 0
+          git push -q origin HEAD:raw-files

@@ -440,3 +440,13 @@ export async function getSchoolInfo(region: string, name: string, kind: 'e' | 'm
   });
   return key ? { year: f.year, info: f.s[key] } : null;
 }
+
+/** 정제 자료(기출 분석·1분 퀴즈): Supabase 비공개 저장소 'pro'에서 받음 (2026-11-28 보안 보강).
+ *  서버 규칙(0034 'pro read')이 경인교대 인증 회원·운영자만 허용 → 그 밖에는 null */
+export async function proJson<T>(path: string): Promise<T | null> {
+  const { data, error } = await supabase.storage.from('pro').createSignedUrl(path, 120);
+  if (error || !data?.signedUrl) return null;
+  const res = await fetch(data.signedUrl);
+  if (!res.ok) return null;
+  return (await res.json()) as T;
+}
