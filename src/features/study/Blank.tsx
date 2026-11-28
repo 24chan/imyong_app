@@ -28,11 +28,11 @@ export function useBlank() {
 }
 
 // 2026-11-28 사용자 요청: 처음엔 '빈칸 암기 모드' 단추 하나 → 누르면 켜지고 1 전체 가리기 · 2 핵심어 가리기 · 3 빈칸 만들기 · 4 오답
-// '빈칸 만들기'를 누르면 바로 편집: 낱말을 한 번 누르면 빈칸, 다시 누르면 없어짐. 단추는 초기화·저장 두 개만
+// '3 내 빈칸' → 내가 만든 빈칸으로 가림, 단추 다시 가리기·편집. '편집'을 눌러야 편집: 낱말 한 번 누르면 빈칸, 다시 누르면 없어짐, 단추는 초기화·저장만
 const MODES: { k: Exclude<BlankMode, 'off'>; label: string; hint: string }[] = [
   { k: 'all', label: '1 전체 가리기', hint: '칸을 통째로 가려요. 누르면 보여요' },
   { k: 'smart', label: '2 핵심어 가리기', hint: '교과 핵심어만 가려요. 가린 곳을 누르면 보여요' },
-  { k: 'mine', label: '3 빈칸 만들기', hint: '내가 만든 빈칸만 가려요. 다시 고치려면 「3 빈칸 만들기」를 누르세요' },
+  { k: 'mine', label: '3 내 빈칸', hint: '내가 만든 빈칸만 가려요. 빈칸을 고르거나 고치려면 「편집」을 누르세요' },
   { k: 'wrong', label: '4 오답', hint: '틀림을 눌렀던 칸만 다시 가려요' },
 ];
 
@@ -74,7 +74,7 @@ export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>;
   if (blank.editing)
     return (
       <View style={box}>
-        <Txt style={{ fontWeight: '700', color: colors.cat.amber.fg }}>★ 빈칸 만들기</Txt>
+        <Txt style={{ fontWeight: '700', color: colors.cat.amber.fg }}>★ 내 빈칸 편집</Txt>
         <Txt variant="sub" style={{ fontSize: 12.5 }}>
           가릴 낱말을 한 번 누르면 빈칸, 다시 누르면 없어져요.
         </Txt>
@@ -121,10 +121,7 @@ export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>;
               key={m.k}
               onPress={() => {
                 blank.setMode(m.k);
-                if (m.k === 'mine') {
-                  startDraft(scope);
-                  blank.setEditing(true);
-                } else blank.setEditing(false);
+                blank.setEditing(false);
                 blank.reset();
               }}
               accessibilityRole="button"
@@ -143,6 +140,16 @@ export function BlankBar({ blank, scope }: { blank: ReturnType<typeof useBlank>;
       )}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <SmallBtn label="다시 가리기" onPress={blank.reset} />
+        {blank.mode === 'mine' && (
+          <SmallBtn
+            label="편집"
+            strong
+            onPress={() => {
+              startDraft(scope);
+              blank.setEditing(true);
+            }}
+          />
+        )}
         <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" hitSlop={6} style={{ flex: 1 }}>
           <Txt style={{ fontSize: 12.5, fontWeight: '600', color: colors.cat.amber.fg }}>
             암기율 {sum.done ? `${Math.round((sum.ok / sum.done) * 100)}% (${sum.ok}/${sum.done}칸) ${open ? '▲' : '영역별 ▼'}` : '— 가린 곳을 열고 맞음·틀림을 눌러요'}
