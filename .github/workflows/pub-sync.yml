@@ -1,0 +1,23 @@
+name: pub-sync
+# 공개 자료(공고·선발 인원·학교·지도·교육과정 목록 등)를 Supabase 공개 저장소 pub 에 맞춤 (2026-11-28: 저장소 비공개 전환 대비)
+# raw-files 를 고치는 수집 작업이 끝나면 자동으로 이어서 실행, 수동 실행도 가능
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [collector-fetch, collector-ingest, collector-kice, collector-schools, collector-geo, collector-jobs, collector-schoolinfo, content-system, ncic, practice-build, compiled-gap]
+    types: [completed]
+permissions:
+  contents: read
+concurrency: { group: pub-sync, cancel-in-progress: false }
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files, path: data }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - name: 공개 저장소에 맞추기
+        env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: python -I -u app/scripts/tools/pub_sync.py data
