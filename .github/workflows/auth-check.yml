@@ -44,3 +44,8 @@ jobs:
           echo "== 배포된 auth.html"
           curl -s "https://24chan.github.io/imyong_app/auth.html?x=$RANDOM" | grep -o 'v4 · to=\|put_auth_relay' | sort | uniq -c
           curl -sI "https://24chan.github.io/imyong_app/auth.html" | grep -i 'cache-control\|age:'
+          echo "== 전달함 왕복 시험(맡기기→꺼내기→다시 꺼내기)"
+          N="roundtrip-$(date +%s)-0000000000000000000000000000"
+          curl -s -X POST "$URL/rest/v1/rpc/put_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\",\"p_payload\":\"access_token=a&refresh_token=b\"}" -w ' put HTTP %{http_code}\n'
+          curl -s -X POST "$URL/rest/v1/rpc/take_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\"}" -w ' take1 HTTP %{http_code}\n'
+          curl -s -X POST "$URL/rest/v1/rpc/take_auth_relay" -H "apikey: $KEY" -H 'content-type: application/json' -d "{\"p_nonce\":\"$N\"}" -w ' take2 HTTP %{http_code}\n'
