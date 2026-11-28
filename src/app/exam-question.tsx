@@ -1,15 +1,19 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { Txt } from '../components/ui';
 import { Box, examPdf, getAnalysis } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
+import { NoteCanvas } from '../features/analysis/NoteCanvas';
 import { QuestionClip } from '../features/analysis/QuestionClip';
+import type { Crop } from '../features/analysis/questionCache';
 import { Gate } from '../features/study/Gate';
 import { radius, space } from '../theme/tokens';
 import { useTheme } from '../theme/useTheme';
 
 // 기출 문항 한눈에 보기 (2026-11-28 사용자 요청)
 // 넓은 화면(태블릿 가로 등): 왼쪽 = 문항 앞부분(지문), 오른쪽 = 이어지는 부분(물음) — 화면 높이에 맞춰 끌지 않고 한 번에
+// 2026-11-28: 그림이 준비되면 그 자리에서 필기(NoteCanvas) — 다른 화면으로 넘어가지 않음
 // 좁은 화면(폰): 위아래로. 그림을 누르면 크게 보기, 위 '문제지 전체 보기'는 평가원 원본 PDF 전체
 // 정답: 평가원은 초등 교육과정 정답을 공개하지 않아 정답 보기는 없음
 const LEVEL = 'elementary' as const;
@@ -33,8 +37,14 @@ function ExamQuestionInner() {
     router.push({ pathname: '/pdf', params: { url: f.data.url, title, page: f.data.page, pageLabel: '평가원 게시판' } });
   };
 
+  // 2026-11-28: 문항 그림이 다 준비되면 필기 화면(확대·축소, 펜·형광펜·지우개, 자동 저장)으로 바꿈
+  const [ready, setReady] = useState<Record<number, Crop>>({});
+  const onReady = useCallback((i: number, img: Crop) => setReady((r) => (r[i]?.uri === img.uri ? r : { ...r, [i]: img })), []);
+  const imgs = parts.map((_, i) => ready[i]).filter(Boolean) as Crop[];
+  const allReady = parts.length > 0 && imgs.length === parts.length;
+
   const clip = (b: Box, i: number, h?: number) =>
-    f.data ? <QuestionClip key={i} url={f.data.url} box={b} cacheKey={`${year}${p}-${n}${i ? `-c${i}` : ''}`} title={title} fitH={h} /> : null;
+    f.data ? <QuestionClip key={i} url={f.data.url} box={b} cacheKey={`${year}${p}-${n}${i ? `-c${i}` : ''}`} title={title} fitH={h} onPress={() => {}} onReady={(img) => onReady(i, img)} /> : null;
 
   let body;
   if (an.loading || f.loading) body = <ActivityIndicator color={colors.brand} style={{ marginTop: space.xl }} />;
@@ -44,6 +54,7 @@ function ExamQuestionInner() {
         이 문항은 자리를 못 찾았어요(그림으로 된 옛 문제지 등). 위 '문제지 전체 보기'로 확인해 주세요.
       </Txt>
     );
+  else if (allReady) body = <NoteCanvas noteKey={`${year}${p}-${n}`} imgs={imgs} layout={width >= 700 ? 'row' : 'col'} />;
   else if (wide) {
     const rest = parts.slice(1);
     const restH = (fitH - space.sm * (rest.length - 1)) / rest.length;
@@ -72,7 +83,7 @@ function ExamQuestionInner() {
       />
       {body}
       <Txt variant="sub" style={{ fontSize: 11.5, textAlign: 'center', paddingBottom: space.sm }}>
-        평가원 원문 그대로예요 · 그림을 누르면 크게 · 평가원은 초등 교육과정 정답을 공개하지 않아요
+        평가원 원문 그대로예요 · 두 손가락으로 확대·축소 · 평가원은 초등 교육과정 정답을 공개하지 않아요
       </Txt>
     </View>
   );

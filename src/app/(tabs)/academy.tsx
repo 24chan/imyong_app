@@ -25,7 +25,7 @@ export default function AcademyScreen() {
   const { settings, viewLevel } = useAppSettings();
   const { session } = useAuth();
   const subject = viewLevel === 'secondary' ? settings.subjectCode : null;
-  const [tab, setTab] = useState<Tab>('lectures');
+  const [tab, setTab] = useState<Tab>('public'); // 2026-11-28: 처음엔 공부 자료
   // 홈 바로가기 '공개 자료'(2026-11-24)에서 tab=public 으로 들어옴
   const params = useLocalSearchParams<{ tab?: string; t?: string }>();
   useEffect(() => {
@@ -62,9 +62,9 @@ export default function AcademyScreen() {
       <View style={{ flexDirection: 'row', paddingVertical: 16, paddingHorizontal: space.sm, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.line }}>
         {(
           [
+            { value: 'public', icon: 'library-outline', label: '공부 자료' },
             { value: 'lectures', icon: 'star-outline', label: '학원·인강 후기' },
             { value: 'mock', icon: 'clipboard-outline', label: '모의고사' },
-            { value: 'public', icon: 'library-outline', label: '공부 자료' },
           ] as const
         ).map((o) => {
           const on = tab === o.value;

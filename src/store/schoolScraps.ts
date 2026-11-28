@@ -31,6 +31,13 @@ export function toggleScrap(s: Omit<ScrapSchool, 'at'>) {
   emit();
 }
 
+/** 순서 바꾸기(2026-11-28): 꾹 눌러 끌어 옮긴 결과 순서 그대로 저장 */
+export function setScrapOrder(list: ScrapSchool[]) {
+  saved = list;
+  AsyncStorage.setItem(KEY, JSON.stringify(saved)).catch(() => {});
+  emit();
+}
+
 export function useScraps(): ScrapSchool[] {
   load();
   return useSyncExternalStore(

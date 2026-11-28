@@ -43,7 +43,7 @@ post({ready:1});
 type State = { k: 'wait' } | { k: 'render'; b64: string } | { k: 'done'; img: Crop } | { k: 'live' } | { k: 'err'; why: string };
 
 /** fitH: 그 높이 안에 맞춰 보여 줌(넓은 화면 한눈에 보기). onPress: 누를 때 할 일(없으면 그림 크게 보기) */
-export function QuestionClip({ url, box, cacheKey, title, fitH, onPress }: { url: string; box: Box; cacheKey: string; title: string; fitH?: number; onPress?: () => void }) {
+export function QuestionClip({ url, box, cacheKey, title, fitH, onPress, onReady }: { url: string; box: Box; cacheKey: string; title: string; fitH?: number; onPress?: () => void; onReady?: (img: Crop) => void }) {
   const { colors } = useTheme();
   const W = webview();
   const name = cropName(cacheKey, box, url);
@@ -67,6 +67,11 @@ export function QuestionClip({ url, box, cacheKey, title, fitH, onPress }: { url
       off = true;
     };
   }, [name, url, W]);
+
+  useEffect(() => {
+    if (st.k === 'done') onReady?.(st.img);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [st]);
 
   const frame = { borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, overflow: 'hidden' as const, backgroundColor: '#FFFFFF' };
 

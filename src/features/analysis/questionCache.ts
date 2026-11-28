@@ -61,6 +61,18 @@ export function cachedCrop(name: string): Crop | null {
   }
 }
 
+/** 잘라낸 그림을 base64로(필기 화면에 넘김). data: 주소면 그대로 떼어 냄 */
+export async function cropBase64(uri: string): Promise<string | null> {
+  if (uri.startsWith('data:')) return uri.split(',')[1] ?? null;
+  const m = fs();
+  if (!m) return null;
+  try {
+    return await new m.File(uri).base64();
+  } catch {
+    return null;
+  }
+}
+
 export async function saveCrop(name: string, pngBase64: string, w: number, h: number): Promise<Crop | null> {
   const m = fs();
   if (!m) return null;

@@ -8,7 +8,6 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, View } from 'react-nat
 import { Chip, Screen, Segmented, Txt } from '../components/ui';
 import { Analysis, examPdf, getAnalysis, getAnalysisSubject, highlight, Hit, Unit } from '../data/analysis';
 import { useAsync } from '../data/useAsync';
-import { Sheet } from '../features/community/parts';
 import { QuestionClip } from '../features/analysis/QuestionClip';
 import { useAppSettings } from '../store/AppSettings';
 import { radius, space } from '../theme/tokens';
@@ -40,6 +39,7 @@ function ExamAnalysisScreenInner() {
   }, [cs.data, subj]);
   const [era, setEra] = useState<'2022' | '2015'>('2022');
   const [openId, setOpenId] = useState<number | null>(null);
+  const [mapW, setMapW] = useState(320); // 출제 지도 칸 줄 너비(한 줄에 몇 칸 들어가는지)
   useEffect(() => setOpenId(null), [subj, era, tab]);
 
   const openExam = useCallback(
@@ -156,52 +156,60 @@ function ExamAnalysisScreenInner() {
           <Txt variant="sub" style={{ fontSize: 12.5 }}>성취기준 하나가 한 칸이에요. 진할수록 많이 나왔고, 빈칸은 안 나온 곳이에요. 칸을 누르면 바로 내용이 떠요.</Txt>
           <BlankBar blank={blank} scope={`ana/${subj}`} />
           {std.length === 0 && <Txt variant="sub">성취기준을 찾지 못했어요.</Txt>}
-          {areas.map((ar) => (
-            <Card key={ar} title={ar}>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-                {std.filter((u) => (u.area || '영역') === ar).map((u) => {
-                  const n = cnt(u);
-                  return (
-                    <Pressable
-                      key={u.id}
-                      onPress={() => setOpenId(u.id)}
-                      accessibilityLabel={`${u.code} ${n}회`}
-                      style={{ width: 54, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: n ? colors.cat.coral.fg : colors.surface, opacity: n ? 0.3 + 0.7 * (n / max) : 1, borderWidth: openId === u.id ? 2 : 0, borderColor: colors.text }}
-                    >
-                      <Txt style={{ fontSize: 10, fontWeight: '700', color: n ? colors.background : colors.textSub }}>{u.code.replace(/[[\]]/g, '')}</Txt>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </Card>
-          ))}
-          {/* 2026-11-24 사용자 요청: 맨 아래가 아니라 누른 자리에서 바로 보이게 → 팝업 시트 */}
-          <Sheet visible={!!sel} onClose={() => setOpenId(null)} title={sel ? `${sel.code} · ${cnt(sel)}회 나옴` : ''}>
-            {sel && (
-              <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ gap: space.md }}>
-                {!!sel.area && (
-                  <Txt variant="sub" style={{ fontSize: 12.5 }}>
-                    {subj} · {sel.area}
-                  </Txt>
-                )}
-                <BlankScope blank={blank} scope={`ana/${subj}`} vocab={vocab}>
-                  <BlankText text={sel.text.split(' ▶ ')[0]} size={15} group={sel.area || '기타'} />
-                </BlankScope>
-                {sel.text.includes(' ▶ ') && (
-                  <Txt variant="sub" style={{ fontSize: 13, lineHeight: 20 }}>
-                    {sel.text.split(' ▶ ').slice(1).join(' ')}
-                  </Txt>
-                )}
-                {hitsOf(sel.id).length ? (
-                  <>
-                    <HitClips hs={hitsOf(sel.id)} a={a} onExam={openExam} onQuestion={openQuestion} />
-                  </>
-                ) : (
-                  <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>
-                )}
-              </ScrollView>
-            )}
-          </Sheet>
+          {areas.map((ar) => {
+            // 2026-11-28 사용자 요청: 팝업 대신 누른 칸이 있는 줄 바로 밑에 내용을 펼침
+            const list = std.filter((u) => (u.area || '영역') === ar);
+            const per = Math.max(1, Math.floor((mapW + 4) / (54 + 4)));
+            const rowsOf: Unit[][] = [];
+            for (let i = 0; i < list.length; i += per) rowsOf.push(list.slice(i, i + per));
+            return (
+              <Card key={ar} title={ar}>
+                <View onLayout={(e) => setMapW(e.nativeEvent.layout.width)} style={{ gap: 4 }}>
+                  {rowsOf.map((row, ri) => (
+                    <View key={ri} style={{ gap: 4 }}>
+                      <View style={{ flexDirection: 'row', gap: 4 }}>
+                        {row.map((u) => {
+                          const n = cnt(u);
+                          return (
+                            <Pressable
+                              key={u.id}
+                              onPress={() => setOpenId((o) => (o === u.id ? null : u.id))}
+                              accessibilityLabel={`${u.code} ${n}회`}
+                              accessibilityState={{ expanded: openId === u.id }}
+                              style={{ width: 54, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center', backgroundColor: n ? colors.cat.coral.fg : colors.surface, opacity: n ? 0.3 + 0.7 * (n / max) : 1, borderWidth: openId === u.id ? 2 : 0, borderColor: colors.text }}
+                            >
+                              <Txt style={{ fontSize: 10, fontWeight: '700', color: n ? colors.background : colors.textSub }}>{u.code.replace(/[[\]]/g, '')}</Txt>
+                            </Pressable>
+                          );
+                        })}
+                      </View>
+                      {sel && row.some((u) => u.id === sel.id) && (
+                        <View style={{ marginTop: 4, marginBottom: 6, padding: space.md, gap: space.md, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Txt style={{ flex: 1, fontSize: 15, fontWeight: '700' }}>
+                              {sel.code} · {cnt(sel)}회 나옴
+                            </Txt>
+                            <Pressable onPress={() => setOpenId(null)} accessibilityRole="button" accessibilityLabel="접기" hitSlop={10}>
+                              <Txt style={{ fontSize: 13, fontWeight: '700', color: colors.textSub }}>접기 ▲</Txt>
+                            </Pressable>
+                          </View>
+                          <BlankScope blank={blank} scope={`ana/${subj}`} vocab={vocab}>
+                            <BlankText text={sel.text.split(' ▶ ')[0]} size={15} group={sel.area || '기타'} />
+                          </BlankScope>
+                          {sel.text.includes(' ▶ ') && (
+                            <Txt variant="sub" style={{ fontSize: 13, lineHeight: 20 }}>
+                              {sel.text.split(' ▶ ').slice(1).join(' ')}
+                            </Txt>
+                          )}
+                          {hitsOf(sel.id).length ? <HitClips hs={hitsOf(sel.id)} a={a} onExam={openExam} onQuestion={openQuestion} /> : <Txt variant="sub">아직 기출에 안 나왔어요.</Txt>}
+                        </View>
+                      )}
+                    </View>
+                  ))}
+                </View>
+              </Card>
+            );
+          })}
         </>
       );
     }
