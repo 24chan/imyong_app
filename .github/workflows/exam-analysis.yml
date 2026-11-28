@@ -29,5 +29,5 @@ jobs:
       # 2026-11-28 보안 보강: 정제 자료는 공개 GitHub에 두지 않고 Supabase 비공개 저장소(pro)에만 올림
       - name: 비공개 저장소(pro)에 올리기
         env:
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
         run: python -I -u app/scripts/tools/pro_upload.py raw/analysis analysis

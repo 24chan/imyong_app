@@ -20,7 +20,7 @@ jobs:
         with: { path: app }
       - name: 비공개 저장소에 올리기
         env:
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
         run: |
           [ -d raw/analysis ] && python -I -u app/scripts/tools/pro_upload.py raw/analysis analysis
           [ -d raw/quiz ] && python -I -u app/scripts/tools/pro_upload.py raw/quiz quiz

@@ -19,5 +19,5 @@ jobs:
         with: { path: app }
       - name: 공개 저장소에 맞추기
         env:
-          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
         run: python -I -u app/scripts/tools/pub_sync.py data
