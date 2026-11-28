@@ -1,0 +1,30 @@
+name: admin-alert
+# 운영자 알림: 하루 두 번(09:23·19:23 KST) 자동 수집 변경·승인 대기·수집 멈춤을 모아 운영자 폰으로
+on:
+  schedule:
+    - cron: '23 0 * * *'
+    - cron: '23 10 * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: raw-files, fetch-depth: 0 }
+      - uses: actions/checkout@v4
+        with: { path: app }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - env:
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY || secrets.IMYONG }}
+        run: python -I -u app/scripts/collector/admin_alert.py .
+      - name: raw-files 브랜치에 저장
+        run: |
+          git config user.name "imyong-collector"
+          git config user.email "actions@users.noreply.github.com"
+          git add raw/changes
+          git commit -qm "운영 알림 $(date +%F)" || exit 0
+          ok=0; for i in 1 2 3 4 5; do if git pull -q --rebase -X theirs origin raw-files && git push -q origin HEAD:raw-files; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep $((i*5)); done; [ "$ok" = 1 ]

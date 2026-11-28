@@ -1,3 +1,4 @@
+import { ChangesAdmin, useAdminPushRegister } from '../features/admin/ChangesAdmin';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Linking, Pressable, View } from 'react-native';
@@ -28,9 +29,11 @@ export default function AdminScreen() {
   const { isAdmin } = useAuth();
   const [reload, setReload] = useState(0);
   const params = useLocalSearchParams<{ tab?: string; type?: string; id?: string }>();
-  const [tab, setTab] = useState<'stats' | 'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs' | 'reveal'>(params.tab === 'reveal' ? 'reveal' : 'stats');
+  const [tab, setTab] = useState<'stats' | 'changes' | 'verify' | 'reports' | 'appeals' | 'mock' | 'academy' | 'jobs' | 'reveal'>(params.tab === 'reveal' ? 'reveal' : params.tab === 'changes' ? 'changes' : 'stats');
+  const push = useAdminPushRegister(isAdmin);
   useEffect(() => {
     if (params.tab === 'reveal') setTab('reveal');
+    if (params.tab === 'changes') setTab('changes');
   }, [params.tab, params.id]);
   const list = useAsync(() => (isAdmin ? getPendingVerifications() : Promise.resolve([])), [isAdmin, reload]);
   const reports = useAsync(() => (isAdmin ? adminReports() : Promise.resolve([])), [isAdmin, reload]);
@@ -54,6 +57,7 @@ export default function AdminScreen() {
       <Screen>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
           <Chip label={'통계'} selected={tab === 'stats'} onPress={() => setTab('stats')} />
+          <Chip label={'변경 알림'} selected={tab === 'changes'} onPress={() => setTab('changes')} />
           <Chip label={`인증 ${(list.data ?? []).length}`} selected={tab === 'verify'} onPress={() => setTab('verify')} />
           <Chip label={`신고 ${(reports.data ?? []).length}`} selected={tab === 'reports'} onPress={() => setTab('reports')} />
           <Chip label={`이의 ${(appeals.data ?? []).length}`} selected={tab === 'appeals'} onPress={() => setTab('appeals')} />
@@ -64,6 +68,7 @@ export default function AdminScreen() {
         </View>
         <PrimaryButton label="새로고침" variant="ghost" onPress={() => setReload((n) => n + 1)} />
         {tab === 'stats' && <StatsAdmin />}
+        {tab === 'changes' && <ChangesAdmin push={push} />}
         {tab === 'reveal' && <RevealAdmin key={`${params.type}-${params.id}`} initialType={params.type} initialId={params.id} />}
         {tab === 'verify' && (
           <>
