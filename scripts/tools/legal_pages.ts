@@ -68,7 +68,7 @@ else if(!n){M.textContent='앱 업데이트가 덜 받아졌어요. 앱을 두 �
 else{st='보내는 중';dbg();
 // 앱 이동은 전달함 저장이 끝난 뒤에(먼저 이동하면 요청이 끊길 수 있음)
 fetch('https://wckaybzamhvmhxiacmnx.supabase.co/rest/v1/rpc/put_auth_relay',{method:'POST',cache:'no-store',keepalive:true,headers:{'apikey':'sb_publishable_Fss2DpcXGiGlqSkUefgIGg_mkdmz5L6','content-type':'application/json'},body:JSON.stringify({p_nonce:n,p_payload:h})})
-.then(function(r){if(r.ok){st='성공(HTTP '+r.status+')';M.textContent='앱에 로그인 정보를 보냈어요. 왼쪽 위 X를 눌러 이 창을 닫으면 앱에서 로그인돼 있어요.';dbg();return;}
+.then(function(r){if(r.ok){st='성공(HTTP '+r.status+')';M.textContent='로그인 정보를 앱에 보냈어요. 왼쪽 위 X를 누르면 앱으로 돌아가요.';dbg();return;}
 return r.text().then(function(t){var why=/PGRST202|Could not find the function/i.test(t)?'함수 없음: 0033 SQL을 실행해 주세요':/permission denied|42501/i.test(t)?'권한 오류(실행 권한)':/42P01|does not exist/i.test(t)?'표 없음: 0033 SQL을 실행해 주세요':/bad input/i.test(t)?'번호·정보 길이 오류':'서버 오류';
 st='실패(HTTP '+r.status+', '+why+')';M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent=why+' — '+t.slice(0,160);dbg();});})
 .catch(function(x){st='실패(인터넷: '+x+')';M.textContent='앱에 로그인 정보를 보내지 못했어요.';E.textContent='인터넷 오류: '+x;dbg();})

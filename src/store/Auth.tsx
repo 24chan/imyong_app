@@ -258,7 +258,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 1500);
     let res: Awaited<ReturnType<typeof WebBrowser.openAuthSessionAsync>>;
     try {
-      res = await WebBrowser.openAuthSessionAsync(data.url, appReturn);
+      // createTask: false → 로그인 창을 앱 안에서 열어, X를 누르면 앱 화면으로 바로 돌아옴(앱이 뒤로 숨지 않음)
+      res = await WebBrowser.openAuthSessionAsync(data.url, appReturn, { createTask: false });
     } finally {
       clearInterval(timer);
     }
